@@ -1,0 +1,44 @@
+material Fusion/Windshield
+{
+  receive_shadows off
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture windshield.png
+      }
+    }
+  }
+}
+
+material Fusion/BackWindow
+{
+  receive_shadows off
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture back_window.png
+      }
+    }
+  }
+}
+
+material Fusion/Wheel
+{
+  receive_shadows off
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture wheel.png
+      }
+    }
+  }
+}

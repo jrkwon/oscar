@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="ouster">
+    <pose>0 0 0.0 0 0 0</pose>
+    <link name="os1_sensor">
+      <inertial>
+        <mass>0.33</mass>
+        <!-- kwon: removed to prevent it from moving on 
+        <inertia>
+          <ixx>0.000241148</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000241148</iyy>
+          <iyz>0</iyz>
+          <izz>0.000264</izz>
+        </inertia -->
+      </inertial>
+      <collision name="os1_sensor_collision">
+         <geometry>
+          <cylinder>
+            <radius>0.04</radius>
+            <length>0.073</length>
+          </cylinder>
+         </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0 0 0 0 0 1.5707</pose>
+        <geometry>
+          <!-- <box>
+            <size>0.02 0.05 0.05</size>
+          </box> -->
+          <mesh>
+            <uri>model://ouster/meshes/os1_64.dae</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <sensor name="laser" type="ray">
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>512</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.1415926535897931</min_angle>
+              <max_angle>3.1415926535897931</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>16</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.261799388</min_angle>
+              <max_angle>0.261799388</max_angle> 
+            </vertical>
+          </scan>
+          <range>
+            <min>0.9</min>
+            <max>75.0</max>
+            <resolution>0.03</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+        <!-- <plugin name="laser" filename="libGpuRayPlugin.so" /> -->
+        <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_ouster_laser.so">
+          <topicName>laser/scan</topicName>
+          <frameName>os1_sensor</frameName>
+          <gaussianNoise>0.08</gaussianNoise>
+          <min_range>0.9</min_range>
+          <max_range>75.0</max_range>
+        </plugin>
+        <always_on>1</always_on>
+        <visualize>0</visualize>
+      </sensor>
+    </link> 
+
+  </model>
+</sdf>
+
+<!-- vim: set et fenc= ff=unix sts=0 sw=2 ts=2 : -->

@@ -1,0 +1,84 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+    <model name='usb_cam'>
+      <pose>0 0 0 0 0 0</pose>
+      <link name='link'>
+        <inertial>
+          <mass>0.1</mass>
+        </inertial>
+        <visual name='visual'>
+          <geometry>
+            <!-- box>
+              <size>0.1 0.1 0.1</size>
+            </box -->
+            <cylinder>
+              <radius>0.021</radius>
+              <length>0.029</length>
+            </cylinder>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <!-- box>
+              <size>0.1 0.1 0.1</size>
+            </box -->
+            <cylinder>
+              <radius>0.021</radius>
+              <length>0.029</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <sensor name='camera' type='camera'>
+          <pose>0 0 0 0 -0 0</pose>
+          <update_rate>30.0</update_rate>
+          <camera name='__default__'>
+            <horizontal_fov>1.3962634</horizontal_fov>
+            <image>
+              <width>800</width>
+              <height>600</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.02</near>
+              <far>300</far>
+            </clip>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.007</stddev>
+            </noise>
+            <lens>
+              <type>custom</type>
+              <custom_function>
+                <c1>1.05</c1>
+                <c2>4</c2>
+                <f>1</f>
+                <fun>tan</fun>
+              </custom_function>
+              <scale_to_hfov>1</scale_to_hfov>
+              <cutoff_angle>3.1415</cutoff_angle>
+              <env_texture_size>1080</env_texture_size>
+            </lens>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>30</update_rate>
+          <visualize>1</visualize>
+          <plugin name='camera_plugin' filename='libgazebo_ros_camera.so'>
+            <robotNamespace></robotNamespace>
+            <alwaysOn>true</alwaysOn>
+            <imageTopicName>/camera/image_raw</imageTopicName>
+            <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+            <updateRate>0</updateRate>
+            <cameraName>usb_cam</cameraName>
+            <frameName>/robot_camera_link</frameName>
+            <hackBaseline>0.07</hackBaseline>
+            <distortionK1>0.0</distortionK1>
+            <distortionK2>0.0</distortionK2>
+            <distortionK3>0.0</distortionK3>
+            <distortionT1>0.0</distortionT1>
+            <distortionT2>0.0</distortionT2>
+          </plugin>
+        </sensor>
+      </link>
+  </model>
+</sdf>

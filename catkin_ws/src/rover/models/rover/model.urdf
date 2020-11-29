@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<robot name="rover">
+  <material name="rover_color">
+    <!--color rgba="0.153137255 0.350196078 0.158039216 1.0"/-->
+    <texture filename="package://rover/models/rover/materials/textures/Ranger_Diffuse.png"/>
+  </material>
+  <link name="base_link">
+    <visual name="visual">
+      <origin xyz="0 0 0" rpy="0 0 -1.57079" /> <!-- "1.57079 0 -1.570796" / -->
+      <geometry>
+        <mesh filename="package://rover/models/rover/meshes/polaris.dae" />  >!--scale="0.0006 0.0006 0.0006" / -->
+      </geometry>
+      <!-- material name="rover_color"/ -->
+      <material name="rover_color" />
+    </visual>
+  </link>
+</robot>
+
