@@ -28,7 +28,7 @@ $ git clone https://github.com/jrkwon/oscar.git --recursive
   - `conda`: conda environment file
   - `neural_net`: system settings for (1) neural_net and (2) ros nodes using neural_net (data_collection, run_neural) 
 - `neural_net`: neural network package for end to end learning
-- `PX4_Firmware`: The `Firmware` folder for PX4.
+- `PX4-Autopilot`: The folder for the PX4 Autopilot.
 
 ## Prior to Use
 
