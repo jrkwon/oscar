@@ -30,6 +30,9 @@ devel_isolated/
 *.dox
 *.wikidoc
 
+# vscode
+.vscode
+
 # eclipse stuff
 .project
 .cproject

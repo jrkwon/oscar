@@ -12,6 +12,12 @@ The OSCAR platform can be used by researchers who want to have a full-stack syst
 OSCAR helps educators who want to teach mobile robotics and/or autonomous vehicles in the classroom. 
 Students also can use the OSCAR platform to learn the principles of robotics programming.
 
+## Download the OSCAR Source Code
+
+```
+$ git clone https://github.com/jrkwon/oscar.git --recursive
+```
+
 ## Directory Structure
 - `catkin_ws`: ros workspace
   - `src`

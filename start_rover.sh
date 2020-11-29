@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd PX4_Firmware
+cd PX4-Autopilot
 DONT_RUN=1 make px4_sitl gazebo_rover
 cd ..
 
