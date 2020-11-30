@@ -1,5 +1,6 @@
 # Ignore data folder
 data/
+ce491_data/
 e2e_fusion_data/
 e2e_rover_data/
 
