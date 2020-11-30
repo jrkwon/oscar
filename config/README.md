@@ -1,4 +1,4 @@
-# yaml files
+# System Configuration
 
 ## conda
 - `environment.yaml`: conda environment file
