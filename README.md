@@ -55,7 +55,7 @@ A `world` can be selected through a command line argument. Three worlds are read
 - `mcity_jaerock`: mcity
 
 ```
-$ ./start_fusion.sh sonoma_raceway/mcity_jaerock
+$ ./start_fusion.sh {sonoma_raceway|mcity_jaerock}
 ```
 
 ### ROVER 
