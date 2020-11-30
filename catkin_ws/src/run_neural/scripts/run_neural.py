@@ -37,9 +37,9 @@ elif config['vehicle_name'] == 'rover':
 else:
     exit(config['vehicle_name'] + 'not supported vehicle.')
 
-SHARP_TURN_MIN = 0.3
-BRAKE_APPLY_SEC = 1.5
-THROTTLE_DEFAULT = 0.2
+SHARP_TURN_MIN = 0.25 # 0.3
+BRAKE_APPLY_SEC = 1.7 # 1.5
+THROTTLE_DEFAULT = 0.15 # 0.2
 THROTTLE_SHARP_TURN = 0.05
 
 class NeuralControl:
