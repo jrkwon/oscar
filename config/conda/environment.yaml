@@ -1,6 +1,8 @@
-name: oscar_neural_net
+name: oscar
 channels:
   - jdh88
+  - menpo
+  - conda-forge
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
@@ -9,16 +11,19 @@ dependencies:
   - backports_abc=0.5=py27_0
   - blas=1.0=mkl
   - bzip2=1.0.8=h7b6447c_0
-  - ca-certificates=2019.10.16=0
+  - ca-certificates=2020.11.8=ha878542_0
   - cairo=1.14.12=h8948797_3
-  - certifi=2019.9.11=py27_0
+  - certifi=2016.9.26=py27_0
   - cloudpickle=1.2.2=py_0
   - cudatoolkit=9.0=h13b8566_0
   - cudnn=7.1.2=cuda9.0_0
+  - cycler=0.10.0=py27_0
   - cytoolz=0.10.0=py27h7b6447c_0
   - dask-core=1.1.4=py27_1
   - dbus=1.13.12=h746ee38_0
   - decorator=4.4.1=py_0
+  - empy=3.3.4=pyh9f0ad1d_1
+  - enum34=1.1.6=py27_1
   - expat=2.2.6=he6710b0_0
   - ffmpeg=4.0=hcdf2ecd_0
   - fontconfig=2.13.0=h9420a91_0
@@ -52,6 +57,7 @@ dependencies:
   - libvpx=1.7.0=h439df22_0
   - libxcb=1.13=h1bed415_1
   - libxml2=2.9.9=hea5a465_1
+  - matplotlib=2.2.3=py27hb69df0a_0
   - mkl=2019.4=243
   - mkl-service=2.3.0=py27he904b0f_0
   - mkl_fft=1.0.14=py27ha843d7b_0
@@ -62,7 +68,7 @@ dependencies:
   - numpy-base=1.16.5=py27hde5b4d6_0
   - olefile=0.46=py27_0
   - opencv=3.4.2=py27h6fd60c2_1
-  - openssl=1.1.1d=h7b6447c_3
+  - openssl=1.1.1h=h516909a_0
   - pcre=8.43=he6710b0_0
   - pillow=6.2.1=py27h34e0f95_0
   - pip=19.3.1=py27_0
@@ -74,10 +80,12 @@ dependencies:
   - python-dateutil=2.8.1=py_0
   - pytz=2019.3=py_0
   - pywavelets=1.0.3=py27hdd07704_1
+  - pyyaml=5.2=py27h7b6447c_0
   - qt=5.9.7=h5867ecd_1
   - readline=7.0=h7b6447c_5
   - rospkg=1.0.38=py27_0
   - scikit-image=0.14.2=py27he6710b0_0
+  - scipy=1.2.1=py27h7c811a0_0
   - setuptools=41.6.0=py27_0
   - singledispatch=3.4.0.3=py27_0
   - sip=4.19.8=py27hf484d3e_0
@@ -97,8 +105,8 @@ dependencies:
     - astor==0.8.0
     - backports-functools-lru-cache==1.6.1
     - backports-weakref==1.0.post1
-    - cycler==0.10.0
-    - enum34==1.1.6
+    - catkin-pkg==0.4.14
+    - docutils==0.16
     - funcsigs==1.0.2
     - gast==0.3.2
     - grpcio==1.25.0
@@ -118,6 +126,4 @@ dependencies:
     - tensorflow-gpu==1.12.0
     - termcolor==1.1.0
     - werkzeug==0.16.0
-    - catkin-pkg==0.4.14
-prefix: /home/ce491/anaconda3/envs/neural_net
-
+prefix: /home/jaerock/anaconda3/envs/oscar

@@ -3,8 +3,14 @@
 ## Introduction
 
 OSCAR is the Open-Source robotic Car Architecture for Research and education. OSCAR is an open-source and full-stack robotic car architecture to advance robotic research and education in a setting of autonomous vehicles.
+
 The OSCAR platform was designed in the Bio-Inspired Machine Intelligence Lab at the University of Michigan-Dearborn. 
-The backend system of the OSCAR is the PX4 Autopilot with Robotic Operating System (ROS) communicating with PX4 running on hardware or on the Gazebo simulator. 
+
+The OSCAR supports two vehicles: `fusion` and `rover`.
+
+`fusion` is based on `car_demo` from OSRF that was originally developed to test simulated Toyota Prius energy efficiency.
+
+The backend system of `rover` is the PX4 Autopilot with Robotic Operating System (ROS) communicating with PX4 running on hardware or on the Gazebo simulator. 
 
 ## Who is OSCAR for?
 
@@ -25,13 +31,20 @@ $ git clone https://github.com/jrkwon/oscar.git --recursive
     - `fusion`: Ford Fusion Energia model
     - `rover`: 
 - `config`: configurations
-  - `conda`: conda environment file
+  - `conda`: conda environment files
   - `neural_net`: system settings for (1) neural_net and (2) ros nodes using neural_net (data_collection, run_neural) 
 - `neural_net`: neural network package for end to end learning
 - `PX4-Autopilot`: The folder for the PX4 Autopilot.
 
 ## Prior to Use
 
+### Create Conda Environment 
+
+Create a conda environment using an environment file that is prepared at `config/conda`.
+```
+$ conda env create --file config/conda/environment.yaml
+```
+### rover only
 This section applies to `rover` which is based on `PX4 `. When RC signal is lost, the vehicle's default behavior is `homing` with `disarming` to protect the vehicle. 
 We disabled this feature to prevent the vehicle from disarming whenever control signals are not being sent.
 
@@ -39,9 +52,17 @@ Use QGroundControl to disable the feature. Find `COM_OBLACT` and make it `Disabl
 
 ## How to Use
 
+### Activate Conda Environment
+
+Activate the `oscar` environment. 
+```
+$ conda activate oscar
+```
+
+
 This section explains how to use `fusion` and `rover`.
 
-### FUSION
+### fusion
 
 `fusion` is heavily relied on OSRF's `car_demo` project. Simply use the following script.
 
@@ -58,7 +79,7 @@ A `world` can be selected through a command line argument. Three worlds are read
 $ ./start_fusion.sh {sonoma_raceway|mcity_jaerock}
 ```
 
-### ROVER 
+### rover 
 
 `rover` is based on the Software-In-The-Loop of PX4.
 
@@ -97,42 +118,33 @@ $ python rebuild_csv.py path/to/data/folder
 
 ## How to Train Neural Network
 
-Create a conda environment using an environment file that is prepared at `config/conda`.
-```
-$ conda env create --file config/conda/environment.yaml
-```
-
-Activate the `oscar_neural_net` environment. 
-```
-$ conda activate oscar_neural_net
-```
 
 Start a training
 ```
-(oscar_neural_net) $ . setup.bash
-(oscar_neural_net) $ python neural_net/train.py path/to/data/folder
+(oscar) $ . setup.bash
+(oscar) $ python neural_net/train.py path/to/data/folder
 ```
 
 ## How to Test Neural Network
 
 TBA
 ```
-(oscar_neural_net) $ . setup.bash
-(oscar_neural_net) $ python neural_net/test.py path/to/data/model path/to/data/folder
+(oscar) $ . setup.bash
+(oscar) $ python neural_net/test.py path/to/data/model path/to/data/folder
 ```
 
 TBA
 ```
-(oscar_neural_net) $ . setup.bash
-(oscar_neural_net) $ python neural_net/log.py path/to/data/model path/to/data/folder
+(oscar) $ . setup.bash
+(oscar) $ python neural_net/log.py path/to/data/model path/to/data/folder
 ```
 
 ## How to Drive using Neural Network
 
 TBA
 ```
-(oscar_neural_net) $ . setup.bash
-(oscar_neural_net) $ ros_run run_neural run_nerual.py path/to/data/model 
+(oscar) $ . setup.bash
+(oscar) $ ros_run run_neural run_nerual.py path/to/data/model 
 ```
 
 ## Acknowledgments
