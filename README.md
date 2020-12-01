@@ -67,7 +67,7 @@ This section explains how to use `fusion` and `rover`.
 `fusion` is heavily relied on OSRF's `car_demo` project. Simply use the following script.
 
 ```
-$ ./start_fusion.sh 
+(oscar) $ ./start_fusion.sh 
 ```
 
 A `world` can be selected through a command line argument. Three worlds are ready to be used.
@@ -76,7 +76,7 @@ A `world` can be selected through a command line argument. Three worlds are read
 - `mcity_jaerock`: mcity
 
 ```
-$ ./start_fusion.sh {sonoma_raceway|mcity_jaerock}
+(oscar) $ ./start_fusion.sh {sonoma_raceway|mcity_jaerock}
 ```
 
 ### rover 
@@ -86,15 +86,15 @@ $ ./start_fusion.sh {sonoma_raceway|mcity_jaerock}
 1. Start the rover
 
 ```
-$ ./start_rover.sh
+(oscar) $ ./start_rover.sh
 ```
 
 2. Get rover ready to be controlled.
 
 Open a new terminal and run the following shell scripts.
 ```
-$ ./cmd_arming.sh
-$ ./offboard_mode.sh
+(oscar) $ ./cmd_arming.sh
+(oscar) $ ./offboard_mode.sh
 ```
 
 Then the `rover` is ready to be controlled by the topic `/mavros/setpoint_velocity/cmd_vel` or `/mavros/setpoint_velocity/cmd_vel_unstamped`. The `OSCAR` uses the `unstamped` version.
@@ -103,7 +103,7 @@ Then the `rover` is ready to be controlled by the topic `/mavros/setpoint_veloci
 
 Run the script with a data ID as an argument.
 ```
-$ ./collect_data_fusion jaerock
+(oscar) $ ./collect_data_fusion jaerock
 ```
 
 The default data folder location is `$(pwd)e2e_{fusion/rover}_data`.
@@ -113,7 +113,7 @@ The default data folder location is `$(pwd)e2e_{fusion/rover}_data`.
 TBA
 
 ```
-$ python rebuild_csv.py path/to/data/folder
+(oscar) $ python rebuild_csv.py path/to/data/folder
 ```
 
 ## How to Train Neural Network
