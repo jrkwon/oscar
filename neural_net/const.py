@@ -11,16 +11,13 @@ History:
 # constant definition
 
 # network model type
-NET_TYPE_NIKHIL      = 0
-NET_TYPE_MIR         = 1
-NET_TYPE_NVIDIA      = 2
-NET_TYPE_SQUEEZE     = 3
-NET_TYPE_LSTM_FC6    = 4
-NET_TYPE_LSTM_FC7    = 5
-NET_TYPE_RESNET      = 6
-NET_TYPE_CE491       = 7
-NET_TYPE_JAEROCK     = 8
-NET_TYPE_JR_LSTM     = 9
+NET_TYPE_JAEROCK     = 0
+NET_TYPE_NVIDIA      = 1
+NET_TYPE_RESNET      = 2
+NET_TYPE_CE491       = 3
+NET_TYPE_LSTM        = 4
+NET_TYPE_LSTM_FC6    = 5
+NET_TYPE_LSTM_FC7    = 6
 
 # file extension
 DATA_EXT             = '.csv'

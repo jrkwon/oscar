@@ -22,6 +22,66 @@ from config import Config
 
 config = Config.config
 
+def model_ce491():
+    input_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'])
+
+    return Sequential([
+        Lambda(lambda x: x/127.5 - 1.0, input_shape=input_shape),
+        Conv2D(24, (5, 5), strides=(2,2), activation='relu'),
+        Conv2D(36, (5, 5), strides=(2,2), activation='relu'),
+        Conv2D(48, (5, 5), strides=(2,2), activation='relu'),
+        Conv2D(64, (3, 3), activation='relu'),
+        Conv2D(64, (3, 3), activation='relu'),
+        Flatten(),
+        Dense(100, activation='relu'),
+        Dense(50, activation='relu'),
+        Dense(10, activation='relu'),
+        Dense(config['num_outputs'])])
+
+def model_jaerock():
+    input_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'])
+
+    return Sequential([
+        Lambda(lambda x: x/127.5 - 1.0, input_shape=input_shape),
+        Conv2D(24, (5, 5), strides=(2,2)),
+        Conv2D(36, (5, 5), strides=(2,2)),
+        Conv2D(48, (5, 5), strides=(2,2)),
+        Conv2D(64, (3, 3)),
+        Conv2D(64, (3, 3)),
+        Flatten(),
+        Dense(1000),
+        Dense(100),
+        Dense(50),
+        Dense(10),
+        Dense(config['num_outputs'])])    
+
+def model_lstm():
+    from keras.layers.recurrent import LSTM
+    from keras.layers.wrappers import TimeDistributed
+
+    # redefine input_shape to add one more dims
+    input_shape = (None, config['input_image_height'],
+                            config['input_image_width'],
+                            config['input_image_depth'])
+    return Sequential([
+        TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), input_shape=input_shape),
+        TimeDistributed(Conv2D(24, (5, 5), strides=(2,2))),
+        TimeDistributed(Conv2D(36, (5, 5), strides=(2,2))),
+        TimeDistributed(Conv2D(48, (5, 5), strides=(2,2))),
+        TimeDistributed(Conv2D(64, (3, 3))),
+        TimeDistributed(Conv2D(64, (3, 3))),
+        TimeDistributed(Flatten()),
+        Dense(100),
+        LSTM(return_sequences=True, units=10),
+        Dense(50),
+        Dense(10),
+        Dropout(0.25),
+        Dense(config['num_outputs'])])
+
 class NetModel:
     def __init__(self, model_path):
         self.model = None
@@ -42,63 +102,12 @@ class NetModel:
     ###########################################################################
     #
     def _model(self):
-
-        input_shape = (config['input_image_height'],
-                       config['input_image_width'],
-                       config['input_image_depth'])
-
         if config['network_type'] == const.NET_TYPE_CE491:
-            self.model = Sequential([
-                      Lambda(lambda x: x/127.5 - 1.0, input_shape=input_shape),
-                      Conv2D(24, (5, 5), strides=(2,2), activation='relu'),
-                      Conv2D(36, (5, 5), strides=(2,2), activation='relu'),
-                      Conv2D(48, (5, 5), strides=(2,2), activation='relu'),
-                      Conv2D(64, (3, 3), activation='relu'),
-                      Conv2D(64, (3, 3), activation='relu'),
-                      Flatten(),
-                      Dense(100, activation='relu'),
-                      Dense(50, activation='relu'),
-                      Dense(10, activation='relu'),
-                      Dense(config['num_outputs'])])
-
+            self.model = model_ce491()
         elif config['network_type'] == const.NET_TYPE_JAEROCK:
-            self.model = Sequential([
-                      Lambda(lambda x: x/127.5 - 1.0, input_shape=input_shape),
-                      Conv2D(24, (5, 5), strides=(2,2)),
-                      Conv2D(36, (5, 5), strides=(2,2)),
-                      Conv2D(48, (5, 5), strides=(2,2)),
-                      Conv2D(64, (3, 3)),
-                      Conv2D(64, (3, 3)),
-                      Flatten(),
-                      Dense(100),
-                      Dense(50),
-                      Dense(10),
-                      Dense(config['num_outputs'])])
-
-        elif config['network_type'] == const.NET_TYPE_JR_LSTM:
-
-            from keras.layers.recurrent import LSTM
-            from keras.layers.wrappers import TimeDistributed
-
-            # redefine input_shape to add one more dims
-            input_shape = (None, config['input_image_height'],
-                                 config['input_image_width'],
-                                 config['input_image_depth'])
-            self.model = Sequential([
-                          TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), input_shape=input_shape),
-                          TimeDistributed(Conv2D(24, (5, 5), strides=(2,2))),
-                          TimeDistributed(Conv2D(36, (5, 5), strides=(2,2))),
-                          TimeDistributed(Conv2D(48, (5, 5), strides=(2,2))),
-                          TimeDistributed(Conv2D(64, (3, 3))),
-                          TimeDistributed(Conv2D(64, (3, 3))),
-                          TimeDistributed(Flatten()),
-                          Dense(100),
-                          LSTM(return_sequences=True, units=10),
-                          Dense(50),
-                          Dense(10),
-                          Dropout(0.25),
-                          Dense(config['num_outputs'])])
-
+            self.model = model_jaerock()
+        elif config['network_type'] == const.NET_TYPE_LSTM:
+            self.model = model_lstm()
         else:
             print('Neural network type is not defined.')
             return

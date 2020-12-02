@@ -7,7 +7,7 @@ version: 0.6
 ## neural network 
 
 # network definition
-network_type: 8
+network_type: 0        # refer to neural_net/const.py
 lstm: False
 
 # training
