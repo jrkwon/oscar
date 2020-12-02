@@ -15,4 +15,9 @@ elif [ "$1" == "sonoma_raceway" ]; then
 elif [ "$1" == "mcity_jaerock" ] ; then
     echo "Starting with $1..." #### experimental
     roslaunch fusion track.launch world:=$1 x:=3 y:=-12 z:=0.017607 R:=0 P:=0 Y:=0
+elif [ "$1" == "simple_city" ] ; then
+    echo "Starting with $1..." #### experimental
+    roslaunch fusion track.launch world:=$1 
+else 
+    echo "Error: no $1.world file exist." 
 fi
