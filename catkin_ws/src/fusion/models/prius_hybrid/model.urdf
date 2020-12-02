@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<robot name="fusion">
+  <link name="base_link">
+    <visual>
+      <!-- origin xyz="0 0 0" rpy="1.57 0 0"/ -->
+      <origin xyz="0 0 0" rpy="1.57 0 0"/>
+      <geometry>
+        <!-- mesh filename="package://fusion/robot_description/meshes/fusion/body.dae" scale="0.064 0.064 0.064"/ -->
+        <mesh filename="package://fusion/models/prius_hybrid/meshes/Hybrid.obj"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>
