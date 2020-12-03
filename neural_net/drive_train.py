@@ -167,7 +167,8 @@ class DriveTrain:
         # checkpoint
         callbacks = []
         #weight_filename = self.net_model.name + '_' + const.CONFIG_YAML + '_ckpt'
-        weight_filename = self.data_path + '_' + Config.config_yaml_name + '_ckpt'
+        weight_filename = self.data_path + '_' + Config.config_yaml_name \
+            + '_N' + str(config['network_type']) + '_ckpt'
         checkpoint = ModelCheckpoint(weight_filename+'.h5',
                                      monitor='val_loss', 
                                      verbose=1, save_best_only=True, mode='min')
