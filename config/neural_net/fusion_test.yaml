@@ -53,3 +53,15 @@ image_crop_x1: 0
 image_crop_y1: 375
 image_crop_x2: 800
 image_crop_y2: 585
+
+######################################################
+## driving strategy - run_neural.py
+
+# steering angle value for sharp turn
+sharp_turn_min: 0.3
+# when sharp turn, apply brake for this sec.
+brake_apply_sec: 1.7
+# throttle at non sharp turn
+throttle_default: 0.15
+# throttle at sharp turn
+throttle_sharp_turn: 0.05

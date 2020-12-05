@@ -37,10 +37,6 @@ elif config['vehicle_name'] == 'rover':
 else:
     exit(config['vehicle_name'] + 'not supported vehicle.')
 
-SHARP_TURN_MIN = 0.25 # 0.3
-BRAKE_APPLY_SEC = 1.7 # 1.5
-THROTTLE_DEFAULT = 0.2 # 0.2
-THROTTLE_SHARP_TURN = 0.05
 
 class NeuralControl:
     def __init__(self, weight_file_name):
@@ -104,14 +100,14 @@ def main(weight_file_name):
         
         # if brake is not already applied and sharp turn
         if neural_control.braking is False: 
-            if abs(joy_data.steer) > SHARP_TURN_MIN: 
-                joy_data.throttle = THROTTLE_SHARP_TURN
+            if abs(joy_data.steer) > config['sharp_turn_min']: 
+                joy_data.throttle = config['throttle_sharp_turn']
                 joy_data.brake = 0.5
                 neural_control.braking = True
-                timer = threading.Timer(BRAKE_APPLY_SEC, neural_control.timer_cb) 
+                timer = threading.Timer(config['brake_apply_sec'], neural_control.timer_cb) 
                 timer.start()
             else:
-                joy_data.throttle = THROTTLE_DEFAULT
+                joy_data.throttle = config['throttle_default']
                 joy_data.brake = 0
         
             
