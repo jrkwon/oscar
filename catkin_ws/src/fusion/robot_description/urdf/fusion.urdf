@@ -629,6 +629,7 @@
       <updateRate>100.0</updateRate>
     </plugin>
   </gazebo>
+  <!-- remove laser links 
   <gazebo reference="center_laser_link">
     <sensor name='center_laser_sensor' type='ray'>
       <ray>
@@ -722,7 +723,7 @@
       <visualize>0</visualize>
     </sensor>
   </gazebo>
-
+  --> 
   <gazebo reference="back_camera_link">
     <sensor type="camera" name="back_camera_sensor">
       <update_rate>30.0</update_rate>
@@ -872,6 +873,7 @@
       </plugin>
     </sensor>
   </gazebo>
+  <!-- remove sonar links 
   <gazebo reference="back_left_far_sonar_link">
     <sensor name='back_left_far_sonar_sensor' type='ray'>
       <ray>
@@ -1119,7 +1121,8 @@
       <update_rate>5</update_rate>
       <visualize>0</visualize>
     </sensor>
-  </gazebo>                
+  </gazebo>               
+  -->  
   <gazebo>    
    <plugin name="imu" filename="libhector_gazebo_ros_imu.so">
       <updateRate>200.0</updateRate>
