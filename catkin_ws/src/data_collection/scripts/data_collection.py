@@ -66,13 +66,18 @@ def vehicle_param(value):
 def recorder(data):
     img = img_cvt.imgmsg_to_opencv(data)
 
-    # crop
-    cropped = img[config['image_crop_y1']:config['image_crop_y2'],
-                  config['image_crop_x1']:config['image_crop_x2']]
+    # no more cropping in data collection - new strategy    
+    # # crop
+    if config['crop'] is True: # this is for old datasets
+        cropped = img[config['image_crop_y1']:config['image_crop_y2'],
+                      config['image_crop_x1']:config['image_crop_x2']]
 
     time_stamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
     file_full_path = str(path) + str(time_stamp) + const.IMAGE_EXT
-    cv2.imwrite(file_full_path, cropped)
+    if config['crop'] is True:
+        cv2.imwrite(file_full_path, cropped)
+    else:
+        cv2.imwrite(file_full_path, img)
     sys.stdout.write(file_full_path + '\r')
     text.write(str(time_stamp) + const.IMAGE_EXT + ',' + str(vehicle_steer) + ',' + str(vehicle_vel) + "\r\n")
     

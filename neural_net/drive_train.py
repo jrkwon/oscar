@@ -61,9 +61,9 @@ class DriveTrain:
         
     ###########################################################################
     #
-    def _prepare_data(self):
+    def _prepare_data(self, normalize_data):
     
-        self.drive.read()
+        self.drive.read(normalize_data = normalize_data)
         
         from sklearn.model_selection import train_test_split
         
@@ -99,6 +99,13 @@ class DriveTrain:
                         
                         image_path = self.data_path + '/' + image_name
                         image = cv2.imread(image_path)
+
+                        # if collected data is not cropped then crop here
+                        # otherwise do not crop.
+                        if config['crop'] is not True:
+                            image = image[config['image_crop_y1']:config['image_crop_y2'],
+                                          config['image_crop_x1']:config['image_crop_x2']]
+
                         image = cv2.resize(image, 
                                            (config['input_image_width'],
                                             config['input_image_height']))
@@ -194,6 +201,7 @@ class DriveTrain:
     
         print(self.train_hist.history.keys())
         
+        plt.figure() # new figure window
         ### plot the training and validation loss for each epoch
         plt.plot(self.train_hist.history['loss'])
         plt.plot(self.train_hist.history['val_loss'])
@@ -205,9 +213,9 @@ class DriveTrain:
         
     ###########################################################################
     #
-    def train(self, show_summary=True):
+    def train(self, show_summary=True, normalize_data=True):
         
-        self._prepare_data()
+        self._prepare_data(normalize_data)
         self._build_model(show_summary)
         self._start_training()
         self.net_model.save()

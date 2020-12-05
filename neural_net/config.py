@@ -17,12 +17,12 @@ import yaml
 class Config:
     config_name = os.environ['OSCAR_PATH'] + '/config/neural_net/' + 'config.yaml'
     with open(config_name) as file:
-        config_yaml = yaml.load(file)
+        config_yaml = yaml.load(file, Loader=yaml.FullLoader)
         config_yaml_name = config_yaml['config_yaml']
 
     yaml_name = os.environ['OSCAR_PATH'] + '/config/neural_net/' + config_yaml_name + '.yaml'
     with open(yaml_name) as file:
-        config = yaml.load(file)
+        config = yaml.load(file, Loader=yaml.FullLoader)
 
     def __init__(self): # model_name):
         pass
