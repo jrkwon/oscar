@@ -17,7 +17,7 @@ elif [ "$1" == "mcity_jaerock" ] ; then
     roslaunch fusion sitl.launch world:=$1 x:=3 y:=-12 z:=0.017607 R:=0 P:=0 Y:=0
 elif [ "$1" == "simple_city" ] ; then
     echo "Starting with $1..." #### experimental
-    roslaunch fusion sitl.launch world:=$1 
+    roslaunch fusion sitl.launch world:=$1 x:=-35 y:=-1.6 z:=0 R:=0 P:=0 Y:=0
 else 
     echo "Error: no $1.world file exist." 
 fi
