@@ -44,73 +44,75 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <!-- mesh filename="package://fusion/robot_description/meshes/fusion/body.dae" scale="0.064 0.064 0.064"/ -->
-        <mesh filename="package://fusion/robot_description/meshes/fusion/body.dae" scale="1.7 1.7 1.7"/>
+        <mesh filename="package://fusion/robot_description/meshes/fusion/body.dae" scale="1.3 1.3 1.3"/>
       </geometry>
     </visual>
     <collision name="chassis">
-      <origin xyz="0 -0.0550 1" rpy="0 0 0"/>
+      <origin xyz="0 -0.0550 0.8" rpy="0 0 0"/>
       <!--origin xyz="0.0 0.05 0.625" rpy="0 0 0"/-->
       <geometry>
-        <box size="2.7026 3.58 1.5"/>
+        <box size="2.4 2.7 0.9"/>
         <!--box size="1.7526 2.1 0.95"/-->
       </geometry>
     </collision>
     <collision name="front_bumper">
-      <origin xyz="0 -3.65 0.82" rpy="0.0 0 0"/>
+      <origin xyz="0 -2.9 0.55" rpy="0.0 0 0"/>
       <!-- origin xyz="0.0 -2.0 0.458488" rpy="0.0 0 0"/-->
       <geometry>
-        <box size="2.7 0.9 0.886691"/>
+        <box size="2.3 0.45 0.65"/>
         <!-- box size="3 1 0.566691"/ -->
       </geometry>
     </collision>
     <collision name="hood">
-      <origin xyz="0 -3.1000 1.46631" rpy="0.191247 -0 0"/>
+      <origin xyz="0 -2.24 1.19" rpy="0.191247 -0 0"/>
       <geometry>
-        <box size="2.3 2.07311 0.265468"/>
+        <box size="2.1 1.41 0.075"/>
       </geometry>
     </collision>
     <collision name="windshield">
-      <origin xyz="0 -1.3950 1.9500" rpy="0.335476 0 0"/>
+      <origin xyz="0 -1.1 1.57" rpy="0.43 0 0"/>
       <geometry>
-        <box size="2.3 1.43425 0.272347"/>
+        <box size="2.0 1.0 0.05"/>
       </geometry>
     </collision>
     <collision name="top_front">
-      <origin xyz="0 -0.111236 2.39604" rpy="0.135030 0 0"/>
+      <origin xyz="0 -0.11 1.86" rpy="0.135030 0 0"/>
       <geometry>
-        <box size="2.3 1.25988 0.171868"/>
+        <box size="1.74 1.0 0.05"/>
       </geometry>
     </collision>
     <collision name="top_rear">
-      <origin xyz="0 1.2177 2.39007" rpy="-0.068997 0 0"/>
+      <origin xyz="0 0.93 1.86" rpy="-0.119 0 0"/>
       <geometry>
-        <box size="2.3 1.441189 0.226557"/>
+        <box size="1.74 1.11 0.05"/>
       </geometry>
     </collision>
     <collision name="rear_window">
-      <origin xyz="0 2.55053 2.14513" rpy="-0.262017 0 0"/>
+      <origin xyz="0 1.97 1.63" rpy="-0.262017 0 0"/>
       <geometry>
-        <box size="2.3 1.24634 0.244286"/>
+        <box size="1.74 0.896 0.05"/>
       </geometry>
     </collision>
     <collision name="trunk">
-      <origin xyz="0 2.83706 1.52818" rpy="0.0 0 0"/>
+      <origin xyz="0 2.57 1.24" rpy="0.0 0 0"/>
       <geometry>
-        <box size="1.78806 2.24899 0.712746"/>
+        <box size="1.78806 0.9 0.38"/>
       </geometry>
     </collision>
     <collision name="back_bumper">
       <!-- origin xyz="0.0 2.054454 0.577870" rpy="0.0 0 0"/ -->
-      <origin xyz="0 3.59 0.85" rpy="0.0 0 0"/>
+      <origin xyz="0 2.7 0.7" rpy="0.0 0 0"/>
       <geometry>
-        <box size="2.7 0.912093 0.681427"/>
+        <box size="2.3 0.7 0.6"/>
         <!-- box size="1.781650 0.512093 0.581427"/-->
       </geometry>
     </collision>
     <inertial>
       <mass value="1356.0"/>
-      <origin xyz="0 0 0.48" rpy="0 0 0"/>
-      <inertia ixx="2581.13354740" ixy="0.0" ixz="0.0" iyy="591.30846112" iyz="0.0" izz="2681.95008628"/>
+      <origin xyz="0 0 1.0" rpy="0 0 1.57"/>
+      <!-- inertia ixx="2581.13354740" ixy="0.0" ixz="0.0" iyy="591.30846112" iyz="0.0" izz="2681.95008628"/ -->
+      <!-- inertia ixx="1000.0" ixy="0" ixz="0" iyy="1000.0" iyz="0" izz="1000.0"/-->
+      <inertia ixx="742.0" ixy="0" ixz="0" iyy="4386.94" iyz="0" izz="3827.59"/>
     </inertial>
   </link>
 
@@ -138,13 +140,13 @@
     </inertial>
     <collision name="front_left_wheel_collision">
       <geometry>
-        <sphere radius="0.56277"/>
+        <sphere radius="0.48"/>
       </geometry>
     </collision>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://fusion/robot_description/meshes/fusion/wheel.obj" scale="0.0126 0.018 0.018"/>
+        <mesh filename="package://fusion/robot_description/meshes/fusion/wheel.dae" scale="0.013 0.013 0.013"/>
       </geometry>
     </visual>
   </link>
@@ -156,13 +158,13 @@
     </inertial>
     <collision name="front_right_wheel_collision">
       <geometry>
-        <sphere radius="0.56277"/>
+        <sphere radius="0.48"/>
       </geometry>
     </collision>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 3.14"/>
       <geometry>
-        <mesh filename="package://fusion/robot_description/meshes/fusion/wheel.obj" scale="0.0126 0.018 0.018"/>
+        <mesh filename="package://fusion/robot_description/meshes/fusion/wheel.dae" scale="0.013 0.013 0.013"/>
       </geometry>
     </visual>
   </link>
@@ -174,13 +176,13 @@
     </inertial>
     <collision name="rear_left_wheel_collision">
       <geometry>
-        <sphere radius="0.56277"/>
+        <sphere radius="0.48"/>
       </geometry>
     </collision>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://fusion/robot_description/meshes/fusion/wheel.obj" scale="0.018 0.018 0.018"/>
+        <mesh filename="package://fusion/robot_description/meshes/fusion/wheel.dae" scale="0.013 0.013 0.013"/>
       </geometry>
     </visual>
   </link>
@@ -192,13 +194,13 @@
     </inertial>
     <collision name="rear_right_wheel_collision">
       <geometry>
-        <sphere radius="0.56277"/>
+        <sphere radius="0.48"/>
       </geometry>
     </collision>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 3.14"/>
       <geometry>
-        <mesh filename="package://fusion/robot_description/meshes/fusion/wheel.obj" scale="0.018 0.018 0.018"/>
+        <mesh filename="package://fusion/robot_description/meshes/fusion/wheel.dae" scale="0.013 0.013 0.013"/>
       </geometry>
     </visual>
   </link>
@@ -210,12 +212,12 @@
     <visual>
       <origin xyz="0 0 0" rpy="1.302101 0 0"/>
       <geometry>
-        <mesh filename="package://fusion/robot_description/meshes/fusion/steering_wheel.obj" scale="0.018 0.018 0.018"/>
+        <mesh filename="package://fusion/robot_description/meshes/fusion/steering_wheel.obj" scale="0.013 0.013 0.013"/>
       </geometry>
     </visual>
   </link>
   <joint name="steering_joint" type="continuous">
-    <origin xyz="0.6439212 -1.1301624 1.7788374" rpy="-1.302101 0 0"/>
+    <origin xyz="0.6439212 -0.8 1.3" rpy="-1.302101 0 0"/>
     <parent link="chassis"/>
     <child link="steering_wheel"/>
     <axis xyz="0 0 1"/>
@@ -224,7 +226,7 @@
   <joint name="front_left_steer_joint" type="continuous">
     <parent link="chassis"/>
     <child link="fl_axle"/>
-    <origin xyz="1.3806 -2.538 0.54" rpy="0 0 0"/>
+    <origin xyz="1.1 -2.0 0.54" rpy="0 0 0"/>
     <!-- origin xyz="1.5006 -3.138 0.54" rpy="0 0 0"/ -->
     <axis xyz="0 0 1"/>
     <limit lower="-0.8727" upper="0.8727" effort="10000000" velocity="1000000"/>
@@ -232,7 +234,7 @@
   <joint name="front_right_steer_joint" type="continuous">
     <parent link="chassis"/>
     <child link="fr_axle"/> 
-    <origin xyz="-1.3806 -2.538 0.54" rpy="0 0 0"/>
+    <origin xyz="-1.1 -2.0 0.54" rpy="0 0 0"/>
     <!-- origin xyz="-1.5006 -3.138 0.54" rpy="0 0 0"/ -->
     <axis xyz="0 0 1"/>
     <limit lower="-0.8727" upper="0.8727" effort="10000000" velocity="1000000"/>
@@ -254,13 +256,13 @@
   <joint name="rear_left_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="rear_left_wheel"/>
-    <origin xyz="1.2474 2.36 0.54" rpy="0 0 0"/>
+    <origin xyz="1.1 1.8 0.54" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
   </joint>
   <joint name="rear_right_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="rear_right_wheel"/>
-    <origin xyz="-1.2474 2.36 0.54" rpy="0 0 0"/>
+    <origin xyz="-1.1 1.8 0.54" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
   </joint>
 
@@ -274,7 +276,7 @@
   <joint name="center_laser_joint" type="fixed">
     <parent link="chassis"/>
     <child link="center_laser_link"/>
-    <origin xyz="0 0.1 3.00" rpy="0 0.05 -1.5707"/>
+    <origin xyz="0 0.1 1.95" rpy="0 0.05 -1.5707"/>
   </joint>
   <link name="front_left_laser_link">
     <inertial>
@@ -285,7 +287,7 @@
   <joint name="front_left_laser_joint" type="fixed">
     <parent link="chassis"/>
     <child link="front_left_laser_link"/>
-    <origin xyz="1.5 -2 1.3" rpy="0 0.22 0"/>
+    <origin xyz="1.2 -1.8 1.0" rpy="0 0.22 0"/>
   </joint>
   <link name="front_right_laser_link">
     <inertial>
@@ -296,7 +298,7 @@
   <joint name="front_right_laser_joint" type="fixed">
     <parent link="chassis"/>
     <child link="front_right_laser_link"/>
-    <origin xyz="-1.5 -2 1.3" rpy="0 0.22 3.14"/>
+    <origin xyz="-1.2 -1.8 1.0" rpy="0 0.22 3.14"/>
   </joint>
   <gazebo reference="base_link_connection">
     <disableFixedJointLumping>true</disableFixedJointLumping>
@@ -312,7 +314,7 @@
     <parent link="chassis"/>
     <child link="camera_link"/>
     <!-- origin xyz="0 -0.7 2.52" rpy="0 0 -1.57"/ -->
-    <origin xyz="0 -0.7 2.42" rpy="0 0 -1.57"/>
+    <origin xyz="0 -0.5 1.81" rpy="0 0 -1.57"/>
   </joint>
   <gazebo reference="camera_link">
     <sensor type="camera" name="stereo_camera">
@@ -361,7 +363,7 @@
     <parent link="chassis"/>
     <child link="back_camera_link"/>
     <!-- origin xyz="0 1.75 2.52" rpy="0 0.05 1.5707"/ -->
-    <origin xyz="0 1.75 2.42" rpy="0 0.05 1.5707"/>
+    <origin xyz="0 1.65 1.82" rpy="0 0.05 1.5707"/>
   </joint>
   <link name="left_camera_link">
     <inertial>
@@ -373,7 +375,7 @@
     <parent link="chassis"/>
     <child link="left_camera_link"/>
     <!-- origin xyz="0.8 -0.7 2.52" rpy="0 0.05 -1.94"/ -->
-    <origin xyz="0.8 -0.7 2.42" rpy="0 0.05 -1.94"/>
+    <origin xyz="0.8 -0.6 1.83" rpy="0 0.05 -1.5707"/>
   </joint>
   <link name="front_camera_link">
     <inertial>
@@ -385,7 +387,7 @@
     <parent link="chassis"/>
     <child link="front_camera_link"/>
     <!-- origin xyz="0 -0.7 2.52" rpy="0 0.05 -1.5707"/ -->
-    <origin xyz="0 -0.7 2.42" rpy="0 0.05 -1.5707"/>
+    <origin xyz="0 -0.6 1.83" rpy="0 0.05 -1.5707"/>
   </joint>
   <link name="right_camera_link">
     <inertial>
@@ -397,7 +399,7 @@
     <parent link="chassis"/>
     <child link="right_camera_link"/>
     <!-- origin xyz="-0.8 -0.7 2.52" rpy="0 0.05 -1.20"/ -->
-    <origin xyz="-0.8 -0.7 2.42" rpy="0 0.05 -1.20"/>
+    <origin xyz="-0.8 -0.6 1.83" rpy="0 0.05 -1.5707"/>
   </joint>
   <link name="back_left_far_sonar_link">
     <inertial>
@@ -549,7 +551,7 @@
   <joint name="velodyne_joint" type="fixed">
     <axis xyz="0 0 0"/>
     <!-- origin xyz="0 -0.7 2.52" rpy="0 0 -1.57"/ -->
-    <origin xyz="0 -0.7 2.42" rpy="0 0 -1.57"/>
+    <origin xyz="0 -0.5 1.86" rpy="0 0 -1.57"/>
     <parent link="chassis"/>
     <child link="velodyne_link" />
   </joint> 
