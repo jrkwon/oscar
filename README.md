@@ -147,6 +147,11 @@ TBA
 (oscar) $ ros_run run_neural run_nerual.py path/to/data/model 
 ```
 
+## Sample Datasets
+
+### Legacy sample datasets
+- https://drive.google.com/drive/folders/173w5kh9h5QCDG8LEJPQ1qGJKwz1TnAkr?usp=sharing
+
 ## Acknowledgments
 
 ### System Design
