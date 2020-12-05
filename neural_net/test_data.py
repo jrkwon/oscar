@@ -27,14 +27,14 @@ def main(data_path):
 
     loc_slash = data_path.rfind('/')
     if loc_slash != -1: # there is '/' in the data path
-        model_name = data_path[loc_slash+1:] # get folder name
+        model_name = data_path[loc_slash + 1:] # get folder name
         #model_name = model_name.strip('/')
     else:
         model_name = data_path
     csv_path = data_path + '/' + model_name + const.DATA_EXT   
     
     data = DriveData(csv_path)
-    data.read(normalize_data = True, show_plot = True)
+    data.read(normalize_data = config['normalize_data'])
             
 
 ###############################################################################
