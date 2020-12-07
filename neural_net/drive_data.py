@@ -24,20 +24,34 @@ class DriveData:
         self.df = None
         self.image_names = []
         self.measurements = []
-    
-    def read(self, normalize_data = False):
+
+    def read(self, read = True, show_statistics = True, normalize_data = False, show_plot = True):
         self.df = pd.read_csv(self.csv_fname, names=self.csv_header, index_col=False)
         #self.fname = fname
+
+        ############################################
+        # show statistics
+        if (show_statistics):
+            print('\n####### data statistics #########')
+            print('Steering Command Statistics:')
+            print(self.df['steering_angle'].describe())
+
+            print('\nThrottle Command Statistics:')
+            # Throttle Command Statistics
+            print(self.df['throttle'].describe())
 
         ############################################
         # normalize data
 
         if (normalize_data):
+            print('\nnormalizing... wait until a figure shows')
             num_bins = 50
-            _, (ax1, ax2) = plt.subplots(1, 2)
+            fig, (ax1, ax2) = plt.subplots(1, 2)
+            fig.suptitle('Data Normalization')
             hist, bins = np.histogram(self.df['steering_angle'], num_bins)
             center = (bins[:-1] + bins[1:])*0.5
             ax1.bar(center, hist)
+            ax1.set(title = 'original')
 
             remove_list = []
             samples_per_bin = 200
@@ -50,7 +64,8 @@ class DriveData:
                 random.shuffle(list_)
                 list_ = list_[samples_per_bin:]
                 remove_list.extend(list_)
-            print('####### data normalization #########')
+            
+            print('\r####### data normalization #########')
             print('removed:', len(remove_list))
             self.df.drop(self.df.index[remove_list], inplace = True)
             self.df.reset_index(inplace = True)
@@ -60,18 +75,21 @@ class DriveData:
             hist, _ = np.histogram(self.df['steering_angle'], (num_bins))
             ax2.bar(center, hist, width=0.05)
             ax2.plot((np.min(self.df['steering_angle']), np.max(self.df['steering_angle'])), 
-                        (samples_per_bin, samples_per_bin))            
+                        (samples_per_bin, samples_per_bin))  
+            ax2.set(title = 'normalized')          
 
-            plt.show()
+            if (show_plot):
+                plt.show()
 
         ############################################ 
         # read out
-        num_data = len(self.df)
-        
-        bar = ProgressBar()
-        
-        for i in bar(range(num_data)): # we don't have a title
-            self.image_names.append(self.df.loc[i]['image_fname'])
-            self.measurements.append((float(self.df.loc[i]['steering_angle']),
-                                        float(self.df.loc[i]['throttle'])))
+        if (read): 
+            num_data = len(self.df)
+            
+            bar = ProgressBar()
+            
+            for i in bar(range(num_data)): # we don't have a title
+                self.image_names.append(self.df.loc[i]['image_fname'])
+                self.measurements.append((float(self.df.loc[i]['steering_angle']),
+                                            float(self.df.loc[i]['throttle'])))
 
