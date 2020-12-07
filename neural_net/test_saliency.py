@@ -15,6 +15,7 @@ import cv2
 from vis.utils import utils
 from vis.visualization import visualize_saliency
 from vis.visualization import visualize_cam
+from vis.visualization import visualize_activation
 
 from drive_run import DriveRun
 from config import Config
@@ -49,22 +50,28 @@ def main(model_path, image_file_name):
     modifiers = [None, 'negate', 'small_values']
 
     for i, modifier in enumerate(modifiers):
-        """ don't know why visualizae_saliency isn't working
+        layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_last')
+        heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
+                    filter_indices=None, seed_input=image, backprop_modifier='guided', 
+                    grad_modifier=modifier)
+
+        """ 
         heatmap = visualize_saliency(drive_run.net_model.model, 
                                     layer_idx=-1, filter_indices=0, 
-                                    seed_input=image, grad_modifier=modifier)
+                                    seed_input=image, grad_modifier=modifier,
+                                    keepdims=True)
         """
 
-        #"""
+        """
         heatmap = visualize_cam(drive_run.net_model.model, layer_idx=-1, 
                                 filter_indices=0, seed_input=image, 
                                 grad_modifier=modifier)
-        #"""
+        """
 
         #"""
         axs[i].set(title = titles[i])
         axs[i].imshow(image)
-        axs[i].imshow(heatmap, cmap='jet', alpha=0.7)
+        axs[i].imshow(heatmap, cmap='jet', alpha=0.3)
         #"""
 
     plt.show()
