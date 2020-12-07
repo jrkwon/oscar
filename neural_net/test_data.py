@@ -42,7 +42,7 @@ def main(data_path):
 if __name__ == '__main__':
     try:
         if (len(sys.argv) != 2):
-            exit('Usage:\n$ python test_data.py model_name data_path')
+            exit('Usage:\n$ python test_data.py data_path')
 
         main(sys.argv[1])
 
