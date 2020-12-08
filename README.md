@@ -152,9 +152,15 @@ TBA
 ### Legacy sample datasets
 - https://drive.google.com/drive/folders/173w5kh9h5QCDG8LEJPQ1qGJKwz1TnAkr?usp=sharing
 
+## ROS packages 
+
+```
+$ sudo apt install ros-melodic-hector-gazebo-plugins
+```
+
 ## Acknowledgments
 
-### System Design
+### System Design and Implementation
 
 - Jaerock Kwon, Ph.D.: Assistant Professor of Electrical and Computer Engineering at the University of Michigan-Dearborn
 
