@@ -1,30 +1,54 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="fusion">
   <!--- Surface properties must come first? -->
-  <gazebo reference="front_left_wheel">
-    <mu1>0.9</mu1>
-    <mu2>0.9</mu2>
-    <minDepth>0.005</minDepth>
-    <kp>1e8</kp>
-  </gazebo>
-  <gazebo reference="front_right_wheel">
-    <mu1>0.9</mu1>
-    <mu2>0.9</mu2>
-    <minDepth>0.005</minDepth>
-    <kp>1e8</kp>
-  </gazebo>
-  <gazebo reference="rear_left_wheel">
-    <mu1>0.9</mu1>
-    <mu2>0.9</mu2>
-    <minDepth>0.005</minDepth>
-    <kp>1e8</kp>
-  </gazebo>
-  <gazebo reference="rear_right_wheel">
-    <mu1>0.9</mu1>
-    <mu2>0.9</mu2>
-    <minDepth>0.005</minDepth>
-    <kp>1e8</kp>
-  </gazebo>
+
+  <!-- #################################################################### -->
+  <!-- base_topprint is a fictitious link(frame) that is on the top above top front origin -->
+  <link name="base_topprint">
+    <!-- inertial>
+      <mass value="0.0001" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+          iyy="0.0001" iyz="0.0" 
+          izz="0.0001" />
+    </inertial -->
+    <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+            <box size="0.001 0.001 0.001" />
+        </geometry>
+    </visual>
+  </link>
+  <joint name="base_topprint_joint" type="fixed">
+    <origin xyz="0 0 -2" rpy="0 0 0" />
+    <parent link="base_topprint"/>
+    <child link="base_footprint" />
+  </joint>
+
+  <!-- #################################################################### -->
+  <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin -->
+  <link name="base_footprint">
+    <inertial>
+      <mass value="0.0001" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+          iyy="0.0001" iyz="0.0" 
+          izz="0.0001" />
+    </inertial>
+    <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+            <box size="0.001 0.001 0.001" />
+        </geometry>
+    </visual>
+  </link>
+  <joint name="base_footprint_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_footprint"/>
+    <child link="base_link" />
+  </joint>
+
+  <!-- #################################################################### -->
   <link name="base_link">
     <inertial>
       <mass value="1"/>
@@ -38,29 +62,24 @@
     <axis xyz="1 0 0"/>
   </joint>
 
+  <!-- #################################################################### -->
   <link name="chassis">
     <visual>
-      <!-- origin xyz="0 0 0" rpy="1.57 0 0"/ -->
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <!-- mesh filename="package://fusion/robot_description/meshes/fusion/body.dae" scale="0.064 0.064 0.064"/ -->
         <mesh filename="package://fusion/robot_description/meshes/fusion/body.dae" scale="1.3 1.3 1.3"/>
       </geometry>
     </visual>
     <collision name="chassis">
       <origin xyz="0 -0.0550 0.8" rpy="0 0 0"/>
-      <!--origin xyz="0.0 0.05 0.625" rpy="0 0 0"/-->
       <geometry>
         <box size="2.4 2.7 0.9"/>
-        <!--box size="1.7526 2.1 0.95"/-->
       </geometry>
     </collision>
     <collision name="front_bumper">
       <origin xyz="0 -2.9 0.55" rpy="0.0 0 0"/>
-      <!-- origin xyz="0.0 -2.0 0.458488" rpy="0.0 0 0"/-->
       <geometry>
         <box size="2.3 0.45 0.65"/>
-        <!-- box size="3 1 0.566691"/ -->
       </geometry>
     </collision>
     <collision name="hood">
@@ -100,11 +119,9 @@
       </geometry>
     </collision>
     <collision name="back_bumper">
-      <!-- origin xyz="0.0 2.054454 0.577870" rpy="0.0 0 0"/ -->
       <origin xyz="0 2.7 0.7" rpy="0.0 0 0"/>
       <geometry>
         <box size="2.3 0.7 0.6"/>
-        <!-- box size="1.781650 0.512093 0.581427"/-->
       </geometry>
     </collision>
     <inertial>
@@ -116,6 +133,8 @@
     </inertial>
   </link>
 
+  <!-- #################################################################### -->
+  <!-- front axles -->
   <link name="fl_axle">
     <inertial>
       <mass value="1"/>
@@ -132,6 +151,9 @@
       <inertia ixx="0.004" ixy="0.0" ixz="0.0" iyy="0.004" iyz="0.0" izz="0.004"/>
     </inertial>
   </link>
+
+  <!-- #################################################################### -->
+  <!-- front wheels -->
   <link name="front_left_wheel">
     <inertial>
       <mass value="11"/>
@@ -168,6 +190,9 @@
       </geometry>
     </visual>
   </link>
+
+  <!-- #################################################################### -->
+  <!-- rear wheels -->
   <link name="rear_left_wheel">
     <inertial>
       <mass value="11"/>
@@ -204,6 +229,9 @@
       </geometry>
     </visual>
   </link>
+
+  <!-- #################################################################### -->
+  <!-- sterring wheel -->
   <link name="steering_wheel">
     <inertial>
       <mass value="1.0"/>
@@ -216,6 +244,9 @@
       </geometry>
     </visual>
   </link>
+
+  <!-- #################################################################### -->
+  <!-- joints for steering and wheel joints -->
   <joint name="steering_joint" type="continuous">
     <origin xyz="0.6439212 -0.8 1.3" rpy="-1.302101 0 0"/>
     <parent link="chassis"/>
@@ -227,7 +258,6 @@
     <parent link="chassis"/>
     <child link="fl_axle"/>
     <origin xyz="1.1 -2.0 0.54" rpy="0 0 0"/>
-    <!-- origin xyz="1.5006 -3.138 0.54" rpy="0 0 0"/ -->
     <axis xyz="0 0 1"/>
     <limit lower="-0.8727" upper="0.8727" effort="10000000" velocity="1000000"/>
   </joint>
@@ -235,21 +265,18 @@
     <parent link="chassis"/>
     <child link="fr_axle"/> 
     <origin xyz="-1.1 -2.0 0.54" rpy="0 0 0"/>
-    <!-- origin xyz="-1.5006 -3.138 0.54" rpy="0 0 0"/ -->
     <axis xyz="0 0 1"/>
     <limit lower="-0.8727" upper="0.8727" effort="10000000" velocity="1000000"/>
   </joint>
   <joint name="front_left_wheel_joint" type="continuous">
     <parent link="fl_axle"/>
     <child link="front_left_wheel"/>
-    <!-- origin xyz="-0.2 0.55 0" rpy="0 0 0"/ -->
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
   </joint>
   <joint name="front_right_wheel_joint" type="continuous">
     <parent link="fr_axle"/>
     <child link="front_right_wheel"/>
-    <!-- origin xyz="0.2 0.55 0" rpy="0 0 0"/ -->
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
   </joint>
@@ -266,93 +293,9 @@
     <axis xyz="1 0 0"/>
   </joint>
 
-  <!-- ###################### Sensor links and fixed joints############################################## -->
-  <link name="center_laser_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="center_laser_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="center_laser_link"/>
-    <origin xyz="0 0.1 1.95" rpy="0 0.05 -1.5707"/>
-  </joint>
-  <link name="front_left_laser_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="front_left_laser_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="front_left_laser_link"/>
-    <origin xyz="1.2 -1.8 1.0" rpy="0 0.22 0"/>
-  </joint>
-  <link name="front_right_laser_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="front_right_laser_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="front_right_laser_link"/>
-    <origin xyz="-1.2 -1.8 1.0" rpy="0 0.22 3.14"/>
-  </joint>
-  <gazebo reference="base_link_connection">
-    <disableFixedJointLumping>true</disableFixedJointLumping>
-  </gazebo>
-  <link name="camera_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="camera_optical_joint" type="fixed">
-  	<axis xyz="0 1 0" />
-    <parent link="chassis"/>
-    <child link="camera_link"/>
-    <!-- origin xyz="0 -0.7 2.52" rpy="0 0 -1.57"/ -->
-    <origin xyz="0 -0.5 1.81" rpy="0 0 -1.57"/>
-  </joint>
-  <gazebo reference="camera_link">
-    <sensor type="camera" name="stereo_camera">
-      <update_rate>30.0</update_rate>
-      <camera name="center">
-        <horizontal_fov>1.3962634</horizontal_fov>
-        <image>
-          <width>800</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.02</near>
-          <far>300</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.007</stddev>
-        </noise>
-      </camera>
-      <plugin name="stereo_camera_controller" filename="libgazebo_ros_camera.so">
-        <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>stereo_camera</cameraName>
-        <imageTopicName>image_rect_color</imageTopicName>
-        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-        <frameName>camera_link</frameName>
-        <hackBaseline>0.07</hackBaseline>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-      </plugin>
-    </sensor>
-  </gazebo>
-  
+  <!-- #################################################################### -->
+  <!-- Sensor links and fixed joints -->
+
   <link name="back_camera_link">
     <inertial>
       <mass value="1"/>
@@ -362,7 +305,6 @@
   <joint name="back_camera_joint" type="fixed">
     <parent link="chassis"/>
     <child link="back_camera_link"/>
-    <!-- origin xyz="0 1.75 2.52" rpy="0 0.05 1.5707"/ -->
     <origin xyz="0 1.65 1.82" rpy="0 0.05 1.5707"/>
   </joint>
   <link name="left_camera_link">
@@ -401,94 +343,7 @@
     <!-- origin xyz="-0.8 -0.7 2.52" rpy="0 0.05 -1.20"/ -->
     <origin xyz="-0.8 -0.6 1.83" rpy="0 0.05 -1.5707"/>
   </joint>
-  <link name="back_left_far_sonar_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="back_left_far_sonar_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="back_left_far_sonar_link"/>
-    <origin xyz="0.7 2.4 0.5" rpy="0 0 1.5707"/>
-  </joint>
-  <link name="back_left_middle_sonar_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="back_left_middle_sonar_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="back_left_middle_sonar_link"/>
-    <origin xyz="0.24 2.4 0.5" rpy="0 0 1.5707"/>
-  </joint>
-  <link name="back_right_far_sonar_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="back_right_far_sonar_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="back_right_far_sonar_link"/>
-    <origin xyz="-0.7 2.4 0.5" rpy="0 0 1.5707"/>
-  </joint>
-  <link name="back_right_middle_sonar_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="back_right_middle_sonar_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="back_right_middle_sonar_link"/>
-    <origin xyz="-0.24 2.4 0.5" rpy="0 0 1.5707"/>
-  </joint>
-  <link name="front_left_far_sonar_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="front_left_far_sonar_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="front_left_far_sonar_link"/>
-    <origin xyz="0.7 -2.1 0.5" rpy="0 0 -1.5707"/>
-  </joint>
-  <link name="front_left_middle_sonar_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="front_left_middle_sonar_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="front_left_middle_sonar_link"/>
-    <origin xyz="0.24 -2.3 0.5" rpy="0 0 -1.5707"/>
-  </joint>
-  <link name="front_right_far_sonar_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="front_right_far_sonar_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="front_right_far_sonar_link"/>
-    <origin xyz="-0.7 -2.1 0.5" rpy="0 0 -1.5707"/>
-  </joint>
-  <link name="front_right_middle_sonar_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="front_right_middle_sonar_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="front_right_middle_sonar_link"/>
-    <origin xyz="-0.24 -2.3 0.5" rpy="0 0 -1.5707"/>
-  </joint>
+
   <link name="imu_link">
     <inertial>
         <mass value="1" />
@@ -515,6 +370,34 @@
     <parent link="chassis"/>
     <child link="imu_link" />
   </joint>
+
+  <link name="gps_link">
+    <inertial>
+        <mass value="1" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+                 iyy="0.001" iyz="0.0" 
+                 izz="0.001" />
+    </inertial>     
+        <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+            <box size = "0.1 0.1 0.1"/> 
+                </geometry>
+        </visual>
+    <collision>         
+        <geometry>
+            <box size = "0.1 0.1 0.1"/> 
+        </geometry>
+    </collision>     
+  </link>
+  <joint name="gps_joint" type="fixed">
+    <axis xyz="0 0 0"/>
+    <origin xyz="0.05 0 0.15" rpy="0 0 0" />
+    <parent link="chassis"/>
+    <child link="gps_link" />
+  </joint>
+
   <link name="velodyne_link">
     <inertial>
         <mass value="1" />
@@ -581,8 +464,52 @@
     <parent link="chassis"/>
     <child link="rad_link"/>
   </joint -->
+
+  <!-- #################################################################### -->
+  <!-- gazebo settings -->
+  <!-- #################################################################### -->
+
+  <gazebo reference="base_link_connection">
+    <disableFixedJointLumping>true</disableFixedJointLumping>
+  </gazebo>
   
-  <!-- plugin##-->
+  <!-- gazebo properties for top/foot print --> 
+  <gazebo reference="base_topprint">
+    <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+  <gazebo reference="base_footprint">
+    <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+
+  <!-- gazebo properties for wheels --> 
+  <gazebo reference="front_left_wheel">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+    <minDepth>0.005</minDepth>
+    <kp>1e8</kp>
+  </gazebo>
+  <gazebo reference="front_right_wheel">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+    <minDepth>0.005</minDepth>
+    <kp>1e8</kp>
+  </gazebo>
+  <gazebo reference="rear_left_wheel">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+    <minDepth>0.005</minDepth>
+    <kp>1e8</kp>
+  </gazebo>
+  <gazebo reference="rear_right_wheel">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+    <minDepth>0.005</minDepth>
+    <kp>1e8</kp>
+  </gazebo>
+
+  <!-- #################################################################### -->
+  <!-- gazebo plugins -->
+  <!-- #################################################################### -->
   <gazebo>
     <plugin name="fusion_energia_drive" filename="libFusionEnergiaPlugin.so">
       <chassis>chassis</chassis>
@@ -612,6 +539,7 @@
       <frwheel_steering_d_gain>3e2</frwheel_steering_d_gain>
     </plugin>
   </gazebo>
+  
   <gazebo>
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
       <!-- <robotNamespace>/fusion</robotNamespace> -->
@@ -620,6 +548,157 @@
       <alwaysOn>true</alwaysOn>
     </plugin>
   </gazebo>
+
+  <gazebo reference="back_camera_link">
+    <sensor type="camera" name="back_camera_sensor">
+      <update_rate>30.0</update_rate>
+      <camera name="back_camera">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="back_camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>false</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>/fusion/back_camera</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>/fusion/back_camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="front_camera_link">
+    <sensor type="camera" name="front_camera_sensor">
+      <update_rate>30.0</update_rate>
+      <camera name="front_camera">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <visualize>1</visualize>
+      <plugin name="front_camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>false</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>/fusion/front_camera</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>/fusion/front_camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="left_camera_link">
+    <sensor type="camera" name="left_camera_sensor">
+      <update_rate>30.0</update_rate>
+      <camera name="left_camera">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="left_camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>false</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>/fusion/left_camera</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>/fusion/left_camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="right_camera_link">
+    <sensor type="camera" name="right_camera_sensor">
+      <update_rate>30.0</update_rate>
+      <camera name="right_camera">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="right_camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>false</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>/fusion/right_camera</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>/fusion/right_camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- 3D Position Interface for Ground Truth -->
   <gazebo>
     <plugin name="p3d" filename="libgazebo_ros_p3d.so">
       <!-- <robotNamespace>/fusion</robotNamespace> -->
@@ -629,7 +708,247 @@
       <updateRate>100.0</updateRate>
     </plugin>
   </gazebo>
-  <!-- remove laser links 
+
+  <!-- imu -->
+  <gazebo>    
+   <plugin name="imu" filename="libhector_gazebo_ros_imu.so">
+      <updateRate>200.0</updateRate>
+      <bodyName>imu_link</bodyName>
+      <frameId>imu_link</frameId>
+      <topicName>/imu</topicName>
+      <rpyOffset>0 0 0</rpyOffset>
+      <xyzOffset>0 0 0</xyzOffset>
+      <gaussianNoise>0.00000001</gaussianNoise>
+      <accelDrift>0.00000001 0.00000001 0.00000001</accelDrift>
+      <accelDriftFrequency>0.00000001 0.00000001 0.00000001</accelDriftFrequency>
+      <accelGaussianNoise>0.00000001 0.00000001 0.00000001</accelGaussianNoise>
+      <rateDrift>0.0 0.0 0.0</rateDrift>
+      <rateDriftFrequency>0.0 0.0 0.0</rateDriftFrequency>
+      <rateGaussianNoise>0.0 0.0 0.0</rateGaussianNoise>
+      <headingDrift>0.0 0.0 0.0</headingDrift>
+      <headingDriftFrequency>0.0 0.0 0.0</headingDriftFrequency>
+      <headingGaussianNoise>0.0 0.0 0.0</headingGaussianNoise>
+   </plugin>
+  </gazebo>
+
+  <!-- gps -->  
+  <gazebo>
+    <plugin name="novatel_gps_sim" filename="libhector_gazebo_ros_gps.so">
+      <alwaysOn>1</alwaysOn>
+      <updateRate>10.0</updateRate>
+      <bodyName>gps_link</bodyName>
+      <frameId>/base_link</frameId>
+      <topicName>fix</topicName>
+      <velocityTopicName>fix_velocity</velocityTopicName>
+      <drift>5.0 5.0 5.0</drift>
+      <gaussianNoise>0.1 0.1 0.1</gaussianNoise>
+      <velocityDrift>0 0 0</velocityDrift>
+      <velocityGaussianNoise>0.1 0.1 0.1</velocityGaussianNoise>
+    </plugin>
+  </gazebo>
+
+  <!-- velodyne sensor -->
+  <gazebo reference="velodyne_link">
+    <sensor name='velodyne_sensor' type='ray'>
+      <visualize>0</visualize>
+      <update_rate>10</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>1875</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>16</samples>
+      <resolution>1</resolution>
+            <min_angle>-0.261799</min_angle>
+            <max_angle>0.261799</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.055</min>
+          <max>80</max>
+          <resolution>0.01</resolution>
+      </range>
+      <noise>
+          <type>gaussian</type>
+          <mean>0</mean>
+          <stddev>0</stddev>
+      </noise>
+      </ray>
+      <plugin name='gazebo_ros_laser_controller' filename='libgazebo_ros_velodyne_laser.so'>
+          <topicName>/velodyne_points</topicName>
+          <frameName>/velodyne_link</frameName>
+          <min_range>0.9</min_range>
+          <!--max_range>130.0</max_range-->
+          <max_range>30.0</max_range>
+          <gaussianNoise>0.008</gaussianNoise>
+          <robotNamespace>/</robotNamespace>
+      </plugin>
+      <gravity>0</gravity>
+      <self_collide>0</self_collide>
+      <kinematic>0</kinematic>
+      <always_on>1</always_on>
+      <update_rate>30</update_rate>
+      <visualize>1</visualize>
+    </sensor>
+  </gazebo>
+
+  <!-- #################################################################### -->
+  <!-- these ros sensers are not being used for now -->
+  <!-- 
+
+  <link name="back_left_far_sonar_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="back_left_far_sonar_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="back_left_far_sonar_link"/>
+    <origin xyz="0.7 2.4 0.5" rpy="0 0 1.5707"/>
+  </joint>
+
+  <link name="back_left_middle_sonar_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="back_left_middle_sonar_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="back_left_middle_sonar_link"/>
+    <origin xyz="0.24 2.4 0.5" rpy="0 0 1.5707"/>
+  </joint>
+  
+  <link name="back_right_far_sonar_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="back_right_far_sonar_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="back_right_far_sonar_link"/>
+    <origin xyz="-0.7 2.4 0.5" rpy="0 0 1.5707"/>
+  </joint>
+  
+  <link name="back_right_middle_sonar_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="back_right_middle_sonar_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="back_right_middle_sonar_link"/>
+    <origin xyz="-0.24 2.4 0.5" rpy="0 0 1.5707"/>
+  </joint>
+  
+  <link name="front_left_far_sonar_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="front_left_far_sonar_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="front_left_far_sonar_link"/>
+    <origin xyz="0.7 -2.1 0.5" rpy="0 0 -1.5707"/>
+  </joint>
+  
+  <link name="front_left_middle_sonar_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="front_left_middle_sonar_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="front_left_middle_sonar_link"/>
+    <origin xyz="0.24 -2.3 0.5" rpy="0 0 -1.5707"/>
+  </joint>
+  
+  <link name="front_right_far_sonar_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="front_right_far_sonar_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="front_right_far_sonar_link"/>
+    <origin xyz="-0.7 -2.1 0.5" rpy="0 0 -1.5707"/>
+  </joint>
+  
+  <link name="front_right_middle_sonar_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="front_right_middle_sonar_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="front_right_middle_sonar_link"/>
+    <origin xyz="-0.24 -2.3 0.5" rpy="0 0 -1.5707"/>
+  </joint>
+
+  <link name="center_laser_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="center_laser_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="center_laser_link"/>
+    <origin xyz="0 0.1 1.95" rpy="0 0.05 -1.5707"/>
+  </joint>
+  
+  <link name="front_left_laser_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="front_left_laser_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="front_left_laser_link"/>
+    <origin xyz="1.2 -1.8 1.0" rpy="0 0.22 0"/>
+  </joint>
+  
+  <link name="front_right_laser_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="front_right_laser_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="front_right_laser_link"/>
+    <origin xyz="-1.2 -1.8 1.0" rpy="0 0.22 3.14"/>
+  </joint>
+
+  <link name="camera_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="camera_optical_joint" type="fixed">
+  	<axis xyz="0 1 0" />
+    <parent link="chassis"/>
+    <child link="camera_link"/>
+    <origin xyz="0 -0.5 1.81" rpy="0 0 -1.57"/>
+  </joint>
+
+  -->
+
+  <!-- #################################################################### -->
+  <!-- 
   <gazebo reference="center_laser_link">
     <sensor name='center_laser_sensor' type='ray'>
       <ray>
@@ -723,11 +1042,11 @@
       <visualize>0</visualize>
     </sensor>
   </gazebo>
-  --> 
-  <gazebo reference="back_camera_link">
-    <sensor type="camera" name="back_camera_sensor">
+
+  <gazebo reference="camera_link">
+    <sensor type="camera" name="stereo_camera">
       <update_rate>30.0</update_rate>
-      <camera name="back_camera">
+      <camera name="center">
         <horizontal_fov>1.3962634</horizontal_fov>
         <image>
           <width>800</width>
@@ -744,12 +1063,12 @@
           <stddev>0.007</stddev>
         </noise>
       </camera>
-      <plugin name="back_camera_controller" filename="libgazebo_ros_camera.so">
-        <alwaysOn>false</alwaysOn>
+      <plugin name="stereo_camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
-        <cameraName>/fusion/back_camera</cameraName>
-        <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>/fusion/back_camera_info</cameraInfoTopicName>
+        <cameraName>stereo_camera</cameraName>
+        <imageTopicName>image_rect_color</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
         <frameName>camera_link</frameName>
         <hackBaseline>0.07</hackBaseline>
         <distortionK1>0.0</distortionK1>
@@ -761,119 +1080,6 @@
     </sensor>
   </gazebo>
 
-  <gazebo reference="front_camera_link">
-    <sensor type="camera" name="front_camera_sensor">
-      <update_rate>30.0</update_rate>
-      <camera name="front_camera">
-        <horizontal_fov>1.3962634</horizontal_fov>
-        <image>
-          <width>800</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.02</near>
-          <far>300</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.007</stddev>
-        </noise>
-      </camera>
-      <visualize>1</visualize>
-      <plugin name="front_camera_controller" filename="libgazebo_ros_camera.so">
-        <alwaysOn>false</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>/fusion/front_camera</cameraName>
-        <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>/fusion/front_camera_info</cameraInfoTopicName>
-        <frameName>camera_link</frameName>
-        <hackBaseline>0.07</hackBaseline>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-      </plugin>
-    </sensor>
-  </gazebo>
-
-
-
-  <gazebo reference="left_camera_link">
-    <sensor type="camera" name="left_camera_sensor">
-      <update_rate>30.0</update_rate>
-      <camera name="left_camera">
-        <horizontal_fov>1.3962634</horizontal_fov>
-        <image>
-          <width>800</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.02</near>
-          <far>300</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.007</stddev>
-        </noise>
-      </camera>
-      <plugin name="left_camera_controller" filename="libgazebo_ros_camera.so">
-        <alwaysOn>false</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>/fusion/left_camera</cameraName>
-        <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>/fusion/left_camera_info</cameraInfoTopicName>
-        <frameName>camera_link</frameName>
-        <hackBaseline>0.07</hackBaseline>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-      </plugin>
-    </sensor>
-  </gazebo>
-  <gazebo reference="right_camera_link">
-    <sensor type="camera" name="right_camera_sensor">
-      <update_rate>30.0</update_rate>
-      <camera name="right_camera">
-        <horizontal_fov>1.3962634</horizontal_fov>
-        <image>
-          <width>800</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.02</near>
-          <far>300</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.007</stddev>
-        </noise>
-      </camera>
-      <plugin name="right_camera_controller" filename="libgazebo_ros_camera.so">
-        <alwaysOn>false</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>/fusion/right_camera</cameraName>
-        <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>/fusion/right_camera_info</cameraInfoTopicName>
-        <frameName>camera_link</frameName>
-        <hackBaseline>0.07</hackBaseline>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-      </plugin>
-    </sensor>
-  </gazebo>
-  <!-- remove sonar links 
   <gazebo reference="back_left_far_sonar_link">
     <sensor name='back_left_far_sonar_sensor' type='ray'>
       <ray>
@@ -1121,76 +1327,9 @@
       <update_rate>5</update_rate>
       <visualize>0</visualize>
     </sensor>
-  </gazebo>               
-  -->  
-  <gazebo>    
-   <plugin name="imu" filename="libhector_gazebo_ros_imu.so">
-      <updateRate>200.0</updateRate>
-      <bodyName>imu_link</bodyName>
-      <frameId>imu_link</frameId>
-      <topicName>/imu</topicName>
-      <rpyOffset>0 0 0</rpyOffset>
-      <xyzOffset>0 0 0</xyzOffset>
-      <gaussianNoise>0.00000001</gaussianNoise>
-      <accelDrift>0.00000001 0.00000001 0.00000001</accelDrift>
-      <accelDriftFrequency>0.00000001 0.00000001 0.00000001</accelDriftFrequency>
-      <accelGaussianNoise>0.00000001 0.00000001 0.00000001</accelGaussianNoise>
-      <rateDrift>0.0 0.0 0.0</rateDrift>
-      <rateDriftFrequency>0.0 0.0 0.0</rateDriftFrequency>
-      <rateGaussianNoise>0.0 0.0 0.0</rateGaussianNoise>
-      <headingDrift>0.0 0.0 0.0</headingDrift>
-      <headingDriftFrequency>0.0 0.0 0.0</headingDriftFrequency>
-      <headingGaussianNoise>0.0 0.0 0.0</headingGaussianNoise>
-   </plugin>
-  </gazebo>
-  <gazebo reference="velodyne_link">
-    <sensor name='velodyne_sensor' type='ray'>
-      <visualize>0</visualize>
-      <update_rate>10</update_rate>
-      <ray>
-        <scan>
-          <horizontal>
-            <samples>1875</samples>
-            <resolution>1</resolution>
-            <min_angle>-3.14159</min_angle>
-            <max_angle>3.14159</max_angle>
-          </horizontal>
-          <vertical>
-            <samples>16</samples>
-      <resolution>1</resolution>
-            <min_angle>-0.261799</min_angle>
-            <max_angle>0.261799</max_angle>
-          </vertical>
-        </scan>
-        <range>
-          <min>0.055</min>
-          <max>80</max>
-          <resolution>0.01</resolution>
-      </range>
-      <noise>
-          <type>gaussian</type>
-          <mean>0</mean>
-          <stddev>0</stddev>
-      </noise>
-      </ray>
-      <plugin name='gazebo_ros_laser_controller' filename='libgazebo_ros_velodyne_laser.so'>
-          <topicName>/velodyne_points</topicName>
-          <frameName>/velodyne_link</frameName>
-          <min_range>0.9</min_range>
-          <!--max_range>130.0</max_range-->
-          <max_range>30.0</max_range>
-          <gaussianNoise>0.008</gaussianNoise>
-          <robotNamespace>/</robotNamespace>
-      </plugin>
-      <gravity>0</gravity>
-      <self_collide>0</self_collide>
-      <kinematic>0</kinematic>
-      <always_on>1</always_on>
-      <update_rate>30</update_rate>
-      <visualize>1</visualize>
-    </sensor>
-  </gazebo>
-  <!-- gazebo reference="rad_link">
+  </gazebo>       
+
+  <gazebo reference="rad_link">
         <sensor name="logical_camera" type="logical_camera">
           <logical_camera>
             <near>0</near>
@@ -1202,10 +1341,9 @@
           <always_on>true</always_on>
           <update_rate>10</update_rate>
         </sensor>
-  </gazebo --> 
+  </gazebo> 
 
-<!-- ######################################################## --> 
-  <!-- gazebo>
+  <gazebo>
       <visualize>true</visualize>
       <update_rate>10</update_rate>
       <plugin name="mode_c_radar" filename="libModeCRadarPlugin.so">
@@ -1220,6 +1358,7 @@
           </noise>
         </position_noise>
       </plugin>
-  </gazebo -->
+  </gazebo>
 
+  -->
 </robot>
