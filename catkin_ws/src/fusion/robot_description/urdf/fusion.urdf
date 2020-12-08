@@ -295,6 +295,19 @@
 
   <!-- #################################################################### -->
   <!-- Sensor links and fixed joints -->
+  <link name="camera_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="camera_optical_joint" type="fixed">
+  	<axis xyz="0 1 0" />
+    <parent link="chassis"/>
+    <child link="camera_link"/>
+    <origin xyz="0 -0.5 1.81" rpy="0 0 -1.57"/>
+  </joint>
+
 
   <link name="back_camera_link">
     <inertial>
@@ -587,6 +600,7 @@
   </gazebo>
 
   <gazebo reference="front_camera_link">
+    <turnGravityOff>false</turnGravityOff>
     <sensor type="camera" name="front_camera_sensor">
       <update_rate>30.0</update_rate>
       <camera name="front_camera">
@@ -749,6 +763,7 @@
 
   <!-- velodyne sensor -->
   <gazebo reference="velodyne_link">
+    <turnGravityOff>false</turnGravityOff>
     <sensor name='velodyne_sensor' type='ray'>
       <visualize>0</visualize>
       <update_rate>10</update_rate>
@@ -762,7 +777,7 @@
           </horizontal>
           <vertical>
             <samples>16</samples>
-      <resolution>1</resolution>
+            <resolution>1</resolution>
             <min_angle>-0.261799</min_angle>
             <max_angle>0.261799</max_angle>
           </vertical>
@@ -930,19 +945,6 @@
     <parent link="chassis"/>
     <child link="front_right_laser_link"/>
     <origin xyz="-1.2 -1.8 1.0" rpy="0 0.22 3.14"/>
-  </joint>
-
-  <link name="camera_link">
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-    </inertial>
-  </link>
-  <joint name="camera_optical_joint" type="fixed">
-  	<axis xyz="0 1 0" />
-    <parent link="chassis"/>
-    <child link="camera_link"/>
-    <origin xyz="0 -0.5 1.81" rpy="0 0 -1.57"/>
   </joint>
 
   -->
