@@ -124,7 +124,7 @@ image_file_name / steering_angle / throttle / linux_time / velocity / velocity_x
 
 ## Data Cleaning
 
-TBA
+When some of test images must be deleted, just delete them and rebuild the csv using `rebuild_csv.py`.
 
 ```
 (oscar) $ python rebuild_csv.py path/to/data/folder
@@ -151,6 +151,14 @@ TBA
 ```
 (oscar) $ . setup.bash
 (oscar) $ python neural_net/log.py path/to/data/model path/to/data/folder
+```
+
+## How to See Saliency Map
+
+TBA
+```
+(oscar) $ . setup.bash
+(oscar) $ python neural_net/test_saliency.py path/to/data/model path/to/image/to/test
 ```
 
 ## How to Drive using Neural Network
