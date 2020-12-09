@@ -77,3 +77,5 @@ brake_apply_sec: 1.7
 throttle_default: 0.15
 # throttle at sharp turn
 throttle_sharp_turn: 0.05
+# velocity threshold for not moving
+velocity_0: 0.03

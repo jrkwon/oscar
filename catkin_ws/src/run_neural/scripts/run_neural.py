@@ -117,10 +117,11 @@ def main(weight_file_name):
         if neural_control.braking is False: 
             if abs(joy_data.steer) > config['sharp_turn_min']: 
                 joy_data.throttle = config['throttle_sharp_turn']
-                joy_data.brake = 0.5
-                neural_control.braking = True
-                timer = threading.Timer(config['brake_apply_sec'], neural_control.timer_cb) 
-                timer.start()
+                if velocity < config['velocity_0']: # too slow then no braking
+                    joy_data.brake = 0.5
+                    neural_control.braking = True
+                    timer = threading.Timer(config['brake_apply_sec'], neural_control.timer_cb) 
+                    timer.start()
             else:
                 joy_data.throttle = config['throttle_default']
                 joy_data.brake = 0
