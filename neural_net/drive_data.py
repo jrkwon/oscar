@@ -17,8 +17,11 @@ import random
 
 class DriveData:
     
-    csv_header = ['image_fname', 'steering_angle', 'throttle']
-    
+    csv_header = ['image_fname', 'steering_angle', 'throttle', 
+                  'linux_time', 
+                  'vel', 'vel_x', 'vel_y', 'vel_z',
+                  'pos_x', 'pos_y', 'pos_z' ]
+
     def __init__(self, csv_fname):
         self.csv_fname = csv_fname
         self.df = None
