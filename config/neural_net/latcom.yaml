@@ -1,0 +1,65 @@
+###############################################################################
+# This is default configuration.
+
+version: 0.6
+
+# network defintion
+network_type: 8
+lstm: False
+
+# training
+# data_shuffle: True
+validation_rate: 0.3
+num_epochs: 20
+batch_size: 16
+num_outputs: 1
+
+# steering data preprocessing
+# - steering angle adjustment
+steering_angle_scale: 5.0
+# - steering wheel jitter tolerance
+steering_angle_jitter_tolerance: 0.01
+
+# driving simulator
+steering_angle_max: 450
+steering_angle_tolerance: 0.015 # around 7.5 degree
+
+# data augmentation
+data_aug_flip: True
+data_aug_bright: True
+data_aug_shift: True
+
+# input image size to the neural network
+input_image_width: 160
+input_image_height: 160
+input_image_depth: 3
+
+# crop (capture) area from a camera image
+# - gazebo simulated camera resolution: 800x800
+image_crop_x1: 0
+image_crop_y1: 380
+image_crop_x2: 800
+image_crop_y2: 590
+
+# Latency compensation parameters
+#lc_model_config: '/home/bimi/bimi/robotics/av/working/latcom/models/model_ts500_config_only.json'
+#lc_model_weight: '/home/bimi/bimi/robotics/av/working/latcom/models/model_ts500_weights_only.h5'
+lc_model_config: '/home/bimi/bimi/robotics/av/working/latcom/models/model_real_time_config_only.json'
+lc_model_weight: '/home/bimi/bimi/robotics/av/working/latcom/models/model_real_time_weights_only.h5'
+lc_init_img_height: 210
+lc_init_img_width: 800
+lc_fin_img_height: 40
+lc_fin_img_width: 80
+lc_crop_y_start: 30
+lc_rightside_width_cut: 700
+lc_ros_rate: 30
+lc_curve_threshold: 0.12
+lc_brake_apply_sec: 1.5
+lc_ throttle_default: 0.2
+lc_throttle_sharp_turn: 0.05
+lc_latency_ms: 500
+
+# Throttle params
+lc_init_steps: 400
+lc_accl_steps: 130
+lc_neut_steps: 150
