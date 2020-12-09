@@ -16,6 +16,8 @@ import numpy as np
 from fusion.msg import Control
 from std_msgs.msg import Int32
 from sensor_msgs.msg import Image
+from nav_msgs.msg import Odometry
+import math
 
 import sys
 import os
@@ -36,6 +38,8 @@ elif config['vehicle_name'] == 'rover':
     from rover.msg import Control
 else:
     exit(config['vehicle_name'] + 'not supported vehicle.')
+
+velocity = 0
 
 
 class NeuralControl:
@@ -72,18 +76,29 @@ class NeuralControl:
     def timer_cb(self):
         self.braking = False
       
+def pos_vel_cb(value):
+    global velocity
+
+    vel_x = value.twist.twist.linear.x 
+    vel_y = value.twist.twist.linear.y
+    vel_z = value.twist.twist.linear.z
+    
+    velocity = math.sqrt(vel_x**2 + vel_y**2 + vel_z**2)
+
+
         
 def main(weight_file_name):
 
     # ready for neural network
     neural_control = NeuralControl(weight_file_name)
     
+    rospy.Subscriber(config['base_pose_topic'], Odometry, pos_vel_cb)
     # ready for /bolt topic publisher
     joy_pub = rospy.Publisher(config['vehicle_control_topic'], Control, queue_size = 10)
     joy_data = Control()
 
     print('\nStart running. Vroom. Vroom. Vroooooom......')
-    print('steer \tthrt: \tbrake')
+    print('steer \tthrt: \tbrake \tvelocity')
 
     while not rospy.is_shutdown():
 
@@ -116,11 +131,11 @@ def main(weight_file_name):
 
         ## print out
         if config['lstm'] is True:
-            cur_output = '{0:.3f} \t{1:.2f} \t{2:.2f}\r'.format(prediction[0][0][0], 
-                          joy_data.throttle, joy_data.brake)
+            cur_output = '{0:.3f} \t{1:.2f} \t{2:.2f} \t{3}\r'.format(prediction[0][0][0], 
+                          joy_data.throttle, joy_data.brake, velocity)
         else:
-            cur_output = '{0:.3f} \t{1:.2f} \t{2:.2f}\r'.format(prediction[0][0], 
-                          joy_data.throttle, joy_data.brake)
+            cur_output = '{0:.3f} \t{1:.2f} \t{2:.2f} \t{3}\r'.format(prediction[0][0], 
+                          joy_data.throttle, joy_data.brake, velocity)
 
         sys.stdout.write(cur_output)
         sys.stdout.flush()
