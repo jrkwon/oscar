@@ -108,6 +108,20 @@ Run the script with a data ID as an argument.
 
 The default data folder location is `$(pwd)e2e_{fusion/rover}_data`.
 
+### Data Format
+
+Data Collection will save a csv file with images. The CSV file has following columns
+
+```
+image_file_name / steering_angle / throttle / linux_time / velocity / velocity_x / velocity_y / velocity_z / position_x / position_y / position_z
+
+```
+
+```
+2020-12-08-23-55-31-150079.jpg	-0.0149267930537	0.15	1607489731.15	0.846993743317	0.846750728334	-0.00903874268025	-0.0181633261171	8.25840907119	-102.836707258	0.0248406100056
+
+```
+
 ## Data Cleaning
 
 TBA

@@ -65,31 +65,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        back_left_far_sonar_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        back_left_middle_sonar_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        back_right_far_sonar_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        back_right_middle_sonar_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        center_laser_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -110,36 +86,17 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        front_left_far_sonar_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        front_left_laser_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        front_left_middle_sonar_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         front_left_wheel:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        front_right_far_sonar_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        front_right_laser_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        front_right_middle_sonar_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         front_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        gps_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -190,20 +147,8 @@ Visualization Manager:
         All Enabled: false
         back_camera_link:
           Value: true
-        back_left_far_sonar_link:
-          Value: true
-        back_left_middle_sonar_link:
-          Value: true
-        back_right_far_sonar_link:
-          Value: true
-        back_right_middle_sonar_link:
-          Value: true
         base_link:
           Value: false
-        camera_link:
-          Value: true
-        center_laser_link:
-          Value: true
         chassis:
           Value: true
         fl_axle:
@@ -212,21 +157,11 @@ Visualization Manager:
           Value: true
         front_camera_link:
           Value: true
-        front_left_far_sonar_link:
-          Value: true
-        front_left_laser_link:
-          Value: true
-        front_left_middle_sonar_link:
-          Value: true
         front_left_wheel:
           Value: true
-        front_right_far_sonar_link:
-          Value: true
-        front_right_laser_link:
-          Value: true
-        front_right_middle_sonar_link:
-          Value: true
         front_right_wheel:
+          Value: true
+        gps_link:
           Value: true
         imu_link:
           Value: true
@@ -259,18 +194,6 @@ Visualization Manager:
             chassis:
               back_camera_link:
                 {}
-              back_left_far_sonar_link:
-                {}
-              back_left_middle_sonar_link:
-                {}
-              back_right_far_sonar_link:
-                {}
-              back_right_middle_sonar_link:
-                {}
-              camera_link:
-                {}
-              center_laser_link:
-                {}
               fl_axle:
                 front_left_wheel:
                   {}
@@ -279,17 +202,7 @@ Visualization Manager:
                   {}
               front_camera_link:
                 {}
-              front_left_far_sonar_link:
-                {}
-              front_left_laser_link:
-                {}
-              front_left_middle_sonar_link:
-                {}
-              front_right_far_sonar_link:
-                {}
-              front_right_laser_link:
-                {}
-              front_right_middle_sonar_link:
+              gps_link:
                 {}
               imu_link:
                 {}
@@ -460,8 +373,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 8.487114906311035
-        Min Value: 0.05823838710784912
+        Max Value: 5.307986259460449
+        Min Value: -0.04059731960296631
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -515,25 +428,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 16.967592239379883
+      Distance: 6.3219380378723145
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.4716328382492065
-        Y: 0.525830864906311
-        Z: 2.4462239742279053
+        X: 0.06130357086658478
+        Y: 1.2650903463363647
+        Z: 1.902601718902588
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: -0.09020226448774338
+      Pitch: -0.035202302038669586
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1504099369049072
+      Yaw: 1.5653977394104004
     Saved: ~
 Window Geometry:
   Displays:
