@@ -1,7 +1,7 @@
 ###############################################################################
 # This is default configuration.
 
-version: 0.6 
+version: 0.8 
 
 ######################################################
 ## neural network 
@@ -19,6 +19,7 @@ validation_rate: 0.3
 num_epochs: 20
 batch_size: 16
 num_outputs: 1
+early_stopping_patience: 3
 
 # steering data preprocessing
 # - steering angle adjustment
