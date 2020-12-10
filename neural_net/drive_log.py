@@ -77,32 +77,31 @@ class DriveLog:
    ###########################################################################
     #
     def _plot_results(self):
-        fig, (ax1, ax2) = plt.subplots(1, 2)
-        fig.suptitle('Evaluation of Trained Model')
+        plt.figure()
         # Plot a histogram of the prediction errors
         num_bins = 25
         hist, bins = np.histogram(self.differences, num_bins)
         center = (bins[:-1]+ bins[1:]) * 0.5
-        ax1.bar(center, hist, width=0.05)
-        ax1.set(title = 'Historgram of Predicted Error')
-        ax1.xlabel('Steering Angle')
-        ax1.ylabel('Number of predictions')
-        ax1.xlim(-1.0, 1.0)
-        ax1.plot(np.min(self.differences), np.max(self.differences))
-        ax1.savefig(self.model_path + '_err_hist.png')
+        plt.bar(center, hist, width=0.05)
+        plt.title('Historgram of Predicted Error')
+        plt.xlabel('Steering Angle')
+        plt.ylabel('Number of predictions')
+        plt.xlim(-1.0, 1.0)
+        plt.plot(np.min(self.differences), np.max(self.differences))
+        plt.savefig(self.model_path + '_err_hist.png')
+        plt.show()
 
+        plt.figure()
         # Plot a Scatter Plot of the Error
-        ax2.scatter(self.measurements, self.predictions)
-        ax2.set(title = 'Scatter Plot')
-        ax2.xlabel('True Values ')
-        ax2.ylabel('Predictions ')
-        ax2.axis('equal')
-        ax2.axis('square')
-        ax2.xlim([-1.0, 1.0])
-        ax2.ylim([-1.0, 1.0])
-        ax2.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
-        ax2.savefig(self.model_path + '_scatter.png')
-        
+        plt.scatter(self.measurements, self.predictions)
+        plt.xlabel('True Values ')
+        plt.ylabel('Predictions ')
+        plt.axis('equal')
+        plt.axis('square')
+        plt.xlim([-1.0, 1.0])
+        plt.ylim([-1.0, 1.0])
+        plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
+        plt.savefig(self.model_path + '_scatter.png')
         plt.show()
 
 
@@ -148,4 +147,4 @@ class DriveLog:
         file.close()
         print(fname + ' created.')
 
-        self._plot_results()
+        _plot_results()
