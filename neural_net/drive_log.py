@@ -71,6 +71,36 @@ class DriveLog:
         
         print('Test samples: {0}'.format(self.num_test_samples))
     
+   ###########################################################################
+    #
+    def _plot_result(self):
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+
+        # Plot a histogram of the prediction errors
+        num_bins = 25
+        hist, bins = np.histogram(diffs, num_bins)
+        center = (bins[:-1]+ bins[1:]) * 0.5
+        ax1.bar(center, hist, width=0.05)
+        ax1.title('Historgram of Predicted Error')
+        ax1.xlabel('Steering Angle')
+        ax1.ylabel('Number of predictions')
+        ax1.xlim(-1.0, 1.0)
+        ax1.plot(np.min(diffs), np.max(diffs))
+        ax1.savefig(self.model_path + '_err_hist.png')
+
+        # Plot a Scatter Plot of the Error
+        ax2.scatter(mesus, preds)
+        ax2.xlabel('True Values ')
+        ax2.ylabel('Predictions ')
+        ax2.axis('equal')
+        ax2.axis('square')
+        ax2.xlim([-1.0, 1.0])
+        ax2.ylim([-1.0, 1.0])
+        ax2.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
+        ax2.savefig(self.model_path + '_scatter.png')
+        
+        plt.show()
+
 
    ###########################################################################
     #
@@ -118,27 +148,4 @@ class DriveLog:
         file.close()
         print(fname + ' created.')
 
-        plt.figure()
-        # Plot a histogram of the prediction errors
-        num_bins = 25
-        hist, bins = np.histogram(diffs, num_bins)
-        center = (bins[:-1]+ bins[1:]) * 0.5
-        plt.bar(center, hist, width=0.05)
-        plt.title('Historgram of Predicted Error')
-        plt.xlabel('Steering Angle')
-        plt.ylabel('Number of predictions')
-        #plt.xlim(-1.0, 1.0)
-        plt.plot(np.min(diffs), np.max(diffs))
-        plt.show()
-
-        plt.figure()
-        # Plot a Scatter Plot of the Error
-        plt.scatter(mesus, preds)
-        plt.xlabel('True Values ')
-        plt.ylabel('Predictions ')
-        plt.axis('equal')
-        plt.axis('square')
-        #plt.xlim([-1.75,1.75])
-        #plt.ylim([-1.75,1.75])
-        plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
-        plt.show()
+        _plot_result(mesus, preds, diffs)
