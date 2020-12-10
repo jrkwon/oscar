@@ -59,6 +59,9 @@ class DriveLog:
         
         self.image_process = ImageProcess()
 
+        self.measurements = []
+        self.predictions = []
+        self.differences = []
 
     ###########################################################################
     #
@@ -73,23 +76,23 @@ class DriveLog:
     
    ###########################################################################
     #
-    def _plot_result(self):
+    def _plot_results(self):
         fig, (ax1, ax2) = plt.subplots(1, 2)
 
         # Plot a histogram of the prediction errors
         num_bins = 25
-        hist, bins = np.histogram(diffs, num_bins)
+        hist, bins = np.histogram(self.differences, num_bins)
         center = (bins[:-1]+ bins[1:]) * 0.5
         ax1.bar(center, hist, width=0.05)
         ax1.title('Historgram of Predicted Error')
         ax1.xlabel('Steering Angle')
         ax1.ylabel('Number of predictions')
         ax1.xlim(-1.0, 1.0)
-        ax1.plot(np.min(diffs), np.max(diffs))
+        ax1.plot(np.min(self.differences), np.max(self.differences))
         ax1.savefig(self.model_path + '_err_hist.png')
 
         # Plot a Scatter Plot of the Error
-        ax2.scatter(mesus, preds)
+        ax2.scatter(self.measurements, self.predictions)
         ax2.xlabel('True Values ')
         ax2.ylabel('Predictions ')
         ax2.axis('equal')
@@ -115,10 +118,6 @@ class DriveLog:
         #print('image_name', 'label', 'predict', 'abs_error')
         bar = ProgressBar()
 
-        mesus = []
-        preds = []
-        diffs = []
-        
         file.write('image_name, label, predict, abs_error\n')
         for image_name, measurement in bar(self.test_data):   
             image_fname = self.data_path + '/' + image_name
@@ -131,9 +130,9 @@ class DriveLog:
             predict = self.net_model.model.predict(npimg)
             predict = predict / Config.config['steering_angle_scale']
             
-            mesus.append(measurement[0])
-            preds.append(predict[0][0])
-            diffs.append(measurement[0]-predict[0][0])
+            self.measurements.append(measurement[0])
+            self.predictions.append(predict[0][0])
+            self.differences.append(measurement[0]-predict[0][0])
             #print(image_name, measurement[0], predict[0][0],\ 
             #                  abs(measurement[0]-predict[0][0]))
             if Config.config['lstm'] is True:
@@ -148,4 +147,4 @@ class DriveLog:
         file.close()
         print(fname + ' created.')
 
-        _plot_result(mesus, preds, diffs)
+        self._plot_results()
