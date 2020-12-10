@@ -60,6 +60,7 @@ def main(model_path, image_file_name):
         axs[i].imshow(heatmap, cmap='jet', alpha=0.3)
 
     plt.show()
+    plt.savefig(model_path + '_saliency.png')
 
 ###############################################################################
 #       

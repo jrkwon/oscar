@@ -174,7 +174,7 @@ class DriveTrain:
         
         ######################################################################
         # callbacks
-        from keras.callbacks import ModelCheckpoint, EarlyStopping
+        from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
         
         # checkpoint
         callbacks = []
@@ -190,14 +190,20 @@ class DriveTrain:
         earlystop = EarlyStopping(monitor='val_loss', min_delta=0, patience=patience, 
                                   verbose=1, mode='min')
         callbacks.append(earlystop)
-        
+
+        # tensor board
+        tensorboard = TensorBoard(log_dir='./logs')
+        callbacks.append(tensorboard)
+
+
         self.train_hist = self.net_model.model.fit_generator(
                 self.train_generator, 
                 steps_per_epoch=self.num_train_samples//config['batch_size'], 
                 epochs=config['num_epochs'], 
                 validation_data=self.valid_generator,
                 validation_steps=self.num_valid_samples//config['batch_size'],
-                verbose=1, callbacks=callbacks)
+                verbose=1, callbacks=callbacks, 
+                use_multiprocessing=True)
     
 
     ###########################################################################
