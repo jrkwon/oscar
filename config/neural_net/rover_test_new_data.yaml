@@ -62,9 +62,9 @@ base_pose_topic: /mavros/global_position/local
 # crop (capture) area from a camera image
 # - gazebo simulated camera resolution: 800x600
 image_crop_x1: 0
-image_crop_y1: 180
+image_crop_y1: 274
 image_crop_x2: 799
-image_crop_y2: 350
+image_crop_y2: 414
 
 ######################################################
 ## driving strategy - run_neural.py
