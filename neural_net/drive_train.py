@@ -8,6 +8,7 @@ History:
 @author: jaerock
 """
 
+from datetime import datetime
 import matplotlib.pyplot as plt
 import cv2
 import numpy as np
@@ -192,7 +193,8 @@ class DriveTrain:
         callbacks.append(earlystop)
 
         # tensor board
-        tensorboard = TensorBoard(log_dir='./logs')
+        logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+        tensorboard = TensorBoard(log_dir=logdir)
         callbacks.append(tensorboard)
 
 
