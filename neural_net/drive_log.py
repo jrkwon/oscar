@@ -147,4 +147,4 @@ class DriveLog:
         file.close()
         print(fname + ' created.')
 
-        _plot_results()
+        self._plot_results()
