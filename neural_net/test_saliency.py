@@ -25,10 +25,10 @@ config = Config.config
 
 ###############################################################################
 #       
-def main(model_path, image_file_name):
+def main(model_path, image_file_path):
     image_process = ImageProcess()
 
-    image = cv2.imread(image_file_name)
+    image = cv2.imread(image_file_path)
 
     # if collected data is not cropped then crop here
     # otherwise do not crop.
@@ -44,6 +44,7 @@ def main(model_path, image_file_name):
     drive_run = DriveRun(model_path)
     measurement = drive_run.run(image)
 
+    """ grad modifier doesn't work somehow
     fig, axs = plt.subplots(1, 3)
     fig.suptitle('Saliency Visualization' + str(measurement))
     titles = ['left steering', 'right steering', 'maintain steering']
@@ -58,9 +59,26 @@ def main(model_path, image_file_name):
         axs[i].set(title = titles[i])
         axs[i].imshow(image)
         axs[i].imshow(heatmap, cmap='jet', alpha=0.3)
+    """
+    plt.figure()
+    plt.title('Saliency Visualization' + str(measurement))
+    layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_last')
+    heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
+                filter_indices=None, seed_input=image, backprop_modifier='guided')
 
+    plt.imshow(image)
+    plt.imshow(heatmap, cmap='jet', alpha=0.7)
+
+    # file name
+    loc_slash = image_file_path.rfind('/')
+    if loc_slash != -1: # there is '/' in the data path
+        image_file_name = image_file_path[loc_slash+1:] 
+
+    saliency_file_path = model_path + '_' + image_file_name + '_saliency.png'
+    # save fig    
+    plt.savefig(saliency_file_path)
+    # show the plot 
     plt.show()
-    plt.savefig(model_path + '_saliency.png')
 
 ###############################################################################
 #       
