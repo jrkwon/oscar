@@ -33,7 +33,7 @@ def main(data_path):
     csv_path = data_path + '/' + model_name + const.DATA_EXT   
     
     data = DriveData(csv_path)
-    data.read(normalize_data = config['normalize_data'], read = True)
+    data.read(normalize_data = config['normalize_data'], read = False)
 
 
 ###############################################################################
