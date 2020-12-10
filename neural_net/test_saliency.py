@@ -45,7 +45,7 @@ def main(model_path, image_file_name):
     measurement = drive_run.run(image)
 
     fig, axs = plt.subplots(1, 3)
-    fig.suptitle('Saliency Visualization')
+    fig.suptitle('Saliency Visualization' + str(measurement))
     titles = ['left steering', 'right steering', 'maintain steering']
     modifiers = [None, 'negate', 'small_values']
 
@@ -55,24 +55,9 @@ def main(model_path, image_file_name):
                     filter_indices=None, seed_input=image, backprop_modifier='guided', 
                     grad_modifier=modifier)
 
-        """ 
-        heatmap = visualize_saliency(drive_run.net_model.model, 
-                                    layer_idx=-1, filter_indices=0, 
-                                    seed_input=image, grad_modifier=modifier,
-                                    keepdims=True)
-        """
-
-        """
-        heatmap = visualize_cam(drive_run.net_model.model, layer_idx=-1, 
-                                filter_indices=0, seed_input=image, 
-                                grad_modifier=modifier)
-        """
-
-        #"""
         axs[i].set(title = titles[i])
         axs[i].imshow(image)
         axs[i].imshow(heatmap, cmap='jet', alpha=0.3)
-        #"""
 
     plt.show()
 
