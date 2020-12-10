@@ -28,7 +28,7 @@ class DriveData:
         self.image_names = []
         self.measurements = []
 
-    def read(self, read = True, show_statistics = True, normalize_data = False, show_plot = True):
+    def read(self, read = True, show_statistics = True, normalize_data = False):
         self.df = pd.read_csv(self.csv_fname, names=self.csv_header, index_col=False)
         #self.fname = fname
 
@@ -47,7 +47,7 @@ class DriveData:
         # normalize data
 
         if (normalize_data):
-            print('\nnormalizing... wait until a figure shows')
+            print('\nnormalizing... wait for a moment')
             num_bins = 50
             fig, (ax1, ax2) = plt.subplots(1, 2)
             fig.suptitle('Data Normalization')
@@ -81,8 +81,7 @@ class DriveData:
                         (samples_per_bin, samples_per_bin))  
             ax2.set(title = 'normalized')          
 
-            if (show_plot):
-                plt.show()
+            plt.savefig(self.get_data_path() + '_normalized.png')
 
         ############################################ 
         # read out
@@ -96,3 +95,12 @@ class DriveData:
                 self.measurements.append((float(self.df.loc[i]['steering_angle']),
                                             float(self.df.loc[i]['throttle'])))
 
+
+    def get_data_path(self):
+        loc_slash = self.csv_fname.rfind('/')
+        
+        if loc_slash != -1: # there is '/' in the data path
+            data_path = self.csv_fname[:loc_slash] # get folder name
+            return data_path
+        else:
+            exit('ERROR: csv file path must have a separator.')
