@@ -52,6 +52,11 @@ class DriveTrain:
         
         self.data_path = data_path
         #self.model_name = model_name
+
+        self.model_name = data_path + '_' + Config.config_yaml_name \
+            + '_N' + str(config['network_type'])
+        self.model_ckpt_name = self.model_name + '_ckpt'
+
         
         self.drive = DriveData(self.csv_path)
         self.net_model = NetModel(data_path)
@@ -173,16 +178,16 @@ class DriveTrain:
         
         # checkpoint
         callbacks = []
-        #weight_filename = self.net_model.name + '_' + const.CONFIG_YAML + '_ckpt'
-        weight_filename = self.data_path + '_' + Config.config_yaml_name \
-            + '_N' + str(config['network_type']) + '_ckpt'
-        checkpoint = ModelCheckpoint(weight_filename+'.h5',
+        #weight_filename = self.data_path + '_' + Config.config_yaml_name \
+        #    + '_N' + str(config['network_type']) + '_ckpt'
+        checkpoint = ModelCheckpoint(self.model_ckpt_name +'.h5',
                                      monitor='val_loss', 
                                      verbose=1, save_best_only=True, mode='min')
         callbacks.append(checkpoint)
         
         # early stopping
-        earlystop = EarlyStopping(monitor='val_loss', min_delta=0, patience=3, 
+        patience = config['early_stopping_patience']
+        earlystop = EarlyStopping(monitor='val_loss', min_delta=0, patience=patience, 
                                   verbose=1, mode='min')
         callbacks.append(earlystop)
         
@@ -205,10 +210,12 @@ class DriveTrain:
         ### plot the training and validation loss for each epoch
         plt.plot(self.train_hist.history['loss'][1:])
         plt.plot(self.train_hist.history['val_loss'][1:])
+        plt.title('model mean squared error loss')
         plt.ylabel('mse loss')
         plt.xlabel('epoch')
         plt.legend(['training set', 'validatation set'], loc='upper right')
-        plt.show()
+        #plt.show()
+        plt.savefig(self.model_name + '_model.png')
         
         
     ###########################################################################
@@ -218,6 +225,6 @@ class DriveTrain:
         self._prepare_data(normalize_data)
         self._build_model(show_summary)
         self._start_training()
-        self.net_model.save()
+        self.net_model.save(self.model_name)
         self._plot_training_history()
         Config.summary()

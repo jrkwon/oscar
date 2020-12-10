@@ -144,13 +144,13 @@ class NetModel:
     ###########################################################################
     #
     # save model
-    def save(self):
+    def save(self, model_name):
 
         json_string = self.model.to_json()
-        weight_filename = self.model_path + '_' + Config.config_yaml_name \
-            + '_N' + str(config['network_type'])
-        open(weight_filename+'.json', 'w').write(json_string)
-        self.model.save_weights(weight_filename+'.h5', overwrite=True)
+        #weight_filename = self.model_path + '_' + Config.config_yaml_name \
+        #    + '_N' + str(config['network_type'])
+        open(model_name+'.json', 'w').write(json_string)
+        self.model.save_weights(model_name+'.h5', overwrite=True)
 
 
     ###########################################################################
