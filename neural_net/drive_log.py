@@ -118,6 +118,7 @@ class DriveLog:
         file.close()
         print(fname + ' created.')
 
+        plt.figure()
         # Plot a histogram of the prediction errors
         num_bins = 25
         hist, bins = np.histogram(diffs, num_bins)
@@ -128,7 +129,9 @@ class DriveLog:
         plt.ylabel('Number of predictions')
         #plt.xlim(-1.0, 1.0)
         plt.plot(np.min(diffs), np.max(diffs))
+        plt.show()
 
+        plt.figure()
         # Plot a Scatter Plot of the Error
         plt.scatter(mesus, preds)
         plt.xlabel('True Values ')
@@ -138,3 +141,4 @@ class DriveLog:
         #plt.xlim([-1.75,1.75])
         #plt.ylim([-1.75,1.75])
         plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
+        plt.show()
