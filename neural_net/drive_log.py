@@ -89,7 +89,7 @@ class DriveLog:
         plt.xlim(-1.0, 1.0)
         plt.plot(np.min(self.differences), np.max(self.differences))
         plt.savefig(self.model_path + '_err_hist.png')
-        plt.show()
+        #plt.show()
 
         plt.figure()
         # Plot a Scatter Plot of the Error
@@ -102,6 +102,19 @@ class DriveLog:
         plt.ylim([-1.0, 1.0])
         plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
         plt.savefig(self.model_path + '_scatter.png')
+        #plt.show()
+
+        plt.figure()
+        # Plot a Side-By-Side Comparison
+        plt.plot(self.measurements)
+        plt.plot(self.predictions)
+        plt.title('ground truth vs prediction')
+        plt.ylabel('steering angle')
+        plt.legend(['ground truth', 'prediction'], loc='upper right')
+
+        plt.savefig(self.model_path + '_comparison.png')
+        
+        # show all figures
         plt.show()
 
 
