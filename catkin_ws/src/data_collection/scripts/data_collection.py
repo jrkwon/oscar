@@ -70,7 +70,7 @@ class DataCollection():
     def steering_throttle_cb(self, value):
         self.throttle = value.throttle
         self.steering = value.steer
-       
+
 
     def pos_vel_cb(self, value):
         self.pos_x = value.pose.pose.position.x 
