@@ -19,6 +19,9 @@ validation_rate: 0.3
 num_epochs: 20
 batch_size: 16
 num_outputs: 1
+early_stopping_patience: 3
+# tensorboard log dir
+tensorboard_log_dir: logs/scalars/
 
 # steering data preprocessing
 # - steering angle adjustment
@@ -43,12 +46,18 @@ input_image_depth: 3
 ######################################################
 ## data collection
 
+# image cropping: True for legacy datasets. 
+#                 False for new datasets.
+crop: False
+
 # vehicle name
 vehicle_name: rover
 # camera image topic 
 camera_image_topic: /camera/image_raw
 # vehicle control topic name
 vehicle_control_topic: /rover
+# p3d - current position and velocity
+base_pose_topic: /mavros/global_position/local
 
 # crop (capture) area from a camera image
 # - gazebo simulated camera resolution: 800x600
@@ -68,3 +77,5 @@ brake_apply_sec: 1.7
 throttle_default: 0.15
 # throttle at sharp turn
 throttle_sharp_turn: 0.05
+# velocity threshold for not moving
+velocity_0: 0.03
