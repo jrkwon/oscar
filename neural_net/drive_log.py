@@ -78,13 +78,13 @@ class DriveLog:
     #
     def _plot_results(self):
         fig, (ax1, ax2) = plt.subplots(1, 2)
-
+        fig.suptitle('Evaluation of Trained Model')
         # Plot a histogram of the prediction errors
         num_bins = 25
         hist, bins = np.histogram(self.differences, num_bins)
         center = (bins[:-1]+ bins[1:]) * 0.5
         ax1.bar(center, hist, width=0.05)
-        ax1.title('Historgram of Predicted Error')
+        ax1.set(title = 'Historgram of Predicted Error')
         ax1.xlabel('Steering Angle')
         ax1.ylabel('Number of predictions')
         ax1.xlim(-1.0, 1.0)
@@ -93,6 +93,7 @@ class DriveLog:
 
         # Plot a Scatter Plot of the Error
         ax2.scatter(self.measurements, self.predictions)
+        ax2.set(title = 'Scatter Plot')
         ax2.xlabel('True Values ')
         ax2.ylabel('Predictions ')
         ax2.axis('equal')
