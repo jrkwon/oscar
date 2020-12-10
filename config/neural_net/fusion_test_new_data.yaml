@@ -20,6 +20,8 @@ num_epochs: 20
 batch_size: 16
 num_outputs: 1
 early_stopping_patience: 3
+# tensorboard log dir
+tensorboard_log_dir: logs/scalars/
 
 # steering data preprocessing
 # - steering angle adjustment

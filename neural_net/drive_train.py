@@ -193,7 +193,7 @@ class DriveTrain:
         callbacks.append(earlystop)
 
         # tensor board
-        logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+        logdir = config['tensorboard_log_dir'] + datetime.now().strftime("%Y%m%d-%H%M%S")
         tensorboard = TensorBoard(log_dir=logdir)
         callbacks.append(tensorboard)
 

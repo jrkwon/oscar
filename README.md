@@ -139,6 +139,13 @@ Start a training
 (oscar) $ python neural_net/train.py path/to/data/folder
 ```
 
+### TensorBoard
+
+After starting a training session, start tensorboard.
+```
+(oscar) $ tensorboard --logdir ./logs/scalars/
+```
+
 ## How to Test Neural Network
 
 TBA
