@@ -14,12 +14,15 @@ import numpy as np
 #import sklearn
 #import resnet
 from progressbar import ProgressBar
+import matplotlib.pyplot as plt
 
 import const
 from net_model import NetModel
 from drive_data import DriveData
 from config import Config
 from image_process import ImageProcess
+
+config = Config.config
 
 ###############################################################################
 #
@@ -81,6 +84,10 @@ class DriveLog:
 
         #print('image_name', 'label', 'predict', 'abs_error')
         bar = ProgressBar()
+
+        mesus = []
+        preds = []
+        diffs = []
         
         file.write('image_name, label, predict, abs_error\n')
         for image_name, measurement in bar(self.test_data):   
@@ -94,6 +101,9 @@ class DriveLog:
             predict = self.net_model.model.predict(npimg)
             predict = predict / Config.config['steering_angle_scale']
             
+            mesus.append(measurement[0])
+            preds.append(predict[0][0])
+            diffs.append(measurement[0]-predict[0][0])
             #print(image_name, measurement[0], predict[0][0],\ 
             #                  abs(measurement[0]-predict[0][0]))
             if Config.config['lstm'] is True:
@@ -107,3 +117,24 @@ class DriveLog:
         
         file.close()
         print(fname + ' created.')
+
+        # Plot a histogram of the prediction errors
+        num_bins = 25
+        hist, bins = np.histogram(diffs, num_bins)
+        center = (bins[:-1]+ bins[1:]) * 0.5
+        plt.bar(center, hist, width=0.05)
+        plt.title('Historgram of Predicted Error')
+        plt.xlabel('Steering Angle')
+        plt.ylabel('Number of predictions')
+        #plt.xlim(-1.0, 1.0)
+        plt.plot(np.min(diffs), np.max(diffs))
+
+        # Plot a Scatter Plot of the Error
+        plt.scatter(mesus, preds)
+        plt.xlabel('True Values ')
+        plt.ylabel('Predictions ')
+        plt.axis('equal')
+        plt.axis('square')
+        #plt.xlim([-1.75,1.75])
+        #plt.ylim([-1.75,1.75])
+        plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)

@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
+from config import Config
+
 class DriveData:
     
     csv_header = ['image_fname', 'steering_angle', 'throttle', 
@@ -28,7 +30,7 @@ class DriveData:
         self.image_names = []
         self.measurements = []
 
-    def read(self, read = True, show_statistics = True, normalize_data = False):
+    def read(self, read = True, show_statistics = True):
         self.df = pd.read_csv(self.csv_fname, names=self.csv_header, index_col=False)
         #self.fname = fname
 
@@ -46,7 +48,7 @@ class DriveData:
         ############################################
         # normalize data
 
-        if (normalize_data):
+        if (Config.config['normalize_data']):
             print('\nnormalizing... wait for a moment')
             num_bins = 50
             fig, (ax1, ax2) = plt.subplots(1, 2)

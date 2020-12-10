@@ -17,8 +17,7 @@ from config import Config
 #
 def train(data_folder_name):
     drive_train = DriveTrain(data_folder_name)
-    drive_train.train(show_summary = False, 
-                        normalize_data = Config.config['normalize_data'])
+    drive_train.train(show_summary = False)
 
 
 ###############################################################################

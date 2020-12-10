@@ -67,9 +67,9 @@ class DriveTrain:
         
     ###########################################################################
     #
-    def _prepare_data(self, normalize_data):
+    def _prepare_data(self):
     
-        self.drive.read(normalize_data = normalize_data)
+        self.drive.read()
         
         from sklearn.model_selection import train_test_split
         
@@ -228,9 +228,9 @@ class DriveTrain:
         
     ###########################################################################
     #
-    def train(self, show_summary=True, normalize_data=True):
+    def train(self, show_summary=True):
         
-        self._prepare_data(normalize_data)
+        self._prepare_data()
         self._build_model(show_summary)
         self._start_training()
         self.net_model.save(self.model_name)
