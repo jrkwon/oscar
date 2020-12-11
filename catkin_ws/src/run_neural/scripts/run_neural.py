@@ -13,7 +13,6 @@ import cv2
 import time
 import rospy
 import numpy as np
-from fusion.msg import Control
 from std_msgs.msg import Int32
 from sensor_msgs.msg import Image
 from nav_msgs.msg import Odometry
@@ -35,6 +34,7 @@ config = Config.config
 if config['vehicle_name'] == 'fusion':
     from fusion.msg import Control
 elif config['vehicle_name'] == 'rover':
+    from geometry_msgs.msg import Twist
     from rover.msg import Control
 else:
     exit(config['vehicle_name'] + 'not supported vehicle.')
@@ -97,6 +97,9 @@ def main(weight_file_name):
     joy_pub = rospy.Publisher(config['vehicle_control_topic'], Control, queue_size = 10)
     joy_data = Control()
 
+    if config['vehicle_name'] == 'rover':
+        joy_pub4mavros = rospy.Publisher(Config.config['mavros_cmd_vel_topic'], Twist, queue_size=20)
+
     print('\nStart running. Vroom. Vroom. Vroooooom......')
     print('steer \tthrt: \tbrake \tvelocity')
 
@@ -126,9 +129,20 @@ def main(weight_file_name):
                 joy_data.throttle = config['throttle_default']
                 joy_data.brake = 0
         
-            
-        ## publish joy_data
+        ##############################    
+        ## publish mavros control topic
         joy_pub.publish(joy_data)
+        if config['vehicle_name'] == 'rover':
+            joy_data4mavros = Twist()
+            if neural_control.braking is True:
+                joy_data4mavros.linear.x = 0
+                joy_data4mavros.linear.y = 0
+            else: 
+                joy_data4mavros.linear.x = joy_data.throttle*config['scale_factor_throttle']
+                joy_data4mavros.linear.y = joy_data.steer*config['scale_factor_steering']
+
+            joy_pub4mavros.publish(joy_data4mavros)
+
 
         ## print out
         if config['lstm'] is True:

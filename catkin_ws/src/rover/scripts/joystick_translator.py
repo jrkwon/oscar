@@ -20,6 +20,8 @@ from rover.msg import Control
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
 
+from config import Config
+
 #######################################
 ## Logitech G920 with Pedal and Shift
 
@@ -44,11 +46,11 @@ SHIFT_FORWARD = 14     # forward 1
 SHIFT_REVERSE = 15     # reverse 1
 
 # Max speed and steering factor
-MAX_THROTTLE_FACTOR = 10
-MAX_STEERING_FACTOR = 5
-# Default speed and steering factor
-INIT_THROTTLE_FACTOR = 3
-INIT_STERRING_FACTOR = 1
+MAX_THROTTLE_FACTOR = 20
+MAX_STEERING_FACTOR = 20
+# Default speed and steering factor : 
+INIT_THROTTLE_FACTOR = Config.config['scale_factor_throttle']
+INIT_STERRING_FACTOR = Config.config['scale_factor_steering']
 
 # Small value
 SMALL_VALUE = 0.0001
@@ -57,7 +59,7 @@ class Translator:
     def __init__(self):
         self.sub = rospy.Subscriber("joy", Joy, self.callback)
         self.pub = rospy.Publisher('rover', Control, queue_size=20)
-        self.pub4mavros = rospy.Publisher('mavros/setpoint_velocity/cmd_vel_unstamped', Twist, queue_size=20)
+        self.pub4mavros = rospy.Publisher(Config.config['mavros_cmd_vel_topic'], Twist, queue_size=20)
 
         self.last_published_time = rospy.get_rostime()
         self.last_published = None

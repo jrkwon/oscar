@@ -58,6 +58,8 @@ camera_image_topic: /camera/image_raw
 vehicle_control_topic: /rover
 # p3d - current position and velocity
 base_pose_topic: /mavros/global_position/local
+# mavros cmd_vel topic
+mavros_cmd_vel_topic: /mavros/setpoint_velocity/cmd_vel_unstamped
 
 # crop (capture) area from a camera image
 # - gazebo simulated camera resolution: 800x600
@@ -70,12 +72,15 @@ image_crop_y2: 414
 ## driving strategy - run_neural.py
 
 # steering angle value for sharp turn
-sharp_turn_min: 0.3
+sharp_turn_min: 0.5
 # when sharp turn, apply brake for this sec.
 brake_apply_sec: 1.7
 # throttle at non sharp turn
-throttle_default: 0.15
+throttle_default: 1
 # throttle at sharp turn
-throttle_sharp_turn: 0.05
+throttle_sharp_turn: 0.5
 # velocity threshold for not moving
-velocity_0: 0.03
+velocity_0: 0.06
+# scaling
+scale_factor_throttle: 10
+scale_factor_steering: 10
