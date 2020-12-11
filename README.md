@@ -178,7 +178,10 @@ TBA
 
 ## Sample Datasets
 
-### Legacy sample datasets
+### New sample datasets (not cropped)
+- https://drive.google.com/drive/folders/197w7u99Jvyf5tuRTTawLhaYuwBLSxo-O?usp=sharing
+
+### Legacy sample datasets (cropped)
 - https://drive.google.com/drive/folders/173w5kh9h5QCDG8LEJPQ1qGJKwz1TnAkr?usp=sharing
 
 ## ROS packages 
