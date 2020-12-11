@@ -97,6 +97,6 @@ class Translator:
         self.pub.publish(command)
 
 if __name__ == '__main__':
-    rospy.init_node('joy_translator')
+    rospy.init_node('joystick_translator')
     t = Translator()
     rospy.spin()

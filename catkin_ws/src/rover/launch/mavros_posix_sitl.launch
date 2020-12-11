@@ -63,7 +63,7 @@
         args="0.31 0 2.02 0 0 0 1.0 base_link ouster::os1_sensor">
     </node>
     
-    <node pkg="rover" type="joy_translator.py" name="joy_translator">
+    <node pkg="rover" type="joystick_translator.py" name="joystick_translator">
     </node>
     <!-- Run two joy nodes publishing to the same topic, just to cover two possible joystick locations -->
     <node pkg="joy" type="joy_node" name="joy_node0">
