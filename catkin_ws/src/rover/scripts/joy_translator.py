@@ -89,6 +89,7 @@ class Translator:
 
         if message.axes[BRAKE_AXIS] > BRAKE_POINT:
 		    command.brake = 1.0
+        
         # Note: init value of axes are all zeros
         # --> problem with -1 to 1 range values like brake
         if message.axes[BRAKE_AXIS] > -1*SMALL_VALUE and message.axes[BRAKE_AXIS] < SMALL_VALUE:
@@ -99,8 +100,6 @@ class Translator:
             command.brake = 0.0
         else:
             command.throttle = 0.0
-         #   command.brake = message.axes[THROTTLE_AXIS] * -1
-          #  command.throttle = 0.0
         
         if message.buttons[SHIFT_FORWARD] == 1:
             command.shift_gears = Control.FORWARD
@@ -113,19 +112,22 @@ class Translator:
 
         command.steer = message.axes[STEERING_AXIS]
 
+        # scale throttle and steering 
+        command.throttle = command.throttle*self.throttle_factor
+        command.steer = command.steer*self.steering_factor
+
         command4mavros = Twist()
         if command.shift_gears == Control.FORWARD:
-            command4mavros.linear.x = command.throttle*self.throttle_factor
-            command4mavros.linear.y = command.steer*self.steering_factor
-            self.pub4mavros.publish(command4mavros)
+            command4mavros.linear.x = command.throttle
+            command4mavros.linear.y = command.steer
         #elif command.shift_gears == Control.REVERSE:
-        #    command4mavros.linear.x = command.throttle*self.throttle_factor
-        #    command4mavros.linear.y = command.steer*self.steering_factor
-        #    self.pub4mavros.publish(command4mavros)
+        #    command4mavros.linear.x = -command.throttle
+        #    command4mavros.linear.y = command.steer
         else:
             command4mavros.linear.x = 0
             command4mavros.linear.y = 0
-            self.pub4mavros.publish(command4mavros)
+
+        self.pub4mavros.publish(command4mavros)
         
         self.last_published = message
         self.pub.publish(command)

@@ -71,6 +71,7 @@ class Translator:
 
         if message.axes[BRAKE_AXIS] > BRAKE_POINT:
 		    command.brake = 1.0
+
         # Note: init value of axes are all zeros
         # --> problem with -1 to 1 range values like brake
         if message.axes[BRAKE_AXIS] > -1*SMALL_VALUE and message.axes[BRAKE_AXIS] < SMALL_VALUE:
@@ -81,9 +82,6 @@ class Translator:
             command.brake = 0.0
         else:
             command.throttle = 0.0
-        #else:
-         #   command.brake = message.axes[THROTTLE_AXIS] * -1
-          #  command.throttle = 0.0
 
         if message.buttons[SHIFT_FORWARD] == 1:
             command.shift_gears = Control.FORWARD
