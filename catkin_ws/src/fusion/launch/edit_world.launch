@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="vehicle" default="fusion"/>
+  <!-- vehicle pose -->
+  <arg name="x" default="0"/>
+  <arg name="y" default="0"/>
+  <arg name="z" default="0"/>
+  <arg name="R" default="0"/>
+  <arg name="P" default="0"/>
+  <arg name="Y" default="0"/>  
+  <arg name="world" default="track_bada"/>
+  <arg name="spawn_vehicle" default="false"/>
+  <arg name="use_sdf" default="false"/> <!-- experimental: no not use this yet. --> 
+  <arg name="sdf_model" default="$(find fusion)/models/$(arg vehicle)/model.sdf"/>
+  <arg name="urdf_model_for_rviz" default="$(find fusion)/models/$(arg vehicle)/model.urdf"/>
+  <arg name="urdf_model" default="$(find fusion)/robot_description/urdf/$(arg vehicle).urdf"/>
+
+  <arg name="rvizconfig" default="$(find fusion)/rviz/$(arg vehicle)_track.rviz" />
+
+  <param if="$(arg use_sdf)" name="robot_description" textfile="$(arg urdf_model_for_rviz)" />
+  <param unless="$(arg use_sdf)" name="robot_description" textfile="$(arg urdf_model)" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" default="false"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="gui" default="true"/>
+    <arg name="headless" default="false"/>
+    <arg name="debug" default="false"/>
+    <arg name="verbose" default="false"/>
+    <arg name="world_name" value="$(find fusion)/worlds/$(arg world).world"/>
+  </include>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" >
+    <!-- <remap from="robot_description" to="different_robot_description" / -->
+    <!-- remap from="joint_states" to="/$(arg vehicle)/joint_states" / -->
+  </node>
+  <node pkg="fake_localization" type="fake_localization" name="fake_localization">
+    <!-- remap from="base_pose_ground_truth" to="/$(arg vehicle)/base_pose_ground_truth"/ -->
+  </node>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="very_inaccurate_odom" args="0 0 0 0 0 0 odom base_link"/>
+
+  <node pkg="fusion" type="joystick_translator.py" name="joystick_translator"/>
+  <!-- Run two joy nodes publishing to the same topic, just to cover two possible joystick locations -->
+  <node pkg="joy" type="joy_node" name="joy_node0">
+    <param name="dev" value="/dev/input/js0"/>
+  </node>
+
+  <!-- **** gazebo model **** -->
+  <!-- sdf version ## experimental: do not use yet. -->
+  <!-- node if="$(arg use_sdf)" name="$(anon vehicle_spawn)" pkg="gazebo_ros" type="spawn_model" output="screen" args="-sdf -file $(arg sdf_model) -model $(arg vehicle) -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg R) -P $(arg P) -Y $(arg Y)"/ -->
+  <!-- urdf version -->
+  <node if="$(arg spawn_vehicle)" name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg R) -P $(arg P) -Y $(arg Y) -model $(arg vehicle)"/>
+</launch>
