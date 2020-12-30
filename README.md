@@ -38,6 +38,10 @@ $ git clone https://github.com/jrkwon/oscar.git --recursive
 
 ## Prior to Use
 
+### Versions 
+
+The OSCAR has been tested with ROS Melodic on Ubuntu 18.04.
+
 ### Install ROS packages
 Install two more packages for this project unless you already have them in your system.
 ```
@@ -195,7 +199,7 @@ TBA
 ## ROS packages 
 
 ```
-$ sudo apt install ros-melodic-hector-gazebo-plugins
+$ sudo apt install ros-$ROS_DISTRO-hector-gazebo-plugins
 ```
 
 ## Acknowledgments
