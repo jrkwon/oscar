@@ -38,6 +38,14 @@ $ git clone https://github.com/jrkwon/oscar.git --recursive
 
 ## Prior to Use
 
+### Install ROS packages
+Install two more packages for this project unless you already have them in your system.
+```
+$ sudo apt install ros-$ROS_DISTRO-fake-localization
+$ sudo apt install ros-$ROS_DISTRO-joy
+
+```
+
 ### Create Conda Environment 
 
 Create a conda environment using an environment file that is prepared at `config/conda`.
@@ -173,7 +181,7 @@ TBA
 TBA
 ```
 (oscar) $ . setup.bash
-(oscar) $ ros_run run_neural run_nerual.py path/to/data/model 
+(oscar) $ rosrun run_neural run_nerual.py path/to/data/model 
 ```
 
 ## Sample Datasets
