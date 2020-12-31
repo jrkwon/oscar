@@ -49,8 +49,16 @@ def build_csv(data_path):
         if os.path.exists(data_path + data.image_names[i]):
             new_csv.append(data.image_names[i] + ','
                            + str(data.measurements[i][0]) + ','
-                           + str(data.measurements[i][1]) + '\n')
-    
+                           + str(data.measurements[i][1]) + ','
+                           + str(data.time_stamps[i]) + ','
+                           + str(data.velocities[i]) + ','
+                           + str(data.velocities_xyz[i][0]) + ','
+                           + str(data.velocities_xyz[i][1]) + ','
+                           + str(data.velocities_xyz[i][2]) + ','
+                           + str(data.positions_xyz[i][0]) + ','
+                           + str(data.positions_xyz[i][1]) + ','
+                           + str(data.positions_xyz[i][2]) + '\n')
+
     # write a new csv
     new_csv_fh = open(data_path + csv_file, 'w')
     for i in range(len(new_csv)):
