@@ -3,7 +3,7 @@
     <gui fullscreen='0'>
       <plugin name='keyboard' filename='libKeyboardGUIPlugin.so'/>
       <camera name='user_camera'>
-        <pose frame=''>-12.8113 -89.496 4.7491 0 0.036256 -0.508189</pose>
+        <pose frame=''>-16.6564 -109.07 7.04523 0 0.061577 0.134548</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -141,10 +141,10 @@
       <pose frame=''>-34.9749 -149.339 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>4406 161000000</sim_time>
-      <real_time>455 804925228</real_time>
-      <wall_time>1609128556 574834819</wall_time>
-      <iterations>199816</iterations>
+      <sim_time>4737 256000000</sim_time>
+      <real_time>85 234088201</real_time>
+      <wall_time>1609534982 271641577</wall_time>
+      <iterations>41999</iterations>
       <model name='(DS) Curved Road - 100m_10'>
         <pose frame=''>-297.688 350.509 0 0 -0 3.14153</pose>
         <scale>1 1 1</scale>
@@ -406,43 +406,43 @@
         </link>
       </model>
       <model name='Construction Cone'>
-        <pose frame=''>-182.906 -70.2393 0 -0 -0 -0</pose>
+        <pose frame=''>-182.906 -70.2393 -0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-182.906 -70.2393 0 -0 -0 -0</pose>
+          <pose frame=''>-182.906 -70.2393 -0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>-0 -0 19.4916 1.25341 -1.31358 0</acceleration>
-          <wrench>-0 -0 19.4916 0 -0 0</wrench>
+          <acceleration>0 -0 -0.008512 -2.58585 1.13682 3.14159</acceleration>
+          <wrench>0 -0 -0.008512 0 -0 0</wrench>
         </link>
       </model>
       <model name='Construction Cone_0'>
-        <pose frame=''>-180.975 -71.7248 -0 0 -1e-06 0</pose>
+        <pose frame=''>-180.975 -71.7248 -0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-180.975 -71.7248 -0 0 -1e-06 0</pose>
+          <pose frame=''>-180.975 -71.7248 -0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>-0 0 0.008512 2.58585 -1.13682 -3.14159</acceleration>
-          <wrench>-0 0 0.008512 0 -0 0</wrench>
+          <acceleration>0 -0 -0.008512 -2.58585 1.13682 3.14159</acceleration>
+          <wrench>0 -0 -0.008512 0 -0 0</wrench>
         </link>
       </model>
       <model name='Construction Cone_1'>
-        <pose frame=''>-178.911 -73.5559 -0 0 -1e-06 0</pose>
+        <pose frame=''>-178.911 -73.5559 -0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-178.911 -73.5559 -0 0 -1e-06 0</pose>
+          <pose frame=''>-178.911 -73.5559 -0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>-0 0 0.008512 2.58585 -1.13682 -3.14159</acceleration>
-          <wrench>-0 0 0.008512 0 -0 0</wrench>
+          <acceleration>0 -0 -0.008512 -2.58585 1.13682 3.14159</acceleration>
+          <wrench>0 -0 -0.008512 0 -0 0</wrench>
         </link>
       </model>
       <model name='Construction Cone_2'>
-        <pose frame=''>7.08785 -105.79 0.009399 0 -1e-06 -0.187428</pose>
+        <pose frame=''>7.0878 -105.79 0.009408 1e-06 -1e-06 -0.187632</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>7.08785 -105.79 0.009399 0 -1e-06 -0.187428</pose>
+          <pose frame=''>7.0878 -105.79 0.009408 1e-06 -1e-06 -0.187632</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 -9.8 0 -0 0</acceleration>
-          <wrench>0 0 -9.8 0 -0 0</wrench>
+          <acceleration>-0.060908 -0.026654 -9.9167 -0.004484 0.014238 -0.000912</acceleration>
+          <wrench>-0.060908 -0.026654 -9.9167 0 -0 0</wrench>
         </link>
       </model>
       <model name='Dumpster'>
@@ -451,8 +451,8 @@
         <link name='link'>
           <pose frame=''>313.905 22.1483 0.000917 0 2e-06 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0.006033 -0 -1e-06 0 0.280682 -4e-06</acceleration>
-          <wrench>0.006033 -0 -1e-06 0 -0 0</wrench>
+          <acceleration>0.006033 -0 -0 0 0.280682 -4e-06</acceleration>
+          <wrench>0.006033 -0 -0 0 -0 0</wrench>
         </link>
       </model>
       <model name='Dumpster_0'>
@@ -461,15 +461,15 @@
         <link name='link'>
           <pose frame=''>-174.065 -77.9209 0.000917 0 2e-06 -0.821613</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0.004108 -0.004418 -1e-06 1.66477 -1.32867 3.14159</acceleration>
-          <wrench>0.004108 -0.004418 -1e-06 0 -0 0</wrench>
+          <acceleration>0.004108 -0.004418 -0 1.66477 -1.32867 3.14159</acceleration>
+          <wrench>0.004108 -0.004418 -0 0 -0 0</wrench>
         </link>
       </model>
       <model name='Fast Food'>
-        <pose frame=''>-256.797 187.331 0 0 -0 0</pose>
+        <pose frame=''>-256.797 184.498 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-256.797 187.331 3.15931 0 -0 0</pose>
+          <pose frame=''>-256.797 184.498 3.15931 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
