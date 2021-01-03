@@ -15,9 +15,7 @@ NET_TYPE_JAEROCK     = 0
 NET_TYPE_NVIDIA      = 1
 NET_TYPE_RESNET      = 2
 NET_TYPE_CE491       = 3
-NET_TYPE_LSTM        = 4
-NET_TYPE_LSTM_FC6    = 5
-NET_TYPE_LSTM_FC7    = 6
+NET_TYPE_CONVLSTM    = 10
 
 # file extension
 DATA_EXT             = '.csv'

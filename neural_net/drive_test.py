@@ -113,12 +113,14 @@ class DriveTest:
                     X_train = np.array(images)
                     y_train = np.array(measurements)
 
+                    #"""
                     if config['lstm'] is True:
                         X_train = np.array(images).reshape(-1, 1, 
                                              config['input_image_height'],
                                              config['input_image_width'],
                                              config['input_image_depth'])
                         y_train = np.array(measurements).reshape(-1, 1, 1)
+                    #"""
 
                     if config['lstm'] is False:
                         yield sklearn.utils.shuffle(X_train, y_train)     

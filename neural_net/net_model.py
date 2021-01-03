@@ -59,7 +59,7 @@ def model_jaerock():
         Dense(10),
         Dense(config['num_outputs'])])    
 
-def model_lstm():
+def model_convlstm():
     from keras.layers.recurrent import LSTM
     from keras.layers.wrappers import TimeDistributed
 
@@ -75,11 +75,11 @@ def model_lstm():
         TimeDistributed(Conv2D(64, (3, 3))),
         TimeDistributed(Conv2D(64, (3, 3), name='conv2d_last')),
         TimeDistributed(Flatten()),
+        LSTM(64, return_sequences=True),
+        Dense(1000),
         Dense(100),
-        LSTM(return_sequences=True, units=10),
         Dense(50),
         Dense(10),
-        Dropout(0.25),
         Dense(config['num_outputs'])])
 
 class NetModel:
@@ -106,8 +106,8 @@ class NetModel:
             self.model = model_ce491()
         elif config['network_type'] == const.NET_TYPE_JAEROCK:
             self.model = model_jaerock()
-        elif config['network_type'] == const.NET_TYPE_LSTM:
-            self.model = model_lstm()
+        elif config['network_type'] == const.NET_TYPE_CONVLSTM:
+            self.model = model_convlstm()
         else:
             print('Neural network type is not defined.')
             return
