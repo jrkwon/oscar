@@ -135,6 +135,13 @@ class DriveLog:
         for image_name, measurement in bar(self.test_data):   
             image_fname = self.data_path + '/' + image_name
             image = cv2.imread(image_fname)
+
+            # if collected data is not cropped then crop here
+            # otherwise do not crop.
+            if config['crop'] is not True:
+                image = image[config['image_crop_y1']:config['image_crop_y2'],
+                                config['image_crop_x1']:config['image_crop_x2']]
+
             image = cv2.resize(image, (Config.config['input_image_width'],
                                        Config.config['input_image_height']))
             image = self.image_process.process(image)
