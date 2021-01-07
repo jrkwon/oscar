@@ -3,7 +3,7 @@
     <gui fullscreen='0'>
       <plugin name='keyboard' filename='libKeyboardGUIPlugin.so'/>
       <camera name='user_camera'>
-        <pose frame=''>199.92 49.3066 31.2504 0 0.298242 -3.13419</pose>
+        <pose frame=''>172.251 19.4286 9.76507 0 0.073799 2.92819</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -94,10 +94,10 @@
       </link>
     </model>
     <state world_name='default'>
-      <sim_time>10001 317000000</sim_time>
-      <real_time>409 76838184</real_time>
-      <wall_time>1609123682 731570738</wall_time>
-      <iterations>163573</iterations>
+      <sim_time>10951 370000000</sim_time>
+      <real_time>956 565881543</real_time>
+      <wall_time>1609560197 789693712</wall_time>
+      <iterations>950053</iterations>
       <model name='(DS) Curved Road - 100m'>
         <pose frame=''>95.4368 348.224 0 0 0 -1.56472</pose>
         <scale>1 1 1</scale>
@@ -113,16 +113,6 @@
         <scale>1 1 1</scale>
         <link name='link'>
           <pose frame=''>-154.789 550.168 0 0 -0 3.14064</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='(DS) Curved Road - 100m_1'>
-        <pose frame=''>-154.764 444.854 0 0 0 -1.56939</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose frame=''>-154.764 444.854 0 0 0 -1.56939</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -213,6 +203,16 @@
         <scale>1 1 1</scale>
         <link name='link'>
           <pose frame=''>-180.011 225.981 0 0 -0 -3.14093</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='(DS) Curved Road - 50m_7'>
+        <pose frame=''>-179.88 419.922 0 0 0 -1.57034</pose>
+        <scale>1 1 1</scale>
+        <link name='link'>
+          <pose frame=''>-179.88 419.922 0 0 0 -1.57034</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -329,10 +329,10 @@
         </link>
       </model>
       <model name='(DS) Straight Road - 50m_3'>
-        <pose frame=''>-77.0899 407.888 0 0 -0 0</pose>
+        <pose frame=''>-77.2063 407.873 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-77.0899 407.888 0 0 -0 0</pose>
+          <pose frame=''>-77.2063 407.873 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -343,6 +343,26 @@
         <scale>1 1 1</scale>
         <link name='link'>
           <pose frame=''>-12.5065 322.961 0 0 -0 1.56858</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='(DS) Straight Road - 50m_5'>
+        <pose frame=''>-212.146 472.628 0 0 -0 1.56978</pose>
+        <scale>1 1 1</scale>
+        <link name='link'>
+          <pose frame=''>-212.146 472.628 0 0 -0 1.56978</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='(DS) Straight Road - 50m_6'>
+        <pose frame=''>-127.153 407.879 0 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='link'>
+          <pose frame=''>-127.153 407.879 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -609,7 +629,7 @@
         </link>
       </model>
       <model name='grocery_store'>
-        <pose frame=''>-103.579 621.713 0 0 -0 -3.10749</pose>
+        <pose frame=''>-103.579 621.713 0 0 0 -3.10749</pose>
         <scale>1 1 1</scale>
         <link name='link'>
           <pose frame=''>-103.579 621.713 0 0 -0 -3.10749</pose>
@@ -1428,54 +1448,6 @@
         <kinematic>0</kinematic>
       </link>
       <pose frame=''>-146.565 567.568 0 0 -0 0</pose>
-    </model>
-    <model name='(DS) Curved Road - 100m_1'>
-      <static>1</static>
-      <link name='link'>
-        <inertial>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <mass>1</mass>
-          <inertia>
-            <ixx>1</ixx>
-            <iyy>1</iyy>
-            <izz>1</izz>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyz>0</iyz>
-          </inertia>
-        </inertial>
-        <collision name='collision'>
-          <geometry>
-            <mesh>
-              <uri>model://ds_curved_road_100m/meshes/curved_road_100m.dae</uri>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <uri>model://ds_curved_road_100m/meshes/curved_road_100m.dae</uri>
-            </mesh>
-          </geometry>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <pose frame=''>-149.255 448.413 0 0 -0 0</pose>
     </model>
     <model name='(DS) Straight Road - 50m_3'>
       <static>1</static>
@@ -3625,6 +3597,150 @@
         <kinematic>0</kinematic>
       </link>
       <pose frame=''>-212.355 525.742 0 0 -0 0</pose>
+    </model>
+    <model name='(DS) Straight Road - 50m_5'>
+      <static>1</static>
+      <link name='link'>
+        <inertial>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <iyy>1</iyy>
+            <izz>1</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://ds_straight_road_50m/meshes/straight_road_50m.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://ds_straight_road_50m/meshes/straight_road_50m.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-185.642 492.273 0 0 -0 0</pose>
+    </model>
+    <model name='(DS) Straight Road - 50m_6'>
+      <static>1</static>
+      <link name='link'>
+        <inertial>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <iyy>1</iyy>
+            <izz>1</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://ds_straight_road_50m/meshes/straight_road_50m.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://ds_straight_road_50m/meshes/straight_road_50m.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-127.012 407.914 0 0 -0 0</pose>
+    </model>
+    <model name='(DS) Curved Road - 50m_7'>
+      <static>1</static>
+      <link name='link'>
+        <inertial>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <iyy>1</iyy>
+            <izz>1</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://ds_curved_road_50m/meshes/curved_road_50m.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://ds_curved_road_50m/meshes/curved_road_50m.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-182.802 424.032 0 0 -0 0</pose>
     </model>
   </world>
 </sdf>
