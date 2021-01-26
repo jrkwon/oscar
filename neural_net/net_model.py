@@ -20,7 +20,7 @@ import tensorflow as tf
 import const
 from config import Config
 
-config = Config.config
+config = Config.neural_net
 
 def model_ce491():
     input_shape = (config['input_image_height'],

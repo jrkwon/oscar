@@ -21,23 +21,22 @@ import math
 import sys
 import os
 
-#sys.path.append('../neural_net/')
-#os.chdir('../neural_net/')
-
 import const
 from image_converter import ImageConverter
 from drive_run import DriveRun
 from config import Config
 from image_process import ImageProcess
 
-config = Config.config
-if config['vehicle_name'] == 'fusion':
+if Config.data_collection['vehicle_name'] == 'fusion':
     from fusion.msg import Control
-elif config['vehicle_name'] == 'rover':
+elif Config.data_collection['vehicle_name'] == 'rover':
     from geometry_msgs.msg import Twist
     from rover.msg import Control
 else:
-    exit(config['vehicle_name'] + 'not supported vehicle.')
+    exit(Config.data_collection['vehicle_name'] + 'not supported vehicle.')
+
+
+config = Config.neural_net
 
 velocity = 0
 
@@ -49,7 +48,7 @@ class NeuralControl:
         self.image_process = ImageProcess()
         self.rate = rospy.Rate(30)
         self.drive= DriveRun(weight_file_name)
-        rospy.Subscriber(config['camera_image_topic'], Image, self._controller_cb)
+        rospy.Subscriber(Config.data_collection['camera_image_topic'], Image, self._controller_cb)
         self.image = None
         self.image_processed = False
         #self.config = Config()
@@ -57,8 +56,8 @@ class NeuralControl:
 
     def _controller_cb(self, image): 
         img = self.ic.imgmsg_to_opencv(image)
-        cropped = img[config['image_crop_y1']:config['image_crop_y2'],
-                      config['image_crop_x1']:config['image_crop_x2']]
+        cropped = img[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                      Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
                       
         img = cv2.resize(cropped, (config['input_image_width'],
                                    config['input_image_height']))
@@ -73,8 +72,14 @@ class NeuralControl:
                                  config['input_image_depth'])
         self.image_processed = True
         
-    def timer_cb(self):
+    def _timer_cb(self):
         self.braking = False
+
+    def apply_brake(self):
+        self.braking = True
+        timer = threading.Timer(Config.run_neural['brake_apply_sec'], self._timer_cb) 
+        timer.start()
+
       
 def pos_vel_cb(value):
     global velocity
@@ -85,19 +90,18 @@ def pos_vel_cb(value):
     
     velocity = math.sqrt(vel_x**2 + vel_y**2 + vel_z**2)
 
-
         
 def main(weight_file_name):
 
     # ready for neural network
     neural_control = NeuralControl(weight_file_name)
     
-    rospy.Subscriber(config['base_pose_topic'], Odometry, pos_vel_cb)
+    rospy.Subscriber(Config.data_collection['base_pose_topic'], Odometry, pos_vel_cb)
     # ready for /bolt topic publisher
-    joy_pub = rospy.Publisher(config['vehicle_control_topic'], Control, queue_size = 10)
+    joy_pub = rospy.Publisher(Config.data_collection['vehicle_control_topic'], Control, queue_size = 10)
     joy_data = Control()
 
-    if config['vehicle_name'] == 'rover':
+    if Config.data_collection['vehicle_name'] == 'rover':
         joy_pub4mavros = rospy.Publisher(Config.config['mavros_cmd_vel_topic'], Twist, queue_size=20)
 
     print('\nStart running. Vroom. Vroom. Vroooooom......')
@@ -110,48 +114,52 @@ def main(weight_file_name):
         
         # predicted steering angle from an input image
         prediction = neural_control.drive.run(neural_control.image)
-        joy_data.steer = prediction
+        # prediction is [ [] ] numpy.ndarray
+        joy_data.steer = prediction[0][0]
 
         #############################
         ## TODO: you need to change the vehicle speed wisely  
         ## e.g. not too fast in a curved road and not too slow in a straight road
-        
+
+        is_sharp_turn = False
         # if brake is not already applied and sharp turn
         if neural_control.braking is False: 
-            if velocity < config['velocity_0']: # too slow then no braking
-                joy_data.throttle = config['throttle_default'] # apply default throttle
+            if velocity < Config.run_neural['velocity_0']: # too slow then no braking
+                joy_data.throttle = Config.run_neural['throttle_default'] # apply default throttle
                 joy_data.brake = 0
-            elif abs(joy_data.steer) > config['sharp_turn_min'] or velocity > config['max_vel']: 
-                    joy_data.throttle = config['throttle_sharp_turn']
-                    joy_data.brake = 0.5
-                    neural_control.braking = True
-                    timer = threading.Timer(config['brake_apply_sec'], neural_control.timer_cb) 
-                    timer.start()
+            elif abs(joy_data.steer) > Config.run_neural['sharp_turn_min']:
+                #joy_data.steer *= 3
+                is_sharp_turn = True
+            
+            if is_sharp_turn or velocity > Config.run_neural['max_vel']: 
+                joy_data.throttle = Config.run_neural['throttle_sharp_turn']
+                joy_data.brake = Config.run_neural['brake_val']
+                neural_control.apply_brake()
+                #joy_data.steer *= 1.5
             else:
-                joy_data.throttle = config['throttle_default']
+                joy_data.throttle = Config.run_neural['throttle_default']
                 joy_data.brake = 0
+        #else:
+        #    joy_data.steer *= 3
+
         
         ##############################    
         ## publish mavros control topic
         joy_pub.publish(joy_data)
-        if config['vehicle_name'] == 'rover':
+        if Config.data_collection['vehicle_name'] == 'rover':
             joy_data4mavros = Twist()
             if neural_control.braking is True:
                 joy_data4mavros.linear.x = 0
                 joy_data4mavros.linear.y = 0
             else: 
-                joy_data4mavros.linear.x = joy_data.throttle*config['scale_factor_throttle']
-                joy_data4mavros.linear.y = joy_data.steer*config['scale_factor_steering']
+                joy_data4mavros.linear.x = joy_data.throttle*Config.run_neural['scale_factor_throttle']
+                joy_data4mavros.linear.y = joy_data.steer*Config.run_neural['scale_factor_steering']
 
             joy_pub4mavros.publish(joy_data4mavros)
 
 
         ## print out
-        if config['lstm'] is True:
-            cur_output = '{0:.3f} \t{1:.2f} \t{2:.2f} \t{3}\r'.format(prediction[0][0][0], 
-                          joy_data.throttle, joy_data.brake, velocity)
-        else:
-            cur_output = '{0:.3f} \t{1:.2f} \t{2:.2f} \t{3}\r'.format(prediction[0][0], 
+        cur_output = '{0:.3f} \t{1:.2f} \t{2:.2f} \t{3}\r'.format(joy_data.steer, 
                           joy_data.throttle, joy_data.brake, velocity)
 
         sys.stdout.write(cur_output)

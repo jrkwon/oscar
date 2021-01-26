@@ -1,6 +1,0 @@
-# config file name
-# - If you want to change it, make your own copy like <meaningful>.yaml
-# - This config name will be postfixed to the neural network weight file name
-
-config_yaml: fusion_bada
-#config_yaml: rover_test_new_data

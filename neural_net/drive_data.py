@@ -52,7 +52,7 @@ class DriveData:
         ############################################
         # normalize data
 
-        if (Config.config['normalize_data']):
+        if (Config.neural_net['normalize_data']):
             print('\nnormalizing... wait for a moment')
             num_bins = 50
             fig, (ax1, ax2) = plt.subplots(1, 2)

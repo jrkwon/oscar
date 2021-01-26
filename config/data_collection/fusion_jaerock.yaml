@@ -1,0 +1,35 @@
+###############################################################################
+# This is a jaerock's configuration.
+
+version: 0.9
+
+######################################################
+## data collection - save full image
+
+# driving simulator
+steering_angle_max: 450
+steering_angle_tolerance: 0.015 # around 7.5 degree
+
+# image cropping: True for legacy datasets. 
+#                 False for new datasets.
+crop: False
+
+# vehicle name
+vehicle_name: fusion
+# camera image topic 
+camera_image_topic: /fusion/front_camera/image_raw
+# vehicle control topic name
+vehicle_control_topic: /fusion
+# p3d - current position and velocity
+base_pose_topic: /base_pose_ground_truth
+
+######################################################
+## when training and running, cropping input image 
+
+# crop (capture) area from a camera image
+# - gazebo simulated camera resolution: 800x800
+image_crop_x1: 0
+image_crop_y1: 380   # 373
+image_crop_x2: 800
+image_crop_y2: 530   # 516
+

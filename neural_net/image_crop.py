@@ -33,8 +33,8 @@ def main(data_path):
         if os.path.isfile(fullpath):
             im = Image.open(fullpath)
             fname, ext = os.path.splitext(fullpath)
-            cropped = im.crop((Config.config['image_crop_x1'], Config.config['image_crop_y1'],
-                              Config.config['image_crop_x2'], Config.config['image_crop_y2'])) 
+            cropped = im.crop((Config.data_collection['image_crop_x1'], Config.data_collection['image_crop_y1'],
+                              Config.data_collection['image_crop_x2'], Config.data_collection['image_crop_y2'])) 
             cropped.save(fname + '_crop' + ext)
             print('Cropped - ' + fname + ext)
 

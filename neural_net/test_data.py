@@ -13,9 +13,6 @@ import sys
 import numpy as np
 import const
 from drive_data import DriveData
-from config import Config
-
-config = Config.config
 
 
 ###############################################################################

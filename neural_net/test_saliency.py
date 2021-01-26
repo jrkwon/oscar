@@ -21,7 +21,6 @@ from drive_run import DriveRun
 from config import Config
 from image_process import ImageProcess
 
-config = Config.config
 
 ###############################################################################
 #       
@@ -32,13 +31,13 @@ def main(model_path, image_file_path):
 
     # if collected data is not cropped then crop here
     # otherwise do not crop.
-    if config['crop'] is not True:
-        image = image[config['image_crop_y1']:config['image_crop_y2'],
-                        config['image_crop_x1']:config['image_crop_x2']]
+    if Config.data_collection['crop'] is not True:
+        image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                      Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
 
     image = cv2.resize(image, 
-                        (config['input_image_width'],
-                        config['input_image_height']))
+                        (Config.neural_net['input_image_width'],
+                         Config.neural_net['input_image_height']))
     image = image_process.process(image)
 
     drive_run = DriveRun(model_path)

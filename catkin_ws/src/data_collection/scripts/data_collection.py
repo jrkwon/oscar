@@ -27,13 +27,14 @@ import const
 from config import Config
 import config 
 
-config = Config.config
+config = Config.data_collection
 if config['vehicle_name'] == 'fusion':
     from fusion.msg import Control
 elif config['vehicle_name'] == 'rover':
     from rover.msg import Control
 else:
     exit(config['vehicle_name'] + 'not supported vehicle.')
+
 
 class DataCollection():
     def __init__(self):
@@ -90,7 +91,7 @@ class DataCollection():
         # # crop
         if config['crop'] is True: # this is for old datasets
             cropped = img[config['image_crop_y1']:config['image_crop_y2'],
-                        config['image_crop_x1']:config['image_crop_x2']]
+                          config['image_crop_x1']:config['image_crop_x2']]
 
         unix_time = time.time()
         time_stamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")

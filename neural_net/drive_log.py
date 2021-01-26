@@ -22,7 +22,6 @@ from drive_data import DriveData
 from config import Config
 from image_process import ImageProcess
 
-config = Config.config
 
 ###############################################################################
 #
@@ -138,24 +137,24 @@ class DriveLog:
 
             # if collected data is not cropped then crop here
             # otherwise do not crop.
-            if config['crop'] is not True:
-                image = image[config['image_crop_y1']:config['image_crop_y2'],
-                                config['image_crop_x1']:config['image_crop_x2']]
+            if Config.data_collection['crop'] is not True:
+                image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                              Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
 
-            image = cv2.resize(image, (Config.config['input_image_width'],
-                                       Config.config['input_image_height']))
+            image = cv2.resize(image, (Config.neural_net['input_image_width'],
+                                       Config.neural_net['input_image_height']))
             image = self.image_process.process(image)
             
             npimg = np.expand_dims(image, axis=0)
             predict = self.net_model.model.predict(npimg)
-            predict = predict / Config.config['steering_angle_scale']
+            predict = predict / Config.neural_net['steering_angle_scale']
             
             self.measurements.append(measurement[0])
             self.predictions.append(predict[0][0])
             self.differences.append(measurement[0]-predict[0][0])
             #print(image_name, measurement[0], predict[0][0],\ 
             #                  abs(measurement[0]-predict[0][0]))
-            if Config.config['lstm'] is True:
+            if Config.neural_net['lstm'] is True:
                 log = image_name+','+str(measurement[0])+','+str(predict[0][0][0])\
                                 +','+str(abs(measurement[0]-predict[0][0][0]))
             else:

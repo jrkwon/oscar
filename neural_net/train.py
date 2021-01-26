@@ -11,7 +11,7 @@ History:
 
 import sys
 from drive_train import DriveTrain
-from config import Config
+
 
 ###############################################################################
 #

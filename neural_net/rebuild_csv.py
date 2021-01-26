@@ -13,7 +13,6 @@ import sys
 import os
 from progressbar import ProgressBar
 
-#sys.path.append('../neural_net/')
 import const
 from drive_data import DriveData
 

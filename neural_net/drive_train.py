@@ -22,7 +22,7 @@ from config import Config
 from image_process import ImageProcess
 from data_augmentation import DataAugmentation
 
-config = Config.config
+config = Config.neural_net
 
 ###############################################################################
 #
@@ -54,7 +54,7 @@ class DriveTrain:
         self.data_path = data_path
         #self.model_name = model_name
 
-        self.model_name = data_path + '_' + Config.config_yaml_name \
+        self.model_name = data_path + '_' + Config.neural_net_yaml_name \
             + '_N' + str(config['network_type'])
         self.model_ckpt_name = self.model_name + '_ckpt'
 
@@ -108,9 +108,9 @@ class DriveTrain:
 
                         # if collected data is not cropped then crop here
                         # otherwise do not crop.
-                        if config['crop'] is not True:
-                            image = image[config['image_crop_y1']:config['image_crop_y2'],
-                                          config['image_crop_x1']:config['image_crop_x2']]
+                        if Config.data_collection['crop'] is not True:
+                            image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                                          Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
 
                         image = cv2.resize(image, 
                                            (config['input_image_width'],

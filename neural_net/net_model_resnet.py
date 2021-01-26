@@ -17,7 +17,7 @@ from keras.layers import Dense
 from keras import losses, optimizers
 from config import Config
 
-config = Config.config
+config = Config.neural_net
 
 class NetModel:
     def __init__(self, model_path):
@@ -57,7 +57,7 @@ class NetModel:
 
     def save(self):
         json_string = self.model.to_json()
-        weight_filename = self.model_path + '_' + Config.config_yaml_name
+        weight_filename = self.model_path + '_' + Config.neural_net_yaml_name
         open(weight_filename+'.json', 'w').write(json_string)
         self.model.save_weights(weight_filename+'.h5', overwrite=True)
 

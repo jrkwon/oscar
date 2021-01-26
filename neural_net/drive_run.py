@@ -30,5 +30,5 @@ class DriveRun:
     def run(self, image):
         npimg = np.expand_dims(image, axis=0)
         measurements = self.net_model.model.predict(npimg)
-        measurements = measurements / Config.config['steering_angle_scale']
+        measurements = measurements / Config.neural_net['steering_angle_scale']
         return measurements
