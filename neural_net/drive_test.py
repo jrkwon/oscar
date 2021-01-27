@@ -53,19 +53,52 @@ class DriveTest:
         self.image_process = ImageProcess()
         self.data_path = data_path
 
+      
     ###########################################################################
     #
     def _prepare_data(self):
-        
-
-        self.drive.read()
     
-        self.test_data = list(zip(self.drive.image_names, self.drive.measurements))
+        self.drive.read()
+        
+        samples = list(zip(self.drive.image_names, self.drive.measurements))
+
+        if config['lstm'] is True:
+            self.test_data = self._prepare_lstm_data(samples)
+        else:    
+            self.test_data = samples
+        
         self.num_test_samples = len(self.test_data)
         
-        print('Test samples: {0}'.format(self.num_test_samples))
+        print('Test samples: ', self.num_test_samples)
     
-      
+                                          
+    ###########################################################################
+    # group the samples by the number of timesteps
+    def _prepare_lstm_data(self, samples):
+        num_samples = len(samples)
+
+        # get the last index number      
+        steps = 1
+        last_index = (num_samples - config['lstm_timestep'])//steps
+        
+        image_names = []
+        measurements = []
+        for i in range(0, last_index, steps):
+            sub_samples = samples[ i : i+config['lstm_timestep'] ]
+            
+            # print('num_batch_sample : ',len(batch_samples))
+            sub_image_names = []
+            sub_measurements = []
+            for image_name, measurment in sub_samples:
+                sub_image_names.append(image_name)
+                sub_measurements.append(measurment)
+
+            image_names.append(sub_image_names)
+            measurements.append(sub_measurements)
+        
+        return list(zip(image_names, measurements))
+
+
     ###########################################################################
     #
     def _prep_generator(self):
@@ -73,59 +106,132 @@ class DriveTest:
         if self.data_path == None:
             raise NameError('data_path must be set.')
             
+        def _prepare_batch_samples(batch_samples):
+            images = []
+            measurements = []
+
+            for image_name, measurement in batch_samples:
+                
+                image_path = self.data_path + '/' + image_name
+                image = cv2.imread(image_path)
+
+                # if collected data is not cropped then crop here
+                # otherwise do not crop.
+                if Config.data_collection['crop'] is not True:
+                    image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                                  Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+
+                image = cv2.resize(image, 
+                                    (config['input_image_width'],
+                                    config['input_image_height']))
+                image = self.image_process.process(image)
+                images.append(image)
+
+                steering_angle, throttle = measurement
+                
+                if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
+                    steering_angle = 0
+                
+                measurements.append(steering_angle*config['steering_angle_scale'])
+                
+                ## data augmentation <-- doesn't need since this is not training
+                #append, image, steering_angle = _data_augmentation(image, steering_angle)
+                #if append is True:
+                #    images.append(image)
+                #    measurements.append(steering_angle*config['steering_angle_scale'])
+
+            return images, measurements
+            
+        def _prepare_lstm_batch_samples(batch_samples):
+            images = []
+            measurements = []
+
+            for i in range(0, config['batch_size']):
+
+                images_timestep = []
+                #images_names_timestep = []
+                measurements_timestep = []
+
+                for j in range(0, config['lstm_timestep']):
+
+                    image_name = batch_samples[i][0][j]
+                    image_path = self.data_path + '/' + image_name
+                    image = cv2.imread(image_path)
+
+                    # if collected data is not cropped then crop here
+                    # otherwise do not crop.
+                    if Config.data_collection['crop'] is not True:
+                        image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                                    Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+
+                    image = cv2.resize(image, 
+                                    (config['input_image_width'],
+                                    config['input_image_height']))
+                    image = self.image_process.process(image)
+
+                    images_timestep.append(image)
+                    #images_names_timestep.append(image_name)
+                    
+                    if j is config['lstm_timestep']-1:
+                        measurement = batch_samples[i][1][j]
+                        steering_angle, throttle = measurement
+                                                    
+                        if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
+                            steering_angle = 0
+                            
+                        measurements_timestep.append(steering_angle*config['steering_angle_scale'])
+
+                    # data augmentation?
+                    """
+                    append, image, steering_angle = _data_augmentation(image, steering_angle)
+                    if append is True:
+                        images_timestep.append(image)
+                        measurements_timestep.append(steering_angle*config['steering_angle_scale'])
+                    """
+                
+                images.append(images_timestep)
+                #images_names.append(images_names_timestep)
+                measurements.append(measurements_timestep)
+
+            return images, measurements
+
         def _generator(samples, batch_size=config['batch_size']):
-
             num_samples = len(samples)
-
             while True: # Loop forever so the generator never terminates
                 
                 bar = ProgressBar()
                 
-                #samples = sklearn.utils.shuffle(samples)
-                for offset in bar(range(0, num_samples, batch_size)):
+                if config['lstm'] is True:
+                    for offset in bar(range(0, (num_samples//batch_size)*batch_size, batch_size)):
+                        batch_samples = samples[offset:offset+batch_size]
 
-                    batch_samples = samples[offset:offset+batch_size]
-        
-                    images = []
-                    measurements = []
-                    for image_name, measurement in batch_samples:
-                        image_path = self.data_path + '/' + image_name
-                        image = cv2.imread(image_path)
+                        images, measurements = _prepare_lstm_batch_samples(batch_samples)        
 
-                        # if collected data is not cropped then crop here
-                        # otherwise do not crop.
-                        if Config.data_collection['crop'] is not True:
-                            image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
-                                          Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+                        X_train = np.array(images)
+                        y_train = np.array(measurements)
 
-                        image = cv2.resize(image, 
-                                           (config['input_image_width'],
-                                            config['input_image_height']))
-                        image = self.image_process.process(image)
-                        images.append(image)
-        
-                        steering_angle, throttle = measurement
+                        # reshape for lstm
+                        X_train = X_train.reshape(-1, config['lstm_timestep'], 
+                                        config['input_image_height'],
+                                        config['input_image_width'],
+                                        config['input_image_depth'])
+                        y_train = y_train.reshape(-1, 1)
 
-                        measurements.append(
-                            steering_angle*config['steering_angle_scale'])
-        
-                        
-                    X_train = np.array(images)
-                    y_train = np.array(measurements)
-
-                    #"""
-                    if config['lstm'] is True:
-                        X_train = np.array(images).reshape(-1, 1, 
-                                             config['input_image_height'],
-                                             config['input_image_width'],
-                                             config['input_image_depth'])
-                        y_train = np.array(measurements).reshape(-1, 1, 1)
-                    #"""
-
-                    if config['lstm'] is False:
-                        yield sklearn.utils.shuffle(X_train, y_train)     
-                    else:
                         yield X_train, y_train
+
+                else: 
+                    samples = sklearn.utils.shuffle(samples)
+
+                    for offset in bar(range(0, num_samples, batch_size)):
+                        batch_samples = samples[offset:offset+batch_size]
+
+                        images, measurements = _prepare_batch_samples(batch_samples)        
+
+                        X_train = np.array(images)
+                        y_train = np.array(measurements)
+
+                        yield sklearn.utils.shuffle(X_train, y_train)     
+
         self.test_generator = _generator(self.test_data)
         
     

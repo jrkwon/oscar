@@ -12,9 +12,7 @@ History:
 
 # network model type
 NET_TYPE_JAEROCK     = 0
-NET_TYPE_NVIDIA      = 1
-NET_TYPE_RESNET      = 2
-NET_TYPE_CE491       = 3
+NET_TYPE_CE491       = 1
 NET_TYPE_CONVLSTM    = 10
 
 # file extension

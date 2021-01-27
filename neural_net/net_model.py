@@ -102,10 +102,10 @@ class NetModel:
     ###########################################################################
     #
     def _model(self):
-        if config['network_type'] == const.NET_TYPE_CE491:
-            self.model = model_ce491()
-        elif config['network_type'] == const.NET_TYPE_JAEROCK:
+        if config['network_type'] == const.NET_TYPE_JAEROCK:
             self.model = model_jaerock()
+        elif config['network_type'] == const.NET_TYPE_CE491:
+            self.model = model_ce491()
         elif config['network_type'] == const.NET_TYPE_CONVLSTM:
             self.model = model_convlstm()
         else:
@@ -128,8 +128,13 @@ class NetModel:
     ###########################################################################
     #
     def _compile(self):
+        if config['lstm'] is True:
+            learning_rate = config['lstm_lr']
+        else:
+            learning_rate = config['cnn_lr']
+
         self.model.compile(loss=losses.mean_squared_error,
-                    optimizer=optimizers.Adam(),
+                    optimizer=optimizers.Adam(lr=learning_rate), 
                     metrics=['accuracy'])
         # if config['steering_angle_tolerance'] == 0.0:
         #     self.model.compile(loss=losses.mean_squared_error,
