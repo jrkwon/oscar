@@ -232,7 +232,7 @@ class DriveTrain:
             while True: # Loop forever so the generator never terminates
                
                 if config['lstm'] is True:
-                    for offset in range(0, num_samples, batch_size):
+                    for offset in range(0, (num_samples//batch_size)*batch_size, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
 
                         images, measurements = _prepare_lstm_batch_samples(batch_samples)        
