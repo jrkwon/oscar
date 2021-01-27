@@ -1,0 +1,25 @@
+###############################################################################
+# This is default configuration.
+
+version: 0.9
+
+######################################################
+## driving strategy - run_neural.py
+
+# max vel
+max_vel: 18
+# steering angle value for sharp turn
+sharp_turn_min: 0.5
+# when sharp turn, apply brake for this sec.
+brake_apply_sec: 1.7
+# brake value
+brake_val: 0.5
+# throttle at non sharp turn
+throttle_default: 1
+# throttle at sharp turn
+throttle_sharp_turn: 0.5
+# velocity threshold for not moving
+velocity_0: 0.06
+# scale factors
+scale_factor_throttle: 10
+scale_factor_steering: 10
