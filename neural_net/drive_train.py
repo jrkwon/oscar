@@ -14,6 +14,7 @@ import cv2
 import numpy as np
 #import keras
 import sklearn
+from sklearn.model_selection import train_test_split
 
 import const
 from net_model import NetModel
@@ -71,11 +72,13 @@ class DriveTrain:
     
         self.drive.read()
         
-        from sklearn.model_selection import train_test_split
-        
         samples = list(zip(self.drive.image_names, self.drive.measurements))
-        self.train_data, self.valid_data = train_test_split(samples, 
-                                   test_size=config['validation_rate'])
+
+        if config['lstm'] is True:
+            self.train_data, self.valid_data = self._prepare_lstm_data(samples)
+        else:    
+            self.train_data, self.valid_data = train_test_split(samples, 
+                                       test_size=config['validation_rate'])
         
         self.num_train_samples = len(self.train_data)
         self.num_valid_samples = len(self.valid_data)
@@ -85,82 +88,179 @@ class DriveTrain:
     
                                           
     ###########################################################################
+    # group the samples by the number of timesteps
+    def _prepare_lstm_data(self, samples):
+        num_samples = len(samples)
+
+        # get the last index number      
+        steps = 1
+        last_index = (num_samples - config['lstm_timestep'])//steps
+        
+        image_names = []
+        measurements = []
+        for i in range(0, last_index, steps):
+            sub_samples = samples[ i : i+config['lstm_timestep'] ]
+            
+            # print('num_batch_sample : ',len(batch_samples))
+            sub_image_names = []
+            sub_measurements = []
+            for image_name, measurment in sub_samples:
+                sub_image_names.append(image_name)
+                sub_measurements.append(measurment)
+
+            image_names.append(sub_image_names)
+            measurements.append(sub_measurements)
+        
+        samples = list(zip(image_names, measurements))
+        return train_test_split(samples, test_size=config['validation_rate'], 
+                                shuffle=False)        
+
+
+    ###########################################################################
     #
     def _build_model(self, show_summary=True):
+
+        def _data_augmentation(image, steering_angle):
+            if config['data_aug_flip'] is True:    
+                # Flipping the image
+                return True, self.data_aug.flipping(image, steering_angle)
+
+            if config['data_aug_bright'] is True:    
+                # Changing the brightness of image
+                if steering_angle > config['steering_angle_jitter_tolerance'] or \
+                    steering_angle < -config['steering_angle_jitter_tolerance']:
+                    image = self.data_aug.brightness(image)
+                return True, image, steering_angle
+
+            if config['data_aug_shift'] is True:    
+                # Shifting the image
+                return True, self.data_aug.shift(image, steering_angle)
+
+            return False, image, steering_angle
+
+        def _prepare_batch_samples(batch_samples):
+            images = []
+            measurements = []
+
+            for image_name, measurement in batch_samples:
+                
+                image_path = self.data_path + '/' + image_name
+                image = cv2.imread(image_path)
+
+                # if collected data is not cropped then crop here
+                # otherwise do not crop.
+                if Config.data_collection['crop'] is not True:
+                    image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                                  Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+
+                image = cv2.resize(image, 
+                                    (config['input_image_width'],
+                                    config['input_image_height']))
+                image = self.image_process.process(image)
+                images.append(image)
+
+                steering_angle, throttle = measurement
+                
+                if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
+                    steering_angle = 0
+                
+                measurements.append(steering_angle*config['steering_angle_scale'])
+                
+                # data augmentation
+                append, image, steering_angle = _data_augmentation(image, steering_angle)
+                if append is True:
+                    images.append(image)
+                    measurements.append(steering_angle*config['steering_angle_scale'])
+
+            return images, measurements
+
+        def _prepare_lstm_batch_samples(batch_samples):
+            images = []
+            measurements = []
+
+            for i in range(0, config['batch_size']):
+
+                images_timestep = []
+                #images_names_timestep = []
+                measurements_timestep = []
+
+                for j in range(0, config['lstm_timestep']):
+
+                    image_name = batch_samples[i][0][j]
+                    image_path = self.data_path + '/' + image_name
+                    image = cv2.imread(image_path)
+
+                    # if collected data is not cropped then crop here
+                    # otherwise do not crop.
+                    if Config.data_collection['crop'] is not True:
+                        image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                                    Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+
+                    image = cv2.resize(image, 
+                                    (config['input_image_width'],
+                                    config['input_image_height']))
+                    image = self.image_process.process(image)
+
+                    images_timestep.append(image)
+                    #images_names_timestep.append(image_name)
+                    
+                    if j is config['lstm_timestep']-1:
+                        measurement = batch_samples[i][1][j]
+                        steering_angle, throttle = measurement
+                                                    
+                        if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
+                            steering_angle = 0
+                            
+                        measurements_timestep.append(steering_angle*config['steering_angle_scale'])
+
+                    # data augmentation?
+                    """
+                    append, image, steering_angle = _data_augmentation(image, steering_angle)
+                    if append is True:
+                        images_timestep.append(image)
+                        measurements_timestep.append(steering_angle*config['steering_angle_scale'])
+                    """
+                
+                images.append(images_timestep)
+                #images_names.append(images_names_timestep)
+                measurements.append(measurements_timestep)
+
+            return images, measurements
 
         def _generator(samples, batch_size=config['batch_size']):
             num_samples = len(samples)
             while True: # Loop forever so the generator never terminates
                
-                if config['lstm'] is False:
+                if config['lstm'] is True:
+                    for offset in range(0, num_samples, batch_size):
+                        batch_samples = samples[offset:offset+batch_size]
+
+                        images, measurements = _prepare_lstm_batch_samples(batch_samples)        
+
+                        X_train = np.array(images)
+                        y_train = np.array(measurements)
+
+                        # reshape for lstm
+                        X_train = X_train.reshape(-1, config['lstm_timestep'], 
+                                        config['input_image_height'],
+                                        config['input_image_width'],
+                                        config['input_image_depth'])
+                        y_train = y_train.reshape(-1, 1)
+
+                        yield X_train, y_train
+
+                else: 
                     samples = sklearn.utils.shuffle(samples)
 
-                for offset in range(0, num_samples, batch_size):
-                    batch_samples = samples[offset:offset+batch_size]
-        
-                    images = []
-                    measurements = []
+                    for offset in range(0, num_samples, batch_size):
+                        batch_samples = samples[offset:offset+batch_size]
 
-                    for image_name, measurement in batch_samples:
-                        
-                        image_path = self.data_path + '/' + image_name
-                        image = cv2.imread(image_path)
+                        images, measurements = _prepare_batch_samples(batch_samples)        
 
-                        # if collected data is not cropped then crop here
-                        # otherwise do not crop.
-                        if Config.data_collection['crop'] is not True:
-                            image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
-                                          Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+                        X_train = np.array(images)
+                        y_train = np.array(measurements)
 
-                        image = cv2.resize(image, 
-                                           (config['input_image_width'],
-                                            config['input_image_height']))
-                        image = self.image_process.process(image)
-                        images.append(image)
-        
-                        steering_angle, throttle = measurement
-                        
-                        if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
-                            steering_angle = 0
-                        
-                        measurements.append(steering_angle*config['steering_angle_scale'])
-                        
-                        if config['data_aug_flip'] is True:    
-                            # Flipping the image
-                            flip_image, flip_steering = self.data_aug.flipping(image, steering_angle)
-                            images.append(flip_image)
-                            measurements.append(flip_steering*config['steering_angle_scale'])
-    
-                        if config['data_aug_bright'] is True:    
-                            # Changing the brightness of image
-                            if steering_angle > config['steering_angle_jitter_tolerance'] or \
-                                steering_angle < -config['steering_angle_jitter_tolerance']:
-                                bright_image = self.data_aug.brightness(image)
-                                images.append(bright_image)
-                                measurements.append(steering_angle*config['steering_angle_scale'])
-    
-                        if config['data_aug_shift'] is True:    
-                            # Shifting the image
-                            shift_image, shift_steering = self.data_aug.shift(image, steering_angle)
-                            images.append(shift_image)
-                            measurements.append(shift_steering*config['steering_angle_scale'])
-
-                    X_train = np.array(images)
-                    y_train = np.array(measurements)
-
-                    #"""
-                    if config['lstm'] is True:
-                        X_train = np.array(images).reshape(-1, 1, 
-                                          config['input_image_height'],
-                                          config['input_image_width'],
-                                          config['input_image_depth'])
-                        y_train = np.array(measurements).reshape(-1, 1, 1)
-                    #"""
-
-                    if config['lstm'] is False:
                         yield sklearn.utils.shuffle(X_train, y_train)
-                    else:
-                        yield X_train, y_train
         
         self.train_generator = _generator(self.train_data)
         self.valid_generator = _generator(self.valid_data)
