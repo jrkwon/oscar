@@ -22,7 +22,6 @@ from drive_data import DriveData
 from config import Config
 from image_process import ImageProcess
 
-
 ###############################################################################
 #
 class DriveLog:
@@ -131,37 +130,76 @@ class DriveLog:
         bar = ProgressBar()
 
         file.write('image_name, label, predict, abs_error\n')
-        for image_name, measurement in bar(self.test_data):   
-            image_fname = self.data_path + '/' + image_name
-            image = cv2.imread(image_fname)
 
-            # if collected data is not cropped then crop here
-            # otherwise do not crop.
-            if Config.data_collection['crop'] is not True:
-                image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
-                              Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+        if Config.neural_net['lstm'] is True:
+            images = []
+            #images_names = []
+            cnt = 1
 
-            image = cv2.resize(image, (Config.neural_net['input_image_width'],
-                                       Config.neural_net['input_image_height']))
-            image = self.image_process.process(image)
-            
-            npimg = np.expand_dims(image, axis=0)
-            predict = self.net_model.model.predict(npimg)
-            predict = predict / Config.neural_net['steering_angle_scale']
-            
-            self.measurements.append(measurement[0])
-            self.predictions.append(predict[0][0])
-            self.differences.append(measurement[0]-predict[0][0])
-            #print(image_name, measurement[0], predict[0][0],\ 
-            #                  abs(measurement[0]-predict[0][0]))
-            if Config.neural_net['lstm'] is True:
-                log = image_name+','+str(measurement[0])+','+str(predict[0][0][0])\
-                                +','+str(abs(measurement[0]-predict[0][0][0]))
-            else:
+            for image_name, measurement in bar(self.test_data):   
+                image_fname = self.data_path + '/' + image_name
+                image = cv2.imread(image_fname)
+
+                # if collected data is not cropped then crop here
+                # otherwise do not crop.
+                if Config.data_collection['crop'] is not True:
+                    image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                                Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+
+                image = cv2.resize(image, (Config.neural_net['input_image_width'],
+                                        Config.neural_net['input_image_height']))
+                image = self.image_process.process(image)
+
+                images.append(image)
+                #images_names.append(image_name)
+                
+                if cnt >= Config.neural_net['lstm_timestep']:
+                    trans_image = np.array(images).reshape(-1, Config.neural_net['lstm_timestep'], 
+                                                Config.neural_net['input_image_height'],
+                                                Config.neural_net['input_image_width'],
+                                                Config.neural_net['input_image_depth'])                    
+
+                    predict = self.net_model.model.predict(trans_image)[0][0]
+                    predict = predict / Config.neural_net['steering_angle_scale']
+                
+                    self.measurements.append(measurement[0])
+                    self.predictions.append(predict)
+                    self.differences.append(measurement[0]-predict)
+                    log = image_name+','+str(measurement[0])+','+str(predict)\
+                                    +','+str(abs(measurement[0]-predict))
+
+                    file.write(log+'\n')
+                    # delete the 1st element
+                    del images[0]
+                cnt += 1
+        else:
+            for image_name, measurement in bar(self.test_data):   
+                image_fname = self.data_path + '/' + image_name
+                image = cv2.imread(image_fname)
+
+                # if collected data is not cropped then crop here
+                # otherwise do not crop.
+                if Config.data_collection['crop'] is not True:
+                    image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                                Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+
+                image = cv2.resize(image, (Config.neural_net['input_image_width'],
+                                        Config.neural_net['input_image_height']))
+                image = self.image_process.process(image)
+                
+                npimg = np.expand_dims(image, axis=0)
+                predict = self.net_model.model.predict(npimg)
+                predict = predict / Config.neural_net['steering_angle_scale']
+                
+                self.measurements.append(measurement[0])
+                self.predictions.append(predict[0][0])
+                self.differences.append(measurement[0]-predict[0][0])
+                #print(image_name, measurement[0], predict[0][0],\ 
+                #                  abs(measurement[0]-predict[0][0]))
                 log = image_name+','+str(measurement[0])+','+str(predict[0][0])\
                                 +','+str(abs(measurement[0]-predict[0][0]))
 
-            file.write(log+'\n')
+                file.write(log+'\n')
         
         file.close()
         print(fname + ' created.')
