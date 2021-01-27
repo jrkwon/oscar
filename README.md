@@ -147,7 +147,29 @@ When some of test images must be deleted, just delete them and rebuild the csv u
 
 ## How to Train Neural Network
 
+### steering_angle_scale
 
+`steering_angle_scale` in `neural_net` config is for making the neural network have higher precision in prediction. The range of steering angle is -1 to 1. But in most cases, there will not be values between -1 and -0.5 as well as between 0.5 to 1 which means very sharp steering angles. These sharp steering angles will not be collected from driving a track in practice.
+
+To find a proper scale value, you may use `test_data.py` by which you can see data statistics. The following is an example.
+
+The choice of `steering_angle_scale` is especially important when activation functions are `sigmoid` or `tanh` in which you may lose data samples of sharp turns.
+
+```
+####### data statistics #########
+Steering Command Statistics:
+count    6261.000000
+mean        0.002407
+std         0.134601
+min        -0.421035
+25%        -0.016988
+50%         0.009774
+75%         0.085238
+max         0.310105
+Name: steering_angle, dtype: float64
+```
+
+### Training
 Start a training
 ```
 (oscar) $ . setup.bash
