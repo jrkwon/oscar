@@ -7,8 +7,8 @@ version: 0.9
 ## neural network 
 
 # network definition
-network_type: 0        # refer to neural_net/const.py
-lstm: False
+network_type: 10        # refer to neural_net/const.py
+lstm: True
 
 # normalize data
 normalize_data: True
