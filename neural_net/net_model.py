@@ -75,9 +75,10 @@ def model_convlstm():
         TimeDistributed(Conv2D(64, (3, 3))),
         TimeDistributed(Conv2D(64, (3, 3), name='conv2d_last')),
         TimeDistributed(Flatten()),
-        LSTM(return_sequences=False, units=10),
+        #LSTM(return_sequences=False, units=10),
         Dense(1000),
         Dense(100),
+        LSTM(return_sequences=False, units=10),
         Dense(50),
         Dense(10),
         Dense(config['num_outputs'])])
