@@ -320,7 +320,7 @@ class DriveTrain:
         ### plot the training and validation loss for each epoch
         plt.plot(self.train_hist.history['loss'][1:])
         plt.plot(self.train_hist.history['val_loss'][1:])
-        plt.title('model mean squared error loss')
+        plt.title('Mean Squared Error Loss')
         plt.ylabel('mse loss')
         plt.xlabel('epoch')
         plt.legend(['training set', 'validatation set'], loc='upper right')
