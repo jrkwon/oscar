@@ -57,9 +57,9 @@ class DriveData:
             num_bins = 50
             fig, (ax1, ax2) = plt.subplots(1, 2)
             fig.suptitle('Data Normalization')
-            hist, bins = np.histogram(self.df['steering_angle'], num_bins)
+            hist, bins = np.histogram(self.df['steering_angle'], (num_bins))
             center = (bins[:-1] + bins[1:])*0.5
-            ax1.bar(center, hist)
+            ax1.bar(center, hist, width=0.05)
             ax1.set(title = 'original')
 
             remove_list = []
