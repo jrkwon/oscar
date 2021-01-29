@@ -38,7 +38,7 @@ def build_csv(data_path):
     print('rename ' + data_path + csv_file + ' to ' + csv_backup_name)
 
     data = DriveData(csv_backup_name)
-    data.read()
+    data.read(normalize = False)
 
     new_csv = []
 
