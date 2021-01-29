@@ -81,18 +81,19 @@ class DriveLog:
         hist, bins = np.histogram(self.differences, num_bins)
         center = (bins[:-1]+ bins[1:]) * 0.5
         plt.bar(center, hist, width=0.05)
-        plt.title('Historgram of Predicted Errors')
+        #plt.title('Historgram of Predicted Errors')
         plt.xlabel('Steering Angle')
         plt.ylabel('Number of Predictions')
         plt.xlim(-1.0, 1.0)
         plt.plot(np.min(self.differences), np.max(self.differences))
+        plt.tight_layout()
         plt.savefig(self.model_path + '_err_hist.png', dpi=150)
         print('Saved ' + self.model_path + '_err_hist.png')
 
         plt.figure()
         # Plot a Scatter Plot of the Error
         plt.scatter(self.measurements, self.predictions)
-        plt.title('Scatter Plot of Errors')
+        #plt.title('Scatter Plot of Errors')
         plt.xlabel('True Values')
         plt.ylabel('Predictions')
         plt.axis('equal')
@@ -100,6 +101,7 @@ class DriveLog:
         plt.xlim([-1.0, 1.0])
         plt.ylim([-1.0, 1.0])
         plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
+        plt.tight_layout()
         plt.savefig(self.model_path + '_scatter.png', dpi=150)
         print('Saved ' + self.model_path + '_scatter.png')
 
@@ -107,12 +109,12 @@ class DriveLog:
         # Plot a Side-By-Side Comparison
         plt.plot(self.measurements)
         plt.plot(self.predictions)
-        plt.title('Ground Truth vs. Prediction')
+        #plt.title('Ground Truth vs. Prediction')
         plt.ylim([-1.0, 1.0])
         plt.xlabel('Time Step')
         plt.ylabel('Steering Angle')
         plt.legend(['ground truth', 'prediction'], loc='upper right')
-
+        plt.tight_layout()
         plt.savefig(self.model_path + '_comparison.png', dpi=150)
         print('Saved ' + self.model_path + '_comparison.png')
 

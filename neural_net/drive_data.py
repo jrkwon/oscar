@@ -56,7 +56,7 @@ class DriveData:
             print('\nnormalizing... wait for a moment')
             num_bins = 50
             fig, (ax1, ax2) = plt.subplots(1, 2)
-            fig.suptitle('Data Normalization')
+            #fig.suptitle('Data Normalization')
             hist, bins = np.histogram(self.df['steering_angle'], (num_bins))
             center = (bins[:-1] + bins[1:])*0.5
             ax1.bar(center, hist, width=0.05)
@@ -87,6 +87,7 @@ class DriveData:
                         (samples_per_bin, samples_per_bin))  
             ax2.set(title = 'normalized')          
 
+            plt.tight_layout()
             plt.savefig(self.get_data_path() + '_normalized.png', dpi=150)
 
         ############################################ 
