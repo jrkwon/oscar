@@ -2,6 +2,6 @@
 # - If you want to change it, make your own copy like <meaningful>.yaml
 # - The config name will be postfixed to the neural network weight file name
 # - update: separated configs
-neural_net: fusion_jaerock
+neural_net: fusion_bada
 data_collection: fusion_jaerock
-run_neural: fusion_jaerock
+run_neural: fusion_bada
