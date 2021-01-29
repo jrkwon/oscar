@@ -20,7 +20,7 @@ normalize_data: True
 # training
 # data_shuffle: True
 validation_rate: 0.3
-num_epochs: 20
+num_epochs: 50
 batch_size: 16
 num_outputs: 1
 early_stopping_patience: 3
