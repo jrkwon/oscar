@@ -92,6 +92,7 @@ class DriveLog:
         plt.figure()
         # Plot a Scatter Plot of the Error
         plt.scatter(self.measurements, self.predictions)
+        plt.title('Scatter Plot of Errors')
         plt.xlabel('True Values')
         plt.ylabel('Predictions')
         plt.axis('equal')
