@@ -75,7 +75,7 @@ def main(model_path, image_file_path):
 
     saliency_file_path = model_path + '_' + image_file_name + '_saliency.png'
     # save fig    
-    plt.savefig(saliency_file_path)
+    plt.savefig(saliency_file_path, dpi=150)
     # show the plot 
     plt.show()
 

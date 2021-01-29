@@ -325,7 +325,7 @@ class DriveTrain:
         plt.xlabel('epoch')
         plt.legend(['training set', 'validatation set'], loc='upper right')
         #plt.show()
-        plt.savefig(self.model_name + '_model.png')
+        plt.savefig(self.model_name + '_model.png', dpi=150)
         
         
     ###########################################################################

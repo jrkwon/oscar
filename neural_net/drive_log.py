@@ -65,7 +65,7 @@ class DriveLog:
     #
     def _prepare_data(self):
         
-        self.drive.read()
+        self.drive.read(normalize = False)
     
         self.test_data = list(zip(self.drive.image_names, self.drive.measurements))
         self.num_test_samples = len(self.test_data)
@@ -81,39 +81,42 @@ class DriveLog:
         hist, bins = np.histogram(self.differences, num_bins)
         center = (bins[:-1]+ bins[1:]) * 0.5
         plt.bar(center, hist, width=0.05)
-        plt.title('Historgram of Predicted Error')
+        plt.title('Historgram of Predicted Errors')
         plt.xlabel('Steering Angle')
-        plt.ylabel('Number of predictions')
+        plt.ylabel('Number of Predictions')
         plt.xlim(-1.0, 1.0)
         plt.plot(np.min(self.differences), np.max(self.differences))
-        plt.savefig(self.model_path + '_err_hist.png')
-        #plt.show()
+        plt.savefig(self.model_path + '_err_hist.png', dpi=150)
+        print('Saved ' + self.model_path + '_err_hist.png')
 
         plt.figure()
         # Plot a Scatter Plot of the Error
         plt.scatter(self.measurements, self.predictions)
-        plt.xlabel('True Values ')
-        plt.ylabel('Predictions ')
+        plt.xlabel('True Values')
+        plt.ylabel('Predictions')
         plt.axis('equal')
         plt.axis('square')
         plt.xlim([-1.0, 1.0])
         plt.ylim([-1.0, 1.0])
         plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
-        plt.savefig(self.model_path + '_scatter.png')
-        #plt.show()
+        plt.savefig(self.model_path + '_scatter.png', dpi=150)
+        print('Saved ' + self.model_path + '_scatter.png')
 
         plt.figure()
         # Plot a Side-By-Side Comparison
         plt.plot(self.measurements)
         plt.plot(self.predictions)
-        plt.title('ground truth vs prediction')
-        plt.ylabel('steering angle')
+        plt.title('Ground Truth vs. Prediction')
+        plt.ylim([-1.0, 1.0])
+        plt.xlabel('Time Step')
+        plt.ylabel('Steering Angle')
         plt.legend(['ground truth', 'prediction'], loc='upper right')
 
-        plt.savefig(self.model_path + '_comparison.png')
-        
+        plt.savefig(self.model_path + '_comparison.png', dpi=150)
+        print('Saved ' + self.model_path + '_comparison.png')
+
         # show all figures
-        plt.show()
+        #plt.show()
 
 
    ###########################################################################
