@@ -74,8 +74,10 @@ def main(model_path, image_file_path):
         image_file_name = image_file_path[loc_slash+1:] 
 
     saliency_file_path = model_path + '_' + image_file_name + '_saliency.png'
+    saliency_file_path_pdf = model_path + '_' + image_file_name + '_saliency.pdf'
     # save fig    
     plt.savefig(saliency_file_path, dpi=150)
+    plt.savefig(saliency_file_path_pdf, dpi=150)
     # show the plot 
     plt.show()
 

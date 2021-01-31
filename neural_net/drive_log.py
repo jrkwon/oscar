@@ -88,7 +88,8 @@ class DriveLog:
         plt.plot(np.min(self.differences), np.max(self.differences))
         plt.tight_layout()
         plt.savefig(self.model_path + '_err_hist.png', dpi=150)
-        print('Saved ' + self.model_path + '_err_hist.png')
+        plt.savefig(self.model_path + '_err_hist.pdf', dpi=150)
+        print('Saved ' + self.model_path + '_err_hist.png & pdf')
 
         plt.figure()
         # Plot a Scatter Plot of the Error
@@ -103,7 +104,8 @@ class DriveLog:
         plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
         plt.tight_layout()
         plt.savefig(self.model_path + '_scatter.png', dpi=150)
-        print('Saved ' + self.model_path + '_scatter.png')
+        plt.savefig(self.model_path + '_scatter.pdf', dpi=150)
+        print('Saved ' + self.model_path + '_scatter.png & pdf')
 
         plt.figure()
         # Plot a Side-By-Side Comparison
@@ -116,7 +118,8 @@ class DriveLog:
         plt.legend(['ground truth', 'prediction'], loc='upper right')
         plt.tight_layout()
         plt.savefig(self.model_path + '_comparison.png', dpi=150)
-        print('Saved ' + self.model_path + '_comparison.png')
+        plt.savefig(self.model_path + '_comparison.pdf', dpi=150)
+        print('Saved ' + self.model_path + '_comparison.png & pdf')
 
         # show all figures
         #plt.show()
