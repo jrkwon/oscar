@@ -7,7 +7,7 @@ version: 0.9
 ## driving strategy - run_neural.py
 
 # max vel
-max_vel: 18
+max_vel: 20
 # steering angle value for sharp turn
 sharp_turn_min: 0.25
 # when sharp turn, apply brake for this sec.
