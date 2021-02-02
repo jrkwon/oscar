@@ -139,7 +139,7 @@ class DriveLog:
         
         self._prepare_data()
         #fname = self.data_path + const.LOG_EXT
-        fname = self.model_path + const.LOG_EXT # use model name to save log
+        fname = self.data_path + const.LOG_EXT # use model name to save log
         
         file = open(fname, 'w')
 
