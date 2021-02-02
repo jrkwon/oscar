@@ -4,4 +4,4 @@
 # - update: separated configs
 neural_net: fusion_bada
 data_collection: fusion_jaerock
-run_neural: fusion_bada
+run_neural: fusion_bada #_track
