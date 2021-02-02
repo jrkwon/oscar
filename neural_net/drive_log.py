@@ -72,8 +72,17 @@ class DriveLog:
         self.num_test_samples = len(self.test_data)
         
         print('Test samples: {0}'.format(self.num_test_samples))
+
     
    ###########################################################################
+    #
+    def _savefigs(self, plt, filename):
+        plt.savefig(filename + '.png', dpi=150)
+        plt.savefig(filename + '.pdf', dpi=150)
+        print('Saved ' + filename + '.png & .pdf')
+
+
+    ###########################################################################
     #
     def _plot_results(self):
         plt.figure()
@@ -88,9 +97,7 @@ class DriveLog:
         plt.xlim(-1.0, 1.0)
         plt.plot(np.min(self.differences), np.max(self.differences))
         plt.tight_layout()
-        plt.savefig(self.model_path + '_err_hist.png', dpi=150)
-        plt.savefig(self.model_path + '_err_hist.pdf', dpi=150)
-        print('Saved ' + self.model_path + '_err_hist.png & pdf')
+        self._savefigs(plt, self.data_path + '_err_hist')
 
         plt.figure()
         # Plot a Scatter Plot of the Error
@@ -104,9 +111,7 @@ class DriveLog:
         plt.ylim([-1.0, 1.0])
         plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
         plt.tight_layout()
-        plt.savefig(self.model_path + '_scatter.png', dpi=150)
-        plt.savefig(self.model_path + '_scatter.pdf', dpi=150)
-        print('Saved ' + self.model_path + '_scatter.png & pdf')
+        self._savefigs(plt, self.data_path + '_scatter')
 
         plt.figure()
         # Plot a Side-By-Side Comparison
@@ -122,9 +127,7 @@ class DriveLog:
         plt.ylabel('Steering Angle')
         plt.legend(['ground truth', 'prediction'], loc='upper right')
         plt.tight_layout()
-        plt.savefig(self.model_path + '_comparison.png', dpi=150)
-        plt.savefig(self.model_path + '_comparison.pdf', dpi=150)
-        print('Saved ' + self.model_path + '_comparison.png & pdf')
+        self._savefigs(plt, self.data_path + '_comparison')
 
         # show all figures
         #plt.show()
