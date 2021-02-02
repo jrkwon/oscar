@@ -89,6 +89,8 @@ class DriveData:
 
             plt.tight_layout()
             plt.savefig(self.get_data_path() + '_normalized.png', dpi=150)
+            plt.savefig(self.get_data_path() + '_normalized.pdf', dpi=150)
+            #plt.show()
 
         ############################################ 
         # read out

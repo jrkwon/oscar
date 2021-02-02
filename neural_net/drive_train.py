@@ -327,6 +327,7 @@ class DriveTrain:
         plt.tight_layout()
         #plt.show()
         plt.savefig(self.model_name + '_model.png', dpi=150)
+        plt.savefig(self.model_name + '_model.pdf', dpi=150)
         
         
     ###########################################################################

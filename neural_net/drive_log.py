@@ -60,6 +60,7 @@ class DriveLog:
         self.measurements = []
         self.predictions = []
         self.differences = []
+        self.squared_differences = []
 
     ###########################################################################
     #
@@ -88,7 +89,8 @@ class DriveLog:
         plt.plot(np.min(self.differences), np.max(self.differences))
         plt.tight_layout()
         plt.savefig(self.model_path + '_err_hist.png', dpi=150)
-        print('Saved ' + self.model_path + '_err_hist.png')
+        plt.savefig(self.model_path + '_err_hist.pdf', dpi=150)
+        print('Saved ' + self.model_path + '_err_hist.png & pdf')
 
         plt.figure()
         # Plot a Scatter Plot of the Error
@@ -103,12 +105,17 @@ class DriveLog:
         plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
         plt.tight_layout()
         plt.savefig(self.model_path + '_scatter.png', dpi=150)
-        print('Saved ' + self.model_path + '_scatter.png')
+        plt.savefig(self.model_path + '_scatter.pdf', dpi=150)
+        print('Saved ' + self.model_path + '_scatter.png & pdf')
 
         plt.figure()
         # Plot a Side-By-Side Comparison
         plt.plot(self.measurements)
         plt.plot(self.predictions)
+        mean = sum(self.differences)/len(self.differences)
+        variance = sum([((x - mean) ** 2) for x in self.differences]) / len(self.differences) 
+        std = variance ** 0.5
+        plt.title('MAE: {0:.3f}, STDEV: {1:.3f}'.format(mean, std))
         #plt.title('Ground Truth vs. Prediction')
         plt.ylim([-1.0, 1.0])
         plt.xlabel('Time Step')
@@ -116,7 +123,8 @@ class DriveLog:
         plt.legend(['ground truth', 'prediction'], loc='upper right')
         plt.tight_layout()
         plt.savefig(self.model_path + '_comparison.png', dpi=150)
-        print('Saved ' + self.model_path + '_comparison.png')
+        plt.savefig(self.model_path + '_comparison.pdf', dpi=150)
+        print('Saved ' + self.model_path + '_comparison.png & pdf')
 
         # show all figures
         #plt.show()
@@ -135,7 +143,7 @@ class DriveLog:
         #print('image_name', 'label', 'predict', 'abs_error')
         bar = ProgressBar()
 
-        file.write('image_name, label, predict, abs_error\n')
+        file.write('image_name, label, predict, abs_error, squared_error\n')
 
         if Config.neural_net['lstm'] is True:
             images = []
@@ -170,9 +178,12 @@ class DriveLog:
                 
                     self.measurements.append(measurement[0])
                     self.predictions.append(predict)
-                    self.differences.append(measurement[0]-predict)
+                    diff = abs(measurement[0]-predict)
+                    self.differences.append(diff)
+                    self.squared_differences.append(diff*2)
                     log = image_name+','+str(measurement[0])+','+str(predict)\
-                                    +','+str(abs(measurement[0]-predict))
+                                    +','+str(diff)\
+                                    +','+str(diff**2)
 
                     file.write(log+'\n')
                     # delete the 1st element
@@ -194,16 +205,19 @@ class DriveLog:
                 image = self.image_process.process(image)
                 
                 npimg = np.expand_dims(image, axis=0)
-                predict = self.net_model.model.predict(npimg)
+                predict = self.net_model.model.predict(npimg)[0][0]
                 predict = predict / Config.neural_net['steering_angle_scale']
                 
                 self.measurements.append(measurement[0])
-                self.predictions.append(predict[0][0])
-                self.differences.append(measurement[0]-predict[0][0])
-                #print(image_name, measurement[0], predict[0][0],\ 
-                #                  abs(measurement[0]-predict[0][0]))
-                log = image_name+','+str(measurement[0])+','+str(predict[0][0])\
-                                +','+str(abs(measurement[0]-predict[0][0]))
+                self.predictions.append(predict)
+                diff = abs(measurement[0]-predict)
+                self.differences.append(diff)
+                self.squared_differences.append(diff**2)
+                #print(image_name, measurement[0], predict,\ 
+                #                  abs(measurement[0]-predict))
+                log = image_name+','+str(measurement[0])+','+str(predict)\
+                                +','+str(diff)\
+                                +','+str(diff**2)
 
                 file.write(log+'\n')
         
