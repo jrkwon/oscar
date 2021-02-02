@@ -69,7 +69,7 @@ def calc_dist(data_path):
     # plot travel trajectory
     plt.figure()
     # Plot a Scatter Plot 
-    plt.scatter(x, y)
+    plt.scatter(x, y, s=1, marker='o')
     #plt.title('Travel Trajectory')
     plt.xlabel('x')
     plt.ylabel('y')
