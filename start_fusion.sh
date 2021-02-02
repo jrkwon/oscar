@@ -9,7 +9,7 @@ source ./catkin_ws/devel/setup.bash
 if [ -z "$1" ]; then
     echo "Starting with default world..."  # modified DataSpeed track
     roslaunch fusion sitl.launch x:=7.58439 y:=-102.82 z:=0.02 R:=0 P:=0 Y:=1.57
-elif [ "$1" == "track_jaerock_v2" ]; then
+elif [ "$1" == "track_jaerock2" ]; then
     echo "Starting with $1..."  # modified DataSpeed track
     roslaunch fusion sitl.launch world:=$1 x:=7.58439 y:=-102.82 z:=0.02 R:=0 P:=0 Y:=1.57
 elif [ "$1" == "track_bada" ]; then

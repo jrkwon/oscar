@@ -8,7 +8,7 @@
   <arg name="R" default="0"/>
   <arg name="P" default="0"/>
   <arg name="Y" default="0"/>  
-  <arg name="world" default="track_jaerock_v2"/>
+  <arg name="world" default="track_jaerock2"/>
   <arg name="use_sdf" default="false"/> <!-- experimental: no not use this yet. --> 
   <arg name="sdf_model" default="$(find fusion)/models/$(arg vehicle)/model.sdf"/>
   <arg name="urdf_model_for_rviz" default="$(find fusion)/models/$(arg vehicle)/model.urdf"/>
