@@ -79,7 +79,7 @@ class DriveLog:
     def _savefigs(self, plt, filename):
         plt.savefig(filename + '.png', dpi=150)
         plt.savefig(filename + '.pdf', dpi=150)
-        print('Saved ' + filename + '.png & .pdf')
+        print('Saved ' + filename + '.png & .pdf.')
 
 
     ###########################################################################
@@ -225,6 +225,6 @@ class DriveLog:
                 file.write(log+'\n')
         
         file.close()
-        print(fname + ' created.')
+        print('Saved ' + fname + '.')
 
         self._plot_results()
