@@ -60,13 +60,14 @@ def main(model_path, image_file_path):
         axs[i].imshow(heatmap, cmap='jet', alpha=0.3)
     """
     plt.figure()
-    plt.title('Saliency Visualization' + str(measurement))
+    #plt.title('Saliency Visualization' + str(measurement))
+    plt.title('Steering Angle Prediction: ' + str(measurement[0][0]))
     layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_last')
     heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
                 filter_indices=None, seed_input=image, backprop_modifier='guided')
 
     plt.imshow(image)
-    plt.imshow(heatmap, cmap='jet', alpha=0.7)
+    plt.imshow(heatmap, cmap='jet', alpha=0.5)
 
     # file name
     loc_slash = image_file_path.rfind('/')
@@ -75,11 +76,16 @@ def main(model_path, image_file_path):
 
     saliency_file_path = model_path + '_' + image_file_name + '_saliency.png'
     saliency_file_path_pdf = model_path + '_' + image_file_name + '_saliency.pdf'
+
+    plt.tight_layout()
     # save fig    
     plt.savefig(saliency_file_path, dpi=150)
     plt.savefig(saliency_file_path_pdf, dpi=150)
+
+    print('Saved ' + saliency_file_path +' & .pdf')
+
     # show the plot 
-    plt.show()
+    #plt.show()
 
 ###############################################################################
 #       
