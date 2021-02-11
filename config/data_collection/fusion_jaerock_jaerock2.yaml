@@ -1,7 +1,7 @@
 ###############################################################################
 # This is a jaerock's configuration.
 
-version: 0.9
+version: 0.91
 
 ######################################################
 ## data collection - save full image
@@ -33,3 +33,5 @@ image_crop_y1: 380   # 373
 image_crop_x2: 800
 image_crop_y2: 530   # 516
 
+image_width: 800
+image_height: 800

@@ -1,7 +1,7 @@
 ###############################################################################
 # This is default configuration.
 
-version: 0.9
+version: 0.91
 
 ######################################################
 ## data collection
@@ -35,3 +35,5 @@ image_crop_y1: 274
 image_crop_x2: 799
 image_crop_y2: 414
 
+image_width: 800
+image_height: 800
