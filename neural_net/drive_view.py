@@ -20,12 +20,12 @@ from image_process import ImageProcess
 import os
 
 
-class SteeringWheelSettings:
-    def __init__(self, wheel_name, index_x):
+class ImageSettings:
+    def __init__(self, image_name, index_x):
         # local settings
         abs_path = os.environ['OSCAR_PATH'] + '/neural_net/'
         
-        wheel_full_name = abs_path + wheel_name
+        full_image_name = abs_path + image_name
 
         input_image_size = (Config.data_collection['image_width'], 
                             Config.data_collection['image_height'])
@@ -35,12 +35,12 @@ class SteeringWheelSettings:
         spacer_x = 50
 
         # class settings
-        self.wheel_image = Image.open(wheel_full_name)
-        width, height = self.wheel_image.size
-        self.wheel_pos = (margin_x + (width + spacer_x)*index_x, 
+        self.image = Image.open(full_image_name)
+        width, height = self.image.size
+        self.image_pos = (margin_x + (width + spacer_x)*index_x, 
                          input_image_size[1] - height - margin_y)
         self.label_pos = (margin_x + (width + spacer_x)*index_x, 
-                         self.wheel_pos[1] + height)
+                         self.image_pos[1] + height)
 
 
 class DisplaySettings:
@@ -51,8 +51,10 @@ class DisplaySettings:
 
         #########################
         # steering wheel settings
-        self.label_wheel = SteeringWheelSettings('drive_view_img/steering_wheel_150x150.png', 0)
-        self.infer_wheel = SteeringWheelSettings('drive_view_img/steering_wheel_green_150x150.png', 1)
+        self.label_wheel = ImageSettings('drive_view_img/steering_wheel_150x150.png', 0)
+        self.infer_wheel = ImageSettings('drive_view_img/steering_wheel_green_150x150.png', 1)
+        # logo
+        self.logo = ImageSettings('drive_view_img/bimi_m_200x40.png', 2)
         
         ###############
         # font settings
@@ -132,8 +134,11 @@ class DriveView:
             input_image = Image.open(abs_path_image)
             steering_angle = self.drive_data.measurements[i][0] # -1 to 1 scale
             degree_angle = steering_angle*Config.data_collection['steering_angle_max']
-            rotated_img = self.display.label_wheel.wheel_image.rotate(degree_angle)
-            input_image.paste(rotated_img, self.display.label_wheel.wheel_pos, rotated_img)    
+            rotated_img = self.display.label_wheel.image.rotate(degree_angle)
+            input_image.paste(rotated_img, self.display.label_wheel.image_pos, rotated_img)    
+
+            # logo
+            input_image.paste(self.display.logo.image, self.display.logo.image_pos, self.display.logo.image)
 
             draw = ImageDraw.Draw(input_image)
             draw.text(self.display.label_wheel.label_pos, "Angle: {:.2f}".format(degree_angle), 
@@ -180,8 +185,8 @@ class DriveView:
                 #####################
                 # display
                 degree_angle = predict*Config.data_collection['steering_angle_max']
-                rotated_img = self.display.infer_wheel.wheel_image.rotate(degree_angle)
-                input_image.paste(rotated_img, self.display.infer_wheel.wheel_pos, rotated_img)
+                rotated_img = self.display.infer_wheel.image.rotate(degree_angle)
+                input_image.paste(rotated_img, self.display.infer_wheel.image_pos, rotated_img)
 
                 draw.text(self.display.infer_wheel.label_pos, "Angle: {:.2f}".format(degree_angle), 
                             font=self.display.font, fill=self.display.font_color)
