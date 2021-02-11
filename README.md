@@ -213,6 +213,20 @@ TBA
 (oscar) $ rosrun run_neural run_nerual.py path/to/data/model 
 ```
 
+## How to See Collected Data with/without Inference
+
+### Visualization of Steering Angle Predictions
+You can specify a trained neural network model to see how the inference engine is actually working.
+```
+(oscar) $ python neural_net/view_data.py path/to/data/model path/to/data/folder path/to/folder/to/save 
+```
+
+### Visualization of Collected Data
+It is also possible to visualize collected data with other information without steering angle predictions.
+```
+(oscar) $ python neural_net/view_data.py path/to/data/folder path/to/folder/to/save 
+```
+
 ## Sample Datasets
 
 ### New sample datasets (not cropped)
