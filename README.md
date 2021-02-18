@@ -259,6 +259,8 @@ It is also possible to visualize collected data with other information without s
 
 ## Sample Datasets
 
+The datasets below were collected before we added `brake`. The CSV files must be converted by `convert_csv.py` before being used.
+
 ### New sample datasets (not cropped)
 - https://drive.google.com/drive/folders/197w7u99Jvyf5tuRTTawLhaYuwBLSxo-O?usp=sharing
 
