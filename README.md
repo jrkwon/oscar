@@ -2,15 +2,15 @@
 
 ## History
 
-- 11/30/2020: Version 1.0 released.
-- 12/04/2020: Version 1.2 released.
-  - New data collection policy.
-  - Data normalization added.
-- 01/15/2021: Version 1.4 released.
-  - Split one config (neural_net) to three (neural_net, data_collection, run_neural)
 - 2/18/2021: Version 1.5 released.
   - Add 'brake' to the `data_collection`.
   - Update the modules that use data from `data_collection`.
+- 01/15/2021: Version 1.4 released.
+  - Split one config (neural_net) to three (neural_net, data_collection, run_neural)
+- 12/04/2020: Version 1.2 released.
+  - New data collection policy.
+  - Data normalization added.
+- 11/30/2020: Version 1.0 released.
 
 ## Introduction
 
