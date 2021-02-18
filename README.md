@@ -125,7 +125,7 @@ The default data folder location is `$(pwd)e2e_{fusion/rover}_data`.
 
 ### Data Format
 
-From `data_collection` config version 0.92, the CSV file has one more column for `brake`. Use `convert_csv.py` to convert a data CSV file collected before 092 to a new CSV file.
+From `data_collection` config version 0.92, the CSV file has one more column for `brake`. Use `convert_csv.py` to convert a data CSV file collected before 0.92 to a new CSV file.
 
 #### From Version 0.92
 
