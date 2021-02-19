@@ -72,7 +72,7 @@ class DriveTrain:
     
         self.drive.read()
         
-        samples = list(zip(self.drive.image_names, self.drive.measurements))
+        samples = list(zip(self.drive.image_names, self.drive.measurements, self.drive.velocities))
 
         if config['lstm'] is True:
             self.train_data, self.valid_data = self._prepare_lstm_data(samples)
@@ -98,20 +98,24 @@ class DriveTrain:
         
         image_names = []
         measurements = []
+        velocities = []
         for i in range(0, last_index, steps):
             sub_samples = samples[ i : i+config['lstm_timestep'] ]
             
             # print('num_batch_sample : ',len(batch_samples))
             sub_image_names = []
             sub_measurements = []
-            for image_name, measurment in sub_samples:
+            sub_velocities = []
+            for image_name, measurment, velocity in sub_samples:
                 sub_image_names.append(image_name)
                 sub_measurements.append(measurment)
+                sub_velocities.append(velocity)
 
             image_names.append(sub_image_names)
             measurements.append(sub_measurements)
+            velocities.append(sub_velocities)
         
-        samples = list(zip(image_names, measurements))
+        samples = list(zip(image_names, measurements, velocities))
         return train_test_split(samples, test_size=config['validation_rate'], 
                                 shuffle=False)        
 
@@ -177,19 +181,23 @@ class DriveTrain:
         def _prepare_lstm_batch_samples(batch_samples):
             images = []
             measurements = []
-
+            velocities = []
+            throttles = []
             for i in range(0, config['batch_size']):
 
                 images_timestep = []
                 #images_names_timestep = []
                 measurements_timestep = []
-
+                throttles_timestep = []
+                velocities_timestep = []
+                
                 for j in range(0, config['lstm_timestep']):
 
                     image_name = batch_samples[i][0][j]
                     image_path = self.data_path + '/' + image_name
                     image = cv2.imread(image_path)
 
+                    velocity = batch_samples[i][2][j]
                     # if collected data is not cropped then crop here
                     # otherwise do not crop.
                     if Config.data_collection['crop'] is not True:
@@ -202,17 +210,18 @@ class DriveTrain:
                     image = self.image_process.process(image)
 
                     images_timestep.append(image)
+                    velocities_timestep.append(velocity)
                     #images_names_timestep.append(image_name)
                     
-                    if j is config['lstm_timestep']-1:
-                        measurement = batch_samples[i][1][j]
-                        steering_angle, throttle = measurement
+                    # if j is config['lstm_timestep']-1:
+                    measurement = batch_samples[i][1][j]
+                    steering_angle, throttle = measurement
                                                     
-                        if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
-                            steering_angle = 0
-                            
-                        measurements_timestep.append(steering_angle*config['steering_angle_scale'])
-
+                    if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
+                        steering_angle = 0
+                        
+                    measurements_timestep.append(steering_angle*config['steering_angle_scale'])
+                    throttles_timestep.append(throttle)
                     # data augmentation?
                     """
                     append, image, steering_angle = _data_augmentation(image, steering_angle)
@@ -224,8 +233,10 @@ class DriveTrain:
                 images.append(images_timestep)
                 #images_names.append(images_names_timestep)
                 measurements.append(measurements_timestep)
-
-            return images, measurements
+                velocities.append(velocities_timestep)
+                throttles.append(throttles_timestep)
+                # print(velocities)
+            return images, throttles, measurements, velocities
 
         def _generator(samples, batch_size=config['batch_size']):
             num_samples = len(samples)
@@ -235,19 +246,25 @@ class DriveTrain:
                     for offset in range(0, (num_samples//batch_size)*batch_size, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
 
-                        images, measurements = _prepare_lstm_batch_samples(batch_samples)        
-
-                        X_train = np.array(images)
-                        y_train = np.array(measurements)
-
+                        images, throttle, steering, velocities = _prepare_lstm_batch_samples(batch_samples)        
+                        X_train_image = np.array(images)
+                        X_train_velocity = np.array(velocities)
+                        y_train = np.array(list(zip(steering,velocities)))
+                        # print(measurements[0])
+                        # print(y_train)
                         # reshape for lstm
-                        X_train = X_train.reshape(-1, config['lstm_timestep'], 
+                        X_train_image = X_train_image.reshape(-1, config['lstm_timestep'], 
                                         config['input_image_height'],
                                         config['input_image_width'],
                                         config['input_image_depth'])
-                        y_train = y_train.reshape(-1, 1)
-
-                        yield X_train, y_train
+                        X_train_velocity = X_train_velocity.reshape(-1, config['lstm_timestep'], 1)
+                        
+                        y_train = y_train.reshape(-1, config['lstm_timestep'], 2)
+                        # print(X_train_image.shape)
+                        # print(X_train_velocity.shape)
+                        # print(y_train.shape)
+                        # print(y_train[0])
+                        yield [X_train_image, X_train_velocity], y_train
 
                 else: 
                     samples = sklearn.utils.shuffle(samples)
@@ -278,6 +295,7 @@ class DriveTrain:
         ######################################################################
         # callbacks
         from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
+        from keras import losses, optimizers
         
         # checkpoint
         callbacks = []
@@ -298,8 +316,7 @@ class DriveTrain:
         logdir = config['tensorboard_log_dir'] + datetime.now().strftime("%Y%m%d-%H%M%S")
         tensorboard = TensorBoard(log_dir=logdir)
         callbacks.append(tensorboard)
-
-
+        
         self.train_hist = self.net_model.model.fit_generator(
                 self.train_generator, 
                 steps_per_epoch=self.num_train_samples//config['batch_size'], 
@@ -308,7 +325,7 @@ class DriveTrain:
                 validation_steps=self.num_valid_samples//config['batch_size'],
                 verbose=1, callbacks=callbacks, 
                 use_multiprocessing=True)
-    
+
 
     ###########################################################################
     #

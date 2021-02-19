@@ -23,7 +23,9 @@ Students also can use the OSCAR platform to learn the principles of robotics pro
 ```
 $ git clone https://github.com/jrkwon/oscar.git --recursive
 ```
-
+```
+$ git submodule update --init --recursive
+```
 ## Directory Structure
 - `catkin_ws`: ros workspace
   - `src`

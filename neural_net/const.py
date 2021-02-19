@@ -14,6 +14,7 @@ History:
 NET_TYPE_JAEROCK     = 0
 NET_TYPE_CE491       = 1
 NET_TYPE_CONVLSTM    = 10
+NET_TYPE_CONVLSTM_VEL    = 11
 
 # file extension
 DATA_EXT             = '.csv'
