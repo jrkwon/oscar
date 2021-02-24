@@ -19,7 +19,7 @@ from image_process import ImageProcess
 
 ###############################################################################
 #       
-def main(model_path, image_file_name):
+def main(model_path, image_file_name, vel):
     image = cv2.imread(image_file_name)
     image_process = ImageProcess()
 
@@ -41,9 +41,9 @@ def main(model_path, image_file_name):
     image = image_process.process(image)
 
     drive_run = DriveRun(model_path)
-    measurement = drive_run.run(image)
+    measurement, throttle = drive_run.run(image, vel)
 
-    fig.suptitle('prediction:{}'.format(str(str(measurement))))
+    fig.suptitle('prediction:{}'.format(str(str(measurement)+" "+str(throttle))))
     ax2.imshow(image)
     ax2.set(title = 'resize and processed')
     plt.show()
@@ -52,10 +52,10 @@ def main(model_path, image_file_name):
 #       
 if __name__ == '__main__':
     try:
-        if (len(sys.argv) != 3):
+        if (len(sys.argv) != 4):
             exit('Usage:\n$ python test_run.py model_path, image_file_name')
 
-        main(sys.argv[1], sys.argv[2])
+        main(sys.argv[1], sys.argv[2], sys.argv[3])
 
     except KeyboardInterrupt:
         print ('\nShutdown requested. Exiting...')

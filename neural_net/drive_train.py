@@ -72,7 +72,7 @@ class DriveTrain:
     
         self.drive.read()
         
-        samples = list(zip(self.drive.image_names, self.drive.measurements))
+        samples = list(zip(self.drive.image_names, self.drive.measurements, self.drive.velocities))
 
         if config['lstm'] is True:
             self.train_data, self.valid_data = self._prepare_lstm_data(samples)
@@ -141,8 +141,9 @@ class DriveTrain:
         def _prepare_batch_samples(batch_samples):
             images = []
             measurements = []
-
-            for image_name, measurement in batch_samples:
+            throttles = []
+            velocities = []
+            for image_name, measurement, velocity in batch_samples:
                 
                 image_path = self.data_path + '/' + image_name
                 image = cv2.imread(image_path)
@@ -165,14 +166,17 @@ class DriveTrain:
                     steering_angle = 0
                 
                 measurements.append(steering_angle*config['steering_angle_scale'])
-                
+                velocities.append(velocity)
+                throttles.append(throttle)
                 # data augmentation
                 append, image, steering_angle = _data_augmentation(image, steering_angle)
                 if append is True:
                     images.append(image)
                     measurements.append(steering_angle*config['steering_angle_scale'])
+                    velocities.append(velocity)
+                    throttles.append(throttle)
 
-            return images, measurements
+            return images, measurements, throttles, velocities
 
         def _prepare_lstm_batch_samples(batch_samples):
             images = []
@@ -255,12 +259,31 @@ class DriveTrain:
                     for offset in range(0, num_samples, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
 
-                        images, measurements = _prepare_batch_samples(batch_samples)        
+                        images, measurements, throttle, velocity = _prepare_batch_samples(batch_samples)
+                        # print((images),(measurements),(throttle),(velocity))      
+                        X_train_img = np.array(images).reshape(-1, 
+                                          config['input_image_height'],
+                                          config['input_image_width'],
+                                          config['input_image_depth'])
+                        X_train_vel = np.array(velocity).reshape(-1, 1)
+                        # X_train = np.stack([X_train_img, X_train_vel], axis=1)
+                        X_train = [X_train_img, X_train_vel]
+                        # X_train = X_train.reshape(-1,2)
+                        # print("img",X_train_img.shape)
+                        # print("vel",X_train_vel.shape)
+                        # print(X_train)
+                        y_train_str = np.array(measurements).reshape(-1, 1)
+                        y_train_thr = np.array(throttle).reshape(-1, 1)
+                        y_train = [y_train_str, y_train_thr]
+                        # y_train = np.stack([measurements, throttle], axis=1)
+                        # y_train = y_train.reshape(-1, 
+                        #                     config['num_outputs'])
+                        # print("y",y_train.shape)
+                        # print("str",y_train_str.shape)
+                        # print("thr",y_train_thr.shape)
+                        # print(y_train)
 
-                        X_train = np.array(images)
-                        y_train = np.array(measurements)
-
-                        yield sklearn.utils.shuffle(X_train, y_train)
+                        yield X_train, y_train
         
         self.train_generator = _generator(self.train_data)
         self.valid_generator = _generator(self.valid_data)
