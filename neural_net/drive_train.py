@@ -236,7 +236,7 @@ class DriveTrain:
                 velocities.append(velocities_timestep)
                 throttles.append(throttles_timestep)
                 # print(velocities)
-            return images, throttles, measurements, velocities
+            return images, measurements, throttles, velocities
 
         def _generator(samples, batch_size=config['batch_size']):
             num_samples = len(samples)
@@ -246,25 +246,29 @@ class DriveTrain:
                     for offset in range(0, (num_samples//batch_size)*batch_size, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
 
-                        images, throttle, steering, velocities = _prepare_lstm_batch_samples(batch_samples)        
-                        X_train_image = np.array(images)
-                        X_train_velocity = np.array(velocities)
-                        y_train = np.array(list(zip(steering,velocities)))
-                        # print(measurements[0])
-                        # print(y_train)
-                        # reshape for lstm
-                        X_train_image = X_train_image.reshape(-1, config['lstm_timestep'], 
+                        images, measurements, throttle, velocity = _prepare_lstm_batch_samples(batch_samples)        
+                        X_train_img = np.array(images).reshape(-1,
+                                        config['lstm_timestep'],
                                         config['input_image_height'],
                                         config['input_image_width'],
                                         config['input_image_depth'])
-                        X_train_velocity = X_train_velocity.reshape(-1, config['lstm_timestep'], 1)
+                        X_train_vel = np.array(velocity).reshape(-1,
+                                        config['lstm_timestep'],
+                                        config['num_outputs'])
+                        X_train = [X_train_img, X_train_vel]
                         
-                        y_train = y_train.reshape(-1, config['lstm_timestep'], 2)
-                        # print(X_train_image.shape)
-                        # print(X_train_velocity.shape)
-                        # print(y_train.shape)
-                        # print(y_train[0])
-                        yield [X_train_image, X_train_velocity], y_train
+                        y_train_str = np.array(measurements).reshape(-1,
+                                        config['lstm_timestep'],
+                                        config['num_outputs'])
+                        y_train_thr = np.array(throttle).reshape(-1,
+                                        config['lstm_timestep'],
+                                        config['num_outputs'])
+                        y_train = [y_train_str, y_train_thr]
+                        
+                        # print(y_train_str.shape)
+                        # print(X_train)
+                        # print(y_train)
+                        yield X_train, y_train
 
                 else: 
                     samples = sklearn.utils.shuffle(samples)

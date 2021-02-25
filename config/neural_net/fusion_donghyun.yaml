@@ -10,8 +10,8 @@ version: 0.9
 network_type: 11        # refer to neural_net/const.py
 lstm: True
 
-lstm_timestep: 20
-lstm_lr: 0.001        # 
+lstm_timestep: 30
+lstm_lr: 0.00001        # 
 cnn_lr:  0.001          # default of Adam is 0.001 
 
 # normalize data
@@ -20,10 +20,10 @@ normalize_data: True
 # training
 # data_shuffle: True
 validation_rate: 0.3
-num_epochs: 200
+num_epochs: 20
 batch_size: 16
-num_outputs: 2
-early_stopping_patience: 20
+num_outputs: 1
+early_stopping_patience: 3
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/
 

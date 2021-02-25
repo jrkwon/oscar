@@ -82,38 +82,41 @@ def model_convlstm():
         Dense(10),
         Dense(config['num_outputs'])])
 
-def model_convlstm_vel():
+def model_jaerock_lstm_vel():
     from keras.layers.recurrent import LSTM
     from keras.layers.wrappers import TimeDistributed
 
     # redefine input_shape to add one more dims
-    input_shape = (None, config['input_image_height'],
+    img_shape = (None, config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'])
     
-    # input_image = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), input_shape=input_shape)
-    input_image = Input(shape=input_shape, name='input_image')
-    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), strides=(2,2)))(input_image)
+    ######img model#######
+    input_img = Input(shape=img_shape, name='input_image')
+    lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0))(input_img)
+    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), strides=(2,2)))(lamb)
     conv_2    = TimeDistributed(Convolution2D(36, (5, 5), strides=(2,2)))(conv_1)
     conv_3    = TimeDistributed(Convolution2D(48, (5, 5), strides=(2,2)))(conv_2)
     conv_4    = TimeDistributed(Convolution2D(64, (3, 3)))(conv_3)
     conv_5    = TimeDistributed(Convolution2D(64, (3, 3), name='conv2d_last'))(conv_4)
     flat      = TimeDistributed(Flatten())(conv_5)
-    fc_1      = Dense(1024, activation='relu', name='fc_1')(flat)
-    fc_2      = Dense(256, activation='relu', name='fc_2')(fc_1)
+    fc_1      = TimeDistributed(Dense(1000, activation='relu', name='fc_1'))(flat)
+    fc_2      = TimeDistributed(Dense(100, activation='relu', name='fc_2'))(fc_1)
     
     ##########velocity###############
     # input_velocity = (config['input_velocity'])
-    input_velocity = Input(shape=(None, config['input_velocity']), name='input_velocity')
-    fc_vel_1  = Dense(64, activation='relu', name='fc_ws')(input_velocity)
+    input_velocity = Input(shape=(None,  config['input_velocity']), name='input_velocity')
+    fc_vel_1  = TimeDistributed(Dense(50, activation='relu', name='fc_ws'))(input_velocity)
     #################################
     ########concat two model#########
     concat    = concatenate([fc_2, fc_vel_1])
-    fc_3      = Dense(128, activation='relu', name='fc_3')(concat)
-    lstm      = LSTM(20, return_sequences=True)(fc_3)
-    fc_4      = Dense(config['num_outputs'], activation='linear', name='fc_last')(lstm)
+    lstm      = LSTM(10, return_sequences=True)(concat)
+    fc_3      = TimeDistributed(Dense(50, activation='relu', name='fc_3'))(lstm)
+    fc_4      = TimeDistributed(Dense(10, activation='relu', name='fc_4'))(fc_3)
+    fc_str    = TimeDistributed(Dense(1, activation='linear'), name='fc_str')(lstm)
+    fc_vel    = TimeDistributed(Dense(1, activation='linear'), name='fc_vel')(lstm)
     
-    model = Model(inputs=[input_image, input_velocity], outputs=fc_4)
+    model = Model(inputs=[input_img, input_velocity], outputs=[fc_str, fc_vel])
     
     return model
 
@@ -143,8 +146,8 @@ class NetModel:
             self.model = model_ce491()
         elif config['network_type'] == const.NET_TYPE_CONVLSTM:
             self.model = model_convlstm()
-        elif config['network_type'] == const.NET_TYPE_CONVLSTM_VEL:
-            self.model = model_convlstm_vel()
+        elif config['network_type'] == const.NET_TYPE_JAEROCK_LSTM_VEL:
+            self.model = model_jaerock_lstm_vel()
         else:
             print('Neural network type is not defined.')
             return
