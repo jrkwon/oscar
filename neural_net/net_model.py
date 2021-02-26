@@ -84,11 +84,10 @@ def model_jaerock_vel():
     concat_img_vel = concatenate([fc_2, fc_vel])
     fc_3 = Dense(50, name='fc_3')(concat_img_vel)
     fc_4 = Dense(10, name='fc_4')(fc_3)
-    fc_str = Dense(1, name='fc_str')(fc_4)
-    fc_thr = Dense(1, name='fc_thr')(fc_4)
+    fc_last = Dense(2, name='fc_str')(fc_4)
     
-    model = Model(inputs=[img_input, vel_input], output=[fc_str, fc_thr])
-    
+    model = Model(inputs=[img_input, vel_input], output=fc_last)
+
     return model
 
 def model_convlstm():

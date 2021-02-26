@@ -259,30 +259,20 @@ class DriveTrain:
                     for offset in range(0, num_samples, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
 
-                        images, measurements, throttle, velocity = _prepare_batch_samples(batch_samples)
-                        # print((images),(measurements),(throttle),(velocity))      
-                        X_train_img = np.array(images).reshape(-1, 
+                        images, steering_angles, throttles, velocities = _prepare_batch_samples(batch_samples)
+                        X_train = np.array(images).reshape(-1, 
                                           config['input_image_height'],
                                           config['input_image_width'],
                                           config['input_image_depth'])
-                        X_train_vel = np.array(velocity).reshape(-1, 1)
-                        # X_train = np.stack([X_train_img, X_train_vel], axis=1)
-                        X_train = [X_train_img, X_train_vel]
-                        # X_train = X_train.reshape(-1,2)
-                        # print("img",X_train_img.shape)
-                        # print("vel",X_train_vel.shape)
-                        # print(X_train)
-                        y_train_str = np.array(measurements).reshape(-1, 1)
-                        y_train_thr = np.array(throttle).reshape(-1, 1)
-                        y_train = [y_train_str, y_train_thr]
-                        # y_train = np.stack([measurements, throttle], axis=1)
-                        # y_train = y_train.reshape(-1, 
-                        #                     config['num_outputs'])
-                        # print("y",y_train.shape)
-                        # print("str",y_train_str.shape)
-                        # print("thr",y_train_thr.shape)
-                        # print(y_train)
-
+                        y_train = np.array(steering_angles)
+                        y_train = y_train.reshape(-1, 1)
+                        
+                        if config['train_velocity'] is True:
+                            X_train_vel = np.array(velocities).reshape(-1, 1)
+                            X_train = [X_train, X_train_vel]
+                            y_train = np.stack([steering_angles, throttles], axis=1).reshape(-1,2)
+                        
+                        print(y_train)
                         yield X_train, y_train
         
         self.train_generator = _generator(self.train_data)

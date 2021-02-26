@@ -28,14 +28,19 @@ class DriveRun:
    ###########################################################################
     #
     def run(self, image, vel):
-        npimg = np.expand_dims(image, axis=0)
-        npimg = np.array(npimg).reshape(-1, 
-                                          160,
-                                          160,
-                                          3)
-        vel = np.array(vel).reshape(-1, 1)
-        # X_train = np.stack([X_train_img, X_train_vel], axis=1)
-        X_train = [npimg, vel]
-        measurements, throttle = self.net_model.model.predict(X_train)
-        measurements = measurements / Config.neural_net['steering_angle_scale']
-        return measurements, throttle
+        np_img = np.expand_dims(image, axis=0)
+        np_img = np.array(np_img).reshape(-1, 
+                                          Config.neural_net['input_image_height'],
+                                          Config.neural_net['input_image_width'],
+                                          Config.neural_net['input_image_depth'])
+        
+        if Config.neural_net['train_velocity'] is True:
+            vel = np.array(vel).reshape(-1, 1)
+            measurements = self.net_model.model.predict([np_img, vel])
+            throttle = measurements[0][1]
+            steering_angle = measurements[0][0] / Config.neural_net['steering_angle_scale']
+            return steering_angle, throttle
+        else:
+            measurements = self.net_model.model.predict(np_img)
+            measurements = measurements / Config.neural_net['steering_angle_scale']
+            return measurements
