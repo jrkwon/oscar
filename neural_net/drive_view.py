@@ -194,36 +194,95 @@ class DriveView:
 
             if self.net_model is not None:
                 diff = abs(predict - self.drive_data.measurements[i][0])
-                draw.multiline_text(self.display.info_pos,
-                            "Input:     {}\nSteering:  {}\nPredicted: {}\nAbs Diff:  {}\nVelocity:  {:.2f}\nPosition:  (x:{:.2f}, y:{:.2f}, z:{:.2f})".format(
-                                    self.drive_data.image_names[i], 
-                                    # steering angle: -1 to 1 scale
-                                    self.drive_data.measurements[i][0],
-                                    predict,
-                                    diff,
-                                    self.drive_data.velocities[i], 
-                                    self.drive_data.positions_xyz[i][0], 
-                                    self.drive_data.positions_xyz[i][1], 
-                                    self.drive_data.positions_xyz[i][2]), 
-                                    font=self.display.font, fill=self.display.font_color)
+                if Config.data_collection['version'] >= 0.92:
+                    draw.multiline_text(self.display.info_pos,
+                                "Input:     {}\nThrottle:  {}\nBrake:     {}\nSteering:  {}\nPredicted: {}\nAbs Diff:  {}\nVelocity:  {:.2f}\nPosition:  (x:{:.2f}, y:{:.2f}, z:{:.2f})".format(
+                                        self.drive_data.image_names[i], 
+                                        self.drive_data.measurements[i][1],
+                                        self.drive_data.measurements[i][2],
+                                        # steering angle: -1 to 1 scale
+                                        self.drive_data.measurements[i][0],
+                                        predict,
+                                        diff,
+                                        self.drive_data.velocities[i], 
+                                        self.drive_data.positions_xyz[i][0], 
+                                        self.drive_data.positions_xyz[i][1], 
+                                        self.drive_data.positions_xyz[i][2]), 
+                                        font=self.display.font, fill=self.display.font_color)
+                else:
+                    draw.multiline_text(self.display.info_pos,
+                                "Input:     {}\nThrottle:  {}\nSteering:  {}\nPredicted: {}\nAbs Diff:  {}\nVelocity:  {:.2f}\nPosition:  (x:{:.2f}, y:{:.2f}, z:{:.2f})".format(
+                                        self.drive_data.image_names[i], 
+                                        self.drive_data.measurements[i][1],
+                                        # steering angle: -1 to 1 scale
+                                        self.drive_data.measurements[i][0],
+                                        predict,
+                                        diff,
+                                        self.drive_data.velocities[i], 
+                                        self.drive_data.positions_xyz[i][0], 
+                                        self.drive_data.positions_xyz[i][1], 
+                                        self.drive_data.positions_xyz[i][2]), 
+                                        font=self.display.font, fill=self.display.font_color)
 
                 loc_dot = self.drive_data.image_names[i].rfind('.')
                 target_img_name = "{}_{:.2f}_{:.2f}{}".format(self.drive_data.image_names[i][:loc_dot], 
                                                             predict, degree_angle, const.IMAGE_EXT)
             else:
-                draw.multiline_text(self.display.info_pos,
-                            "Input:     {}\nSteering:  {}\nVelocity: {:.2f}\nPosition: (x:{:.2f}, y:{:.2f}, z:{:.2f})".format(
-                                    self.drive_data.image_names[i], 
-                                    # steering angle: -1 to 1 scale
-                                    self.drive_data.measurements[i][0],
-                                    self.drive_data.velocities[i], 
-                                    self.drive_data.positions_xyz[i][0], 
-                                    self.drive_data.positions_xyz[i][1], 
-                                    self.drive_data.positions_xyz[i][2]), 
-                                    font=self.display.font, fill=self.display.font_color)
+                if Config.data_collection['version'] >= 0.92:
+                    draw.multiline_text(self.display.info_pos,
+                                "Input:     {}\nThrottle:  {}\nBrake:     {}\nSteering:  {}\nVelocity: {:.2f}\nPosition: (x:{:.2f}, y:{:.2f}, z:{:.2f})".format(
+                                        self.drive_data.image_names[i], 
+                                        self.drive_data.measurements[i][1],
+                                        self.drive_data.measurements[i][2],
+                                        # steering angle: -1 to 1 scale
+                                        self.drive_data.measurements[i][0],
+                                        self.drive_data.velocities[i], 
+                                        self.drive_data.positions_xyz[i][0], 
+                                        self.drive_data.positions_xyz[i][1], 
+                                        self.drive_data.positions_xyz[i][2]), 
+                                        font=self.display.font, fill=self.display.font_color)
+                else:
+                    draw.multiline_text(self.display.info_pos,
+                                "Input:     {}\nThrottle:  {}\nSteering:  {}\nVelocity: {:.2f}\nPosition: (x:{:.2f}, y:{:.2f}, z:{:.2f})".format(
+                                        self.drive_data.image_names[i], 
+                                        self.drive_data.measurements[i][1],
+                                        # steering angle: -1 to 1 scale
+                                        self.drive_data.measurements[i][0],
+                                        self.drive_data.velocities[i], 
+                                        self.drive_data.positions_xyz[i][0], 
+                                        self.drive_data.positions_xyz[i][1], 
+                                        self.drive_data.positions_xyz[i][2]), 
+                                        font=self.display.font, fill=self.display.font_color)
                 
                 loc_dot = self.drive_data.image_names[i].rfind('.')
                 target_img_name = "{}_{:.2f}_{:.2f}{}".format(self.drive_data.image_names[i][:loc_dot], 
                                                             steering_angle, degree_angle, const.IMAGE_EXT)
 
             input_image.save(self.target_path + target_img_name)
+
+
+
+###############################################################################
+#  for testing DriveView      
+def main(weight_name, data_folder_name, target_folder_name):
+    drive_view = DriveView(weight_name, data_folder_name, target_folder_name) 
+    drive_view.run() # data folder path to test
+       
+
+###############################################################################
+#       
+if __name__ == '__main__':
+    import sys
+    try:
+        if (len(sys.argv) == 3):
+            main(None, sys.argv[1], sys.argv[2])
+        elif (len(sys.argv) == 4):
+            main(sys.argv[1], sys.argv[2], sys.argv[3])
+        else:
+            msg1 = 'Usage:\n$ python {}.py weight_name data_folder_name target_folder_name'.format(sys.argv[0]) 
+            msg2 = '\n$ python {}.py data_folder_name target_folder_name'.format(sys.argv[0]) 
+            msg = 'Use either of followings\n' + msg1 + msg2
+            exit(msg)
+        
+    except KeyboardInterrupt:
+        print ('\nShutdown requested. Exiting...')

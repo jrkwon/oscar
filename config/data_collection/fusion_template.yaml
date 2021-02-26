@@ -1,7 +1,11 @@
 ###############################################################################
 # This is a jaerock's configuration.
 
-version: 0.91
+version: 0.92
+
+# history
+# 0.92: add brake ==> data format changed - data_collection
+# 0.91: add image_width, height
 
 ######################################################
 ## data collection - save full image

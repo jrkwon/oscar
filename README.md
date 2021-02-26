@@ -1,5 +1,17 @@
 # OSCAR
 
+## History
+
+- 2/18/2021: Version 1.5 released.
+  - Add 'brake' to the `data_collection`.
+  - Update the modules that use data from `data_collection`.
+- 01/15/2021: Version 1.4 released.
+  - Split one config (neural_net) to three (neural_net, data_collection, run_neural)
+- 12/04/2020: Version 1.2 released.
+  - New data collection policy.
+  - Data normalization added.
+- 11/30/2020: Version 1.0 released.
+
 ## Introduction
 
 OSCAR is the Open-Source robotic Car Architecture for Research and education. OSCAR is an open-source and full-stack robotic car architecture to advance robotic research and education in a setting of autonomous vehicles.
@@ -125,6 +137,24 @@ The default data folder location is `$(pwd)e2e_{fusion/rover}_data`.
 
 ### Data Format
 
+From `data_collection` config version 0.92, the CSV file has one more column for `brake`. Use `convert_csv.py` to convert a data CSV file collected before 0.92 to a new CSV file.
+
+#### From Version 0.92
+
+Data Collection will save a csv file with images. The CSV file has following columns
+
+```
+image_file_name / steering_angle / throttle / brake / linux_time / velocity / velocity_x / velocity_y / velocity_z / position_x / position_y / position_z
+
+```
+
+```
+2020-12-08-23-55-31-150079.jpg	-0.0149267930537	0.15	0.7 1607489731.15	0.846993743317	0.846750728334	-0.00903874268025	-0.0181633261171	8.25840907119	-102.836707258	0.0248406100056
+
+```
+
+#### Before Version 0.92
+
 Data Collection will save a csv file with images. The CSV file has following columns
 
 ```
@@ -191,10 +221,10 @@ TBA
 (oscar) $ python neural_net/test.py path/to/data/model path/to/data/folder
 ```
 
-TBA
+To compare labeled steering angles and their corresponding ones.
 ```
 (oscar) $ . setup.bash
-(oscar) $ python neural_net/log.py path/to/data/model path/to/data/folder
+(oscar) $ python neural_net/drive_log.py path/to/data/model path/to/data/folder
 ```
 
 ## How to See Saliency Map
@@ -218,16 +248,18 @@ TBA
 ### Visualization of Steering Angle Predictions
 You can specify a trained neural network model to see how the inference engine is actually working.
 ```
-(oscar) $ python neural_net/view_data.py path/to/data/model path/to/data/folder path/to/folder/to/save 
+(oscar) $ python neural_net/drive_view.py path/to/data/model path/to/data/folder path/to/folder/to/save 
 ```
 
 ### Visualization of Collected Data
 It is also possible to visualize collected data with other information without steering angle predictions.
 ```
-(oscar) $ python neural_net/view_data.py path/to/data/folder path/to/folder/to/save 
+(oscar) $ python neural_net/drive_view.py path/to/data/folder path/to/folder/to/save 
 ```
 
 ## Sample Datasets
+
+The datasets below were collected before we added `brake`. The CSV files must be converted by `convert_csv.py` before being used.
 
 ### New sample datasets (not cropped)
 - https://drive.google.com/drive/folders/197w7u99Jvyf5tuRTTawLhaYuwBLSxo-O?usp=sharing

@@ -15,7 +15,7 @@ from progressbar import ProgressBar
 
 import const
 from drive_data import DriveData
-
+from config import Config
 
 ###############################################################################
 #
@@ -46,17 +46,32 @@ def build_csv(data_path):
     bar = ProgressBar()
     for i in bar(range(len(data.df))):
         if os.path.exists(data_path + data.image_names[i]):
-            new_csv.append(data.image_names[i] + ','
-                           + str(data.measurements[i][0]) + ','
-                           + str(data.measurements[i][1]) + ','
-                           + str(data.time_stamps[i]) + ','
-                           + str(data.velocities[i]) + ','
-                           + str(data.velocities_xyz[i][0]) + ','
-                           + str(data.velocities_xyz[i][1]) + ','
-                           + str(data.velocities_xyz[i][2]) + ','
-                           + str(data.positions_xyz[i][0]) + ','
-                           + str(data.positions_xyz[i][1]) + ','
-                           + str(data.positions_xyz[i][2]) + '\n')
+            if Config.data_collection['version'] >= 0.92:
+                new_csv.append(data.image_names[i] + ','
+                            + str(data.measurements[i][0]) + ','
+                            + str(data.measurements[i][1]) + ','
+                            + str(data.measurements[i][2]) + ',' # brake
+                            + str(data.time_stamps[i]) + ','
+                            + str(data.velocities[i]) + ','
+                            + str(data.velocities_xyz[i][0]) + ','
+                            + str(data.velocities_xyz[i][1]) + ','
+                            + str(data.velocities_xyz[i][2]) + ','
+                            + str(data.positions_xyz[i][0]) + ','
+                            + str(data.positions_xyz[i][1]) + ','
+                            + str(data.positions_xyz[i][2]) + '\n')
+            else:
+                new_csv.append(data.image_names[i] + ','
+                            + str(data.measurements[i][0]) + ','
+                            + str(data.measurements[i][1]) + ','
+                            + str(data.time_stamps[i]) + ','
+                            + str(data.velocities[i]) + ','
+                            + str(data.velocities_xyz[i][0]) + ','
+                            + str(data.velocities_xyz[i][1]) + ','
+                            + str(data.velocities_xyz[i][2]) + ','
+                            + str(data.positions_xyz[i][0]) + ','
+                            + str(data.positions_xyz[i][1]) + ','
+                            + str(data.positions_xyz[i][2]) + '\n')
+
 
     # write a new csv
     new_csv_fh = open(data_path + csv_file, 'w')

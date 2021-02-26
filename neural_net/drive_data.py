@@ -18,11 +18,17 @@ import random
 from config import Config
 
 class DriveData:
-    
-    csv_header = ['image_fname', 'steering_angle', 'throttle', 
-                  'linux_time', 
-                  'vel', 'vel_x', 'vel_y', 'vel_z',
-                  'pos_x', 'pos_y', 'pos_z' ]
+
+    if Config.data_collection['version'] >= 0.92:
+        csv_header = ['image_fname', 'steering_angle', 'throttle', 'brake', 
+                    'linux_time', 
+                    'vel', 'vel_x', 'vel_y', 'vel_z',
+                    'pos_x', 'pos_y', 'pos_z' ]
+    else:
+        csv_header = ['image_fname', 'steering_angle', 'throttle', 
+                    'linux_time', 
+                    'vel', 'vel_x', 'vel_y', 'vel_z',
+                    'pos_x', 'pos_y', 'pos_z' ]
 
     def __init__(self, csv_fname):
         self.csv_fname = csv_fname
@@ -48,6 +54,11 @@ class DriveData:
             print('\nThrottle Command Statistics:')
             # Throttle Command Statistics
             print(self.df['throttle'].describe())
+
+            if Config.data_collection['version'] >= 0.92:
+                print('\nBrake Command Statistics:')
+                # Throttle Command Statistics
+                print(self.df['brake'].describe())
 
         ############################################
         # normalize data
@@ -101,8 +112,14 @@ class DriveData:
             
             for i in bar(range(num_data)): # we don't have a title
                 self.image_names.append(self.df.loc[i]['image_fname'])
-                self.measurements.append((float(self.df.loc[i]['steering_angle']),
-                                            float(self.df.loc[i]['throttle'])))
+                if Config.data_collection['version'] >= 0.92:
+                    self.measurements.append((float(self.df.loc[i]['steering_angle']),
+                                            float(self.df.loc[i]['throttle']), 
+                                            float(self.df.loc[i]['brake'])))
+                else:
+                    self.measurements.append((float(self.df.loc[i]['steering_angle']),
+                                            float(self.df.loc[i]['throttle']), 
+                                            0.0)) # dummy value for old data
                 self.time_stamps.append(float(self.df.loc[i]['linux_time']))
                 self.velocities.append(float(self.df.loc[i]['vel']))
                 self.velocities_xyz.append((float(self.df.loc[i]['vel_x']), 
@@ -121,3 +138,38 @@ class DriveData:
             return data_path
         else:
             exit('ERROR: csv file path must have a separator.')
+
+
+###############################################################################
+#  for testing DriveData class only
+def main(data_path):
+    import const
+
+    if data_path[-1] == '/':
+        data_path = data_path[:-1]
+
+    loc_slash = data_path.rfind('/')
+    if loc_slash != -1: # there is '/' in the data path
+        model_name = data_path[loc_slash + 1:] # get folder name
+        #model_name = model_name.strip('/')
+    else:
+        model_name = data_path
+    csv_path = data_path + '/' + model_name + const.DATA_EXT   
+    
+    data = DriveData(csv_path)
+    data.read(read = False)
+
+
+###############################################################################
+#       
+if __name__ == '__main__':
+    import sys
+
+    try:
+        if (len(sys.argv) != 2):
+            exit('Usage:\n$ python {} data_path'.format(sys.argv[0]))
+
+        main(sys.argv[1])
+
+    except KeyboardInterrupt:
+        print ('\nShutdown requested. Exiting...')

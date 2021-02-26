@@ -40,6 +40,8 @@ class DataCollection():
     def __init__(self):
         self.steering = 0
         self.throttle = 0
+        self.brake = 0
+
         self.vel_x = self.vel_y = self.vel_z = 0
         self.vel = 0
         self.pos_x = self.pos_y = self.pos_z = 0
@@ -71,6 +73,7 @@ class DataCollection():
     def steering_throttle_cb(self, value):
         self.throttle = value.throttle
         self.steering = value.steer
+        self.brake = value.brake
 
 
     def pos_vel_cb(self, value):
@@ -101,17 +104,31 @@ class DataCollection():
         else:
             cv2.imwrite(file_full_path, img)
         sys.stdout.write(file_full_path + '\r')
-        line = "{}{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
-                                                    self.steering, 
-                                                    self.throttle,
-                                                    unix_time,
-                                                    self.vel,
-                                                    self.vel_x,
-                                                    self.vel_y,
-                                                    self.vel_z,
-                                                    self.pos_x,
-                                                    self.pos_y,
-                                                    self.pos_z)
+        if config['version'] >= 0.92:
+            line = "{}{},{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
+                                                        self.steering, 
+                                                        self.throttle,
+                                                        self.brake,
+                                                        unix_time,
+                                                        self.vel,
+                                                        self.vel_x,
+                                                        self.vel_y,
+                                                        self.vel_z,
+                                                        self.pos_x,
+                                                        self.pos_y,
+                                                        self.pos_z)
+        else:
+            line = "{}{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
+                                                        self.steering, 
+                                                        self.throttle,
+                                                        unix_time,
+                                                        self.vel,
+                                                        self.vel_x,
+                                                        self.vel_y,
+                                                        self.vel_z,
+                                                        self.pos_x,
+                                                        self.pos_y,
+                                                        self.pos_z)
         self.text.write(line)                                                 
 
 
