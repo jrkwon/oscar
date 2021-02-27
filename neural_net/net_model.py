@@ -138,6 +138,8 @@ class NetModel:
     ###########################################################################
     #
     def _model(self):
+        from keras.utils import multi_gpu_model
+        
         if config['network_type'] == const.NET_TYPE_JAEROCK:
             self.model = model_jaerock()
         elif config['network_type'] == const.NET_TYPE_CE491:
@@ -149,7 +151,10 @@ class NetModel:
         else:
             print('Neural network type is not defined.')
             return
-
+        
+        if config['num_gpus'] >= 2:
+            self.model = multi_gpu_model(self.model, gpus=config['num_gpus'])
+        
         self.model.summary()
         self._compile()
 
