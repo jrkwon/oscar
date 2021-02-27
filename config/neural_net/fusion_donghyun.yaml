@@ -22,7 +22,8 @@ normalize_data: True
 validation_rate: 0.3
 num_epochs: 20
 batch_size: 16
-num_outputs: 1
+train_velocity: True
+num_outputs: 2
 early_stopping_patience: 3
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/

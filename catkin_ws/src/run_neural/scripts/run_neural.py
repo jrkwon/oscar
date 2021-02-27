@@ -50,10 +50,12 @@ class NeuralControl:
         self.drive= DriveRun(weight_file_name)
         rospy.Subscriber(Config.data_collection['camera_image_topic'], Image, self._controller_cb)
         self.image = None
+        self.lstm_image = []
         self.image_processed = False
         #self.config = Config()
         self.braking = False
-
+        self.lstm_vel = []
+        
     def _controller_cb(self, image): 
         img = self.ic.imgmsg_to_opencv(image)
         cropped = img[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
@@ -66,10 +68,15 @@ class NeuralControl:
 
         ## this is for CNN-LSTM net models
         if config['lstm'] is True:
-            self.image = np.array(self.image).reshape(1, 
-                                 config['input_image_height'],
-                                 config['input_image_width'],
-                                 config['input_image_depth'])
+            self.lstm_image.append(self.image)
+            if len(self.lstm_image) > config['lstm_timestep'] :
+                del self.lstm_image[0]
+            
+            if config['train_velocity'] is True:
+                self.lstm_vel.append(velocity)
+                if len(self.lstm_vel) > config['lstm_timestep']:
+                    del self.lstm_vel[0]
+            
         self.image_processed = True
         
     def _timer_cb(self):
@@ -113,34 +120,50 @@ def main(weight_file_name):
             continue
         
         # predicted steering angle from an input image
-        prediction, throttle = neural_control.drive.run(neural_control.image, velocity)
-        # prediction is [ [] ] numpy.ndarray
-        joy_data.steer = prediction[0][0]
-        joy_data.throttle = throttle[0][0]
+        if config['lstm'] is True:
+            if len(neural_control.lstm_image) >= config['lstm_timestep'] :
+                if config['train_velocity'] is True:
+                    if len(neural_control.lstm_vel) >= config['lstm_timestep']:
+                        steering_angle, throttle = neural_control.drive.run_vel(neural_control.lstm_image, neural_control.lstm_vel)
+                        joy_data.throttle = throttle
+                        joy_data.steer = steering_angle
+                else : #if config['train_velocity'] is False
+                    steering_angle = neural_control.drive.run(neural_control.lstm_image)
+                    joy_data.steer = steering_angle
+                
+        else:
+            prediction = neural_control.drive.run(neural_control.image)
+            # if prediction >= 0.05 or prediction <= -0.05:
+            #     joy_data.steer = prediction*1.5
+            # else:
+            joy_data.steer = prediction
+        
         #############################
-        ## TODO: you need to change the vehicle speed wisely  
-        ## e.g. not too fast in a curved road and not too slow in a straight road
+        
+        if config['train_velocity'] is False:
+            # TODO: you need to change the vehicle speed wisely  
+            # e.g. not too fast in a curved road and not too slow in a straight road
 
-        # is_sharp_turn = False
-        # # if brake is not already applied and sharp turn
-        # if neural_control.braking is False: 
-        #     if velocity < Config.run_neural['velocity_0']: # too slow then no braking
-        #         joy_data.throttle = Config.run_neural['throttle_default'] # apply default throttle
-        #         joy_data.brake = 0
-        #     elif abs(joy_data.steer) > Config.run_neural['sharp_turn_min']:
-        #         #joy_data.steer *= 3
-        #         is_sharp_turn = True
-            
-        #     if is_sharp_turn or velocity > Config.run_neural['max_vel']: 
-        #         joy_data.throttle = Config.run_neural['throttle_sharp_turn']
-        #         joy_data.brake = Config.run_neural['brake_val']
-        #         neural_control.apply_brake()
-        #         #joy_data.steer *= 1.5
-        #     else:
-        #         joy_data.throttle = Config.run_neural['throttle_default']
-        #         joy_data.brake = 0
-        #else:
-        #    joy_data.steer *= 3
+            is_sharp_turn = False
+            # if brake is not already applied and sharp turn
+            if neural_control.braking is False: 
+                if velocity < Config.run_neural['velocity_0']: # too slow then no braking
+                    joy_data.throttle = Config.run_neural['throttle_default'] # apply default throttle
+                    joy_data.brake = 0
+                elif abs(joy_data.steer) > Config.run_neural['sharp_turn_min']:
+                    #joy_data.steer *= 3
+                    is_sharp_turn = True
+                
+                if is_sharp_turn or velocity > Config.run_neural['max_vel']: 
+                    joy_data.throttle = Config.run_neural['throttle_sharp_turn']
+                    joy_data.brake = Config.run_neural['brake_val']
+                    neural_control.apply_brake()
+                    #joy_data.steer *= 1.5
+                else:
+                    joy_data.throttle = Config.run_neural['throttle_default']
+                    joy_data.brake = 0
+            else:
+                joy_data.steer *= 3
 
         
         ##############################    

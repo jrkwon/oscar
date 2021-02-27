@@ -183,10 +183,11 @@ class DriveTrain:
             measurements = []
             velocities = []
             throttles = []
+            # images_names = []
             for i in range(0, config['batch_size']):
 
                 images_timestep = []
-                #images_names_timestep = []
+                # images_names_timestep = []
                 measurements_timestep = []
                 throttles_timestep = []
                 velocities_timestep = []
@@ -211,7 +212,7 @@ class DriveTrain:
 
                     images_timestep.append(image)
                     velocities_timestep.append(velocity)
-                    #images_names_timestep.append(image_name)
+                    # images_names_timestep.append(image_name)
                     
                     # if j is config['lstm_timestep']-1:
                     measurement = batch_samples[i][1][j]
@@ -231,7 +232,7 @@ class DriveTrain:
                     """
                 
                 images.append(images_timestep)
-                #images_names.append(images_names_timestep)
+                # images_names.append(images_names_timestep)
                 measurements.append(measurements_timestep)
                 velocities.append(velocities_timestep)
                 throttles.append(throttles_timestep)
@@ -246,28 +247,25 @@ class DriveTrain:
                     for offset in range(0, (num_samples//batch_size)*batch_size, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
 
-                        images, measurements, throttle, velocity = _prepare_lstm_batch_samples(batch_samples)        
-                        X_train_img = np.array(images).reshape(-1,
-                                        config['lstm_timestep'],
-                                        config['input_image_height'],
-                                        config['input_image_width'],
-                                        config['input_image_depth'])
-                        X_train_vel = np.array(velocity).reshape(-1,
-                                        config['lstm_timestep'],
-                                        config['num_outputs'])
-                        X_train = [X_train_img, X_train_vel]
-                        
-                        y_train_str = np.array(measurements).reshape(-1,
-                                        config['lstm_timestep'],
-                                        config['num_outputs'])
-                        y_train_thr = np.array(throttle).reshape(-1,
-                                        config['lstm_timestep'],
-                                        config['num_outputs'])
-                        y_train = [y_train_str, y_train_thr]
-                        
-                        # print(y_train_str.shape)
-                        # print(X_train)
-                        # print(y_train)
+                        images, steering_angle, throttle, velocity = _prepare_lstm_batch_samples(batch_samples)        
+                        X_train = np.array(images).reshape(-1,
+                                                           config['lstm_timestep'],
+                                                           config['input_image_height'],
+                                                           config['input_image_width'],
+                                                           config['input_image_depth'])
+                                                
+                        if config['train_velocity'] is True:
+                            X_train_vel = np.array(velocity).reshape(-1,
+                                                                    config['lstm_timestep'],
+                                                                    config['input_velocity'])
+                            X_train = [X_train, X_train_vel]
+                            y_train = np.stack([steering_angle, throttle], axis=2).reshape(-1,
+                                                                    config['lstm_timestep'],
+                                                                    config['num_outputs'])
+                        else:
+                            y_train = np.array(steering_angle).reshape(-1, 
+                                                                    config['num_outputs'])
+                            
                         yield X_train, y_train
 
                 else: 

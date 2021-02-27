@@ -32,3 +32,18 @@ class DriveRun:
         measurements = self.net_model.model.predict(npimg)
         measurements = measurements / Config.neural_net['steering_angle_scale']
         return measurements
+    
+    def run_vel(self, image, vel):
+        npimg = np.expand_dims(image, axis=0).reshape(-1, 
+                                                    Config.neural_net['lstm_timestep'], 
+                                                    Config.neural_net['input_image_height'],
+                                                    Config.neural_net['input_image_width'],
+                                                    Config.neural_net['input_image_depth'])
+        npvel = np.expand_dims(vel, axis=0).reshape(-1,
+                                                    Config.neural_net['lstm_timestep'],
+                                                    Config.neural_net['input_velocity'])
+        measurements = self.net_model.model.predict([npimg, npvel])
+        steering_angle = measurements[0][0][0] / Config.neural_net['steering_angle_scale']
+        throttle = measurements[0][0][1]
+        # print("throttle:",throttle,"   steering_angle:",steering_angle)
+        return steering_angle, throttle
