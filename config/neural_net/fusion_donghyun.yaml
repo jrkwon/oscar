@@ -10,7 +10,8 @@ version: 0.9
 network_type: 11        # refer to neural_net/const.py
 lstm: True
 
-lstm_timestep: 30
+lstm_timestep: 10
+lstm_dataterm: 4
 lstm_lr: 0.00001        # 
 cnn_lr:  0.001          # default of Adam is 0.001 
 
@@ -21,7 +22,7 @@ normalize_data: True
 # data_shuffle: True
 validation_rate: 0.3
 num_epochs: 200
-batch_size: 32
+batch_size: 16
 train_velocity: True
 num_outputs: 2
 early_stopping_patience: 30

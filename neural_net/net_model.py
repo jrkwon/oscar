@@ -93,8 +93,8 @@ def model_jaerock_lstm_vel():
     
     ######img model#######
     input_img = Input(shape=img_shape, name='input_image')
-    lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb')(input_img)
-    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), strides=(2,2)), name='conv_1')(lamb)
+    lamb_img  = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb')(input_img)
+    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), strides=(2,2)), name='conv_1')(lamb_img)
     conv_2    = TimeDistributed(Convolution2D(36, (5, 5), strides=(2,2)), name='conv_2')(conv_1)
     conv_3    = TimeDistributed(Convolution2D(48, (5, 5), strides=(2,2)), name='conv_3')(conv_2)
     conv_4    = TimeDistributed(Convolution2D(64, (3, 3)), name='conv_4')(conv_3)
@@ -105,7 +105,8 @@ def model_jaerock_lstm_vel():
     
     ##########velocity###############
     input_velocity = Input(shape=(None,  config['input_velocity']), name='input_velocity')
-    fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(input_velocity)
+    lamb_vel  = TimeDistributed(Lambda(lambda x: x/(config['max_vel']/2.0) - 1.0), name='lamb')(input_velocity)
+    fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(lamb_vel)
     #################################
     ##########concat#################
     concat    = concatenate([fc_2, fc_vel_1], name='concat')
@@ -121,6 +122,7 @@ def model_jaerock_lstm_vel():
 class NetModel:
     def __init__(self, model_path):
         self.model = None
+        self.multi_gpu_model = None
         model_name = model_path[model_path.rfind('/'):] # get folder name
         self.name = model_name.strip('/')
 
@@ -153,7 +155,7 @@ class NetModel:
             return
         
         if config['num_gpus'] >= 2:
-            self.model = multi_gpu_model(self.model, gpus=config['num_gpus'])
+            self.multi_gpu_model = multi_gpu_model(self.model, gpus=config['num_gpus'])
         
         self.model.summary()
         self._compile()
@@ -176,9 +178,14 @@ class NetModel:
         else:
             learning_rate = config['cnn_lr']
 
-        self.model.compile(loss=losses.mean_squared_error,
-                    optimizer=optimizers.Adam(lr=learning_rate), 
-                    metrics=['accuracy'])
+        if config['num_gpus'] >= 2:
+            self.multi_gpu_model.compile(loss=losses.mean_squared_error,
+                        optimizer=optimizers.Adam(lr=learning_rate), 
+                        metrics=['accuracy'])
+        else:
+            self.model.compile(loss=losses.mean_squared_error,
+                        optimizer=optimizers.Adam(lr=learning_rate), 
+                        metrics=['accuracy'])
         # if config['steering_angle_tolerance'] == 0.0:
         #     self.model.compile(loss=losses.mean_squared_error,
         #               optimizer=optimizers.Adam(),

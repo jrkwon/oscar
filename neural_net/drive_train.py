@@ -94,13 +94,13 @@ class DriveTrain:
 
         # get the last index number      
         steps = 1
-        last_index = (num_samples - config['lstm_timestep'])//steps
+        last_index = (num_samples - config['lstm_timestep']*config['lstm_dataterm'])//steps
         
         image_names = []
         measurements = []
         velocities = []
         for i in range(0, last_index, steps):
-            sub_samples = samples[ i : i+config['lstm_timestep'] ]
+            sub_samples = samples[ i : i+config['lstm_timestep']*config['lstm_dataterm'] :config['lstm_dataterm']]
             
             # print('num_batch_sample : ',len(batch_samples))
             sub_image_names = []
@@ -193,8 +193,8 @@ class DriveTrain:
                 velocities_timestep = []
                 
                 for j in range(0, config['lstm_timestep']):
-
                     image_name = batch_samples[i][0][j]
+                    # print(j," : ", image_name)
                     image_path = self.data_path + '/' + image_name
                     image = cv2.imread(image_path)
 
@@ -210,8 +210,6 @@ class DriveTrain:
                                     config['input_image_height']))
                     image = self.image_process.process(image)
 
-                    images_timestep.append(image)
-                    velocities_timestep.append(velocity)
                     # images_names_timestep.append(image_name)
                     
                     # if j is config['lstm_timestep']-1:
@@ -220,7 +218,10 @@ class DriveTrain:
                                                     
                     if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
                         steering_angle = 0
-                        
+                    
+                    
+                    images_timestep.append(image)
+                    velocities_timestep.append(velocity)
                     measurements_timestep.append(steering_angle*config['steering_angle_scale'])
                     throttles_timestep.append(throttle)
                     # data augmentation?
@@ -319,14 +320,24 @@ class DriveTrain:
         tensorboard = TensorBoard(log_dir=logdir)
         callbacks.append(tensorboard)
         
-        self.train_hist = self.net_model.model.fit_generator(
-                self.train_generator, 
-                steps_per_epoch=self.num_train_samples//config['batch_size'], 
-                epochs=config['num_epochs'], 
-                validation_data=self.valid_generator,
-                validation_steps=self.num_valid_samples//config['batch_size'],
-                verbose=1, callbacks=callbacks, 
-                use_multiprocessing=True)
+        if config['num_gpus'] >= 2:
+            self.train_hist = self.net_model.multi_gpu_model.fit_generator(
+                    self.train_generator, 
+                    steps_per_epoch=self.num_train_samples//config['batch_size'], 
+                    epochs=config['num_epochs'], 
+                    validation_data=self.valid_generator,
+                    validation_steps=self.num_valid_samples//config['batch_size'],
+                    verbose=1, callbacks=callbacks, 
+                    use_multiprocessing=True)
+        else:
+            self.train_hist = self.net_model.model.fit_generator(
+                    self.train_generator, 
+                    steps_per_epoch=self.num_train_samples//config['batch_size'], 
+                    epochs=config['num_epochs'], 
+                    validation_data=self.valid_generator,
+                    validation_steps=self.num_valid_samples//config['batch_size'],
+                    verbose=1, callbacks=callbacks, 
+                    use_multiprocessing=True)
 
 
     ###########################################################################
