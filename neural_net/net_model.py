@@ -105,8 +105,8 @@ def model_jaerock_lstm_vel():
     
     ##########velocity###############
     input_velocity = Input(shape=(None,  config['input_velocity']), name='input_velocity')
-    lamb_vel  = TimeDistributed(Lambda(lambda x: x/(config['max_vel']/2.0) - 1.0), name='lamb')(input_velocity)
-    fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(lamb_vel)
+    # lamb_vel  = TimeDistributed(Lambda(lambda x: x/(config['max_vel']/2.0) - 1.0), name='lamb')(input_velocity)
+    fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(input_velocity)
     #################################
     ##########concat#################
     concat    = concatenate([fc_2, fc_vel_1], name='concat')
