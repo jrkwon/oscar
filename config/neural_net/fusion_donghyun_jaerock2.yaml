@@ -22,8 +22,8 @@ normalize_data: True
 validation_rate: 0.2
 num_epochs: 20
 batch_size: 16
-num_outputs: 2
-train_velocity: True    # input image, velocity  ouput steering_angle, throttle
+num_inputs: 2     # input: image, velocity
+num_outputs: 2    # output: steering_angle, throttle
 early_stopping_patience: 3
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/
