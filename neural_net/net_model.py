@@ -71,7 +71,7 @@ def model_jaerock_vel():
     conv_2 = Conv2D(36, (5, 5), strides=(2,2))(conv_1)
     conv_3 = Conv2D(48, (5, 5), strides=(2,2))(conv_2)
     conv_4 = Conv2D(64, (3, 3))(conv_3)
-    conv_5 = Conv2D(64, (3, 3))(conv_4)
+    conv_5 = Conv2D(64, (3, 3), name='conv2d_last')(conv_4)
     flat = Flatten()(conv_5)
     fc_1 = Dense(1000, name='fc_1')(flat)
     fc_2 = Dense(100, name='fc_2')(fc_1)
@@ -136,15 +136,14 @@ class NetModel:
     def _model(self):
         if config['network_type'] == const.NET_TYPE_JAEROCK:
             self.model = model_jaerock()
-        if config['network_type'] == const.NET_TYPE_JAEROCK_VEL:
+        elif config['network_type'] == const.NET_TYPE_JAEROCK_VEL:
             self.model = model_jaerock_vel()
         elif config['network_type'] == const.NET_TYPE_CE491:
             self.model = model_ce491()
         elif config['network_type'] == const.NET_TYPE_CONVLSTM:
             self.model = model_convlstm()
         else:
-            print('Neural network type is not defined.')
-            return
+            exit('ERROR: Invalid neural network type.')
 
         self.summary()
         self._compile()

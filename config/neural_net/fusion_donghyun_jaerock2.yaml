@@ -1,16 +1,13 @@
 ###############################################################################
 # This is a jaerock's configuration.
 
-version: 0.91
-
-# history
-# 0.91 - add num_inputs, use 2 for num_outputs
+version: 0.9
 
 ######################################################
 ## neural network 
 
 # network definition
-network_type: 0        # refer to neural_net/const.py
+network_type: 2        # refer to neural_net/const.py
 lstm: False
 
 lstm_timestep: 20
@@ -20,13 +17,13 @@ cnn_lr:  0.001          # default of Adam is 0.001
 # normalize data
 normalize_data: True
 
-# training 
+# training
 # data_shuffle: True
 validation_rate: 0.2
 num_epochs: 20
 batch_size: 16
-num_inputs: 1     # input: image, velocity
-num_outputs: 1    # output: steering_angle, throttle
+num_outputs: 2
+train_velocity: True    # input image, velocity  ouput steering_angle, throttle
 early_stopping_patience: 3
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/

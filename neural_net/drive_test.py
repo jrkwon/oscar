@@ -40,7 +40,7 @@ class DriveTest:
             model_name = data_path
         csv_path = data_path + '/' + model_name + const.DATA_EXT   
         
-        self.drive = DriveData(csv_path)
+        self.data = DriveData(csv_path)
         
         self.test_generator = None
         
@@ -58,9 +58,9 @@ class DriveTest:
     #
     def _prepare_data(self):
     
-        self.drive.read()
+        self.data.read()
         
-        samples = list(zip(self.drive.image_names, self.drive.measurements))
+        samples = list(zip(self.data.image_names, self.data.velocities, self.data.measurements))
 
         if config['lstm'] is True:
             self.test_data = self._prepare_lstm_data(samples)
@@ -82,21 +82,26 @@ class DriveTest:
         last_index = (num_samples - config['lstm_timestep'])//steps
         
         image_names = []
+        velocities = []
         measurements = []
+
         for i in range(0, last_index, steps):
             sub_samples = samples[ i : i+config['lstm_timestep'] ]
             
             # print('num_batch_sample : ',len(batch_samples))
             sub_image_names = []
+            sub_velocities = []
             sub_measurements = []
             for image_name, measurment in sub_samples:
                 sub_image_names.append(image_name)
+                sub_velocities.append(velocity)
                 sub_measurements.append(measurment)
 
             image_names.append(sub_image_names)
+            velocities.append(sub_velocities)
             measurements.append(sub_measurements)
         
-        return list(zip(image_names, measurements))
+        return list(zip(image_names, velocities, measurements))
 
 
     ###########################################################################
@@ -108,9 +113,10 @@ class DriveTest:
             
         def _prepare_batch_samples(batch_samples):
             images = []
+            velocities = []
             measurements = []
 
-            for image_name, measurement in batch_samples:
+            for image_name, velocity, measurement in batch_samples:
                 
                 image_path = self.data_path + '/' + image_name
                 image = cv2.imread(image_path)
@@ -126,13 +132,17 @@ class DriveTest:
                                     config['input_image_height']))
                 image = self.image_process.process(image)
                 images.append(image)
+                velocities.append(velocity)
 
-                steering_angle, throttle = measurement
+                steering_angle, throttle, brake = measurement
                 
                 if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
                     steering_angle = 0
                 
-                measurements.append(steering_angle*config['steering_angle_scale'])
+                if config['num_outputs'] == 2:                
+                    measurements.append((steering_angle*config['steering_angle_scale'], throttle))
+                else:
+                    measurements.append(steering_angle*config['steering_angle_scale'])
                 
                 ## data augmentation <-- doesn't need since this is not training
                 #append, image, steering_angle = _data_augmentation(image, steering_angle)
@@ -140,16 +150,17 @@ class DriveTest:
                 #    images.append(image)
                 #    measurements.append(steering_angle*config['steering_angle_scale'])
 
-            return images, measurements
+            return images, velocities, measurements
             
         def _prepare_lstm_batch_samples(batch_samples):
             images = []
+            velocities = []
             measurements = []
 
             for i in range(0, config['batch_size']):
 
                 images_timestep = []
-                #images_names_timestep = []
+                velocities_timestep = []
                 measurements_timestep = []
 
                 for j in range(0, config['lstm_timestep']):
@@ -170,16 +181,22 @@ class DriveTest:
                     image = self.image_process.process(image)
 
                     images_timestep.append(image)
-                    #images_names_timestep.append(image_name)
+
+                    velocity = batch_samples[i][1][j]
+                    velocities_timestep.append(velocity)
                     
                     if j is config['lstm_timestep']-1:
-                        measurement = batch_samples[i][1][j]
-                        steering_angle, throttle = measurement
+                        measurement = batch_samples[i][2][j]
+                        # if no brake data in collected data, brake values are dummy
+                        steering_angle, throttle, brake = measurement
                                                     
                         if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
                             steering_angle = 0
                             
-                        measurements_timestep.append(steering_angle*config['steering_angle_scale'])
+                        if config['num_outputs'] == 2:                
+                            measurements.append((steering_angle*config['steering_angle_scale'], throttle))
+                        else:
+                            measurements.append(steering_angle*config['steering_angle_scale'])
 
                     # data augmentation?
                     """
@@ -190,10 +207,10 @@ class DriveTest:
                     """
                 
                 images.append(images_timestep)
-                #images_names.append(images_names_timestep)
+                velocities.append(velocities_timestep)
                 measurements.append(measurements_timestep)
 
-            return images, measurements
+            return images, velocities, measurements
 
         def _generator(samples, batch_size=config['batch_size']):
             num_samples = len(samples)
@@ -217,6 +234,12 @@ class DriveTest:
                                         config['input_image_depth'])
                         y_train = y_train.reshape(-1, 1)
 
+                        if config['num_inputs'] == 2:
+                            X_train_vel = np.array(velocities).reshape(-1, 1)
+                            X_train = [X_train, X_train_vel]
+                        if config['num_outputs'] == 2:
+                            y_train = np.stack([steering_angles, throttles], axis=1).reshape(-1,2)
+
                         yield X_train, y_train
 
                 else: 
@@ -225,12 +248,22 @@ class DriveTest:
                     for offset in bar(range(0, num_samples, batch_size)):
                         batch_samples = samples[offset:offset+batch_size]
 
-                        images, measurements = _prepare_batch_samples(batch_samples)        
-
-                        X_train = np.array(images)
+                        images, velocities, measurements = _prepare_batch_samples(batch_samples)
+                        X_train = np.array(images).reshape(-1, 
+                                          config['input_image_height'],
+                                          config['input_image_width'],
+                                          config['input_image_depth'])
                         y_train = np.array(measurements)
-
-                        yield sklearn.utils.shuffle(X_train, y_train)     
+                        y_train = y_train.reshape(-1, 1)
+                        
+                        if config['num_inputs'] == 2:
+                            X_train_vel = np.array(velocities).reshape(-1, 1)
+                            X_train = [X_train, X_train_vel]
+                        #if config['num_outputs'] == 2:
+                        #    y_train = np.stack([steering_angles, throttles], axis=1).reshape(-1,2)
+                        
+                        #print(y_train)
+                        yield X_train, y_train
 
         self.test_generator = _generator(self.test_data)
         

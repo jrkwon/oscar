@@ -41,7 +41,7 @@ def main(model_path, image_file_path):
     image = image_process.process(image)
 
     drive_run = DriveRun(model_path)
-    measurement = drive_run.run(image)
+    measurement = drive_run.run((image, ))
 
     """ grad modifier doesn't work somehow
     fig, axs = plt.subplots(1, 3)
@@ -92,7 +92,7 @@ def main(model_path, image_file_path):
 if __name__ == '__main__':
     try:
         if (len(sys.argv) != 3):
-            exit('Usage:\n$ python test_saliency.py model_path, image_file_name')
+            exit('Usage:\n$ python {} model_path, image_file_name'.format(sys.argv[0]))
 
         main(sys.argv[1], sys.argv[2])
 

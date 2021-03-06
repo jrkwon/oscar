@@ -40,6 +40,9 @@ wget-log/
 .project
 .cproject
 
+#.spyder project
+.spyproject/
+
 # qcreator stuff
 CMakeLists.txt.user
 

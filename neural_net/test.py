@@ -26,7 +26,7 @@ def test(trained_model_name, data_path):
 if __name__ == '__main__':
     try:
         if (len(sys.argv) != 3):
-            exit('Usage:\n$ python test.py model_name data_path')
+            exit('Usage:\n$ python {} model_name data_path'.format(sys.argv[0]))
 
         test(sys.argv[1], sys.argv[2])
 

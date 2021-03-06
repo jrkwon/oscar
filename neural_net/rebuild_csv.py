@@ -46,7 +46,7 @@ def build_csv(data_path):
     bar = ProgressBar()
     for i in bar(range(len(data.df))):
         if os.path.exists(data_path + data.image_names[i]):
-            if Config.data_collection['version'] >= 0.92:
+            if Config.data_collection['brake'] is True:
                 new_csv.append(data.image_names[i] + ','
                             + str(data.measurements[i][0]) + ','
                             + str(data.measurements[i][1]) + ','

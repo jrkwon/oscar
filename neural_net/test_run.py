@@ -19,7 +19,11 @@ from image_process import ImageProcess
 
 ###############################################################################
 #       
-def main(model_path, image_file_name, vel):
+def main(model_path, input):
+    image_file_name = input[0]
+    if Config.neural_net['num_inputs'] == 2:
+        velocity = input[1]
+
     image = cv2.imread(image_file_name)
     image_process = ImageProcess()
 
@@ -41,21 +45,32 @@ def main(model_path, image_file_name, vel):
     image = image_process.process(image)
 
     drive_run = DriveRun(model_path)
-    measurement, throttle = drive_run.run(image, vel)
+    if Config.neural_net['num_inputs'] == 2:
+        predict = drive_run.run((image, velocity))
+        steering_angle = predict[0][0]
+        throttle = predict[0][1]
+        fig.suptitle('pred-steering:{} pred-throttle:{}'.format(steering_angle, throttle))
+    else:
+        predict = drive_run.run((image, ))
+        steering_angle = predict[0][0]
+        fig.suptitle('pred_steering:{}'.format(steering_angle))
 
-    fig.suptitle('prediction:{}'.format(str(str(measurement)+" "+str(throttle))))
     ax2.imshow(image)
     ax2.set(title = 'resize and processed')
+
     plt.show()
 
 ###############################################################################
 #       
 if __name__ == '__main__':
     try:
-        if (len(sys.argv) != 4):
-            exit('Usage:\n$ python test_run.py model_path, image_file_name')
+        if len(sys.argv) == 3:
+            main(sys.argv[1], (sys.argv[2], ))
+        elif len(sys.argv) == 4:
+            main(sys.argv[1], (sys.argv[2], sys.argv[3]))
+        else:
+            exit('Usage:\n$ python {} model_path, image_file_name, \{velocity\}'.format(sys.argv[0]))
 
-        main(sys.argv[1], sys.argv[2], sys.argv[3])
 
     except KeyboardInterrupt:
         print ('\nShutdown requested. Exiting...')

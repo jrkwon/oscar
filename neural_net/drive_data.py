@@ -19,7 +19,7 @@ from config import Config
 
 class DriveData:
 
-    if Config.data_collection['version'] >= 0.92:
+    if Config.data_collection['brake'] is True:
         csv_header = ['image_fname', 'steering_angle', 'throttle', 'brake', 
                     'linux_time', 
                     'vel', 'vel_x', 'vel_y', 'vel_z',
@@ -55,7 +55,7 @@ class DriveData:
             # Throttle Command Statistics
             print(self.df['throttle'].describe())
 
-            if Config.data_collection['version'] >= 0.92:
+            if Config.data_collection['brake'] is True:
                 print('\nBrake Command Statistics:')
                 # Throttle Command Statistics
                 print(self.df['brake'].describe())
@@ -112,7 +112,7 @@ class DriveData:
             
             for i in bar(range(num_data)): # we don't have a title
                 self.image_names.append(self.df.loc[i]['image_fname'])
-                if Config.data_collection['version'] >= 0.92:
+                if Config.data_collection['brake'] is True:
                     self.measurements.append((float(self.df.loc[i]['steering_angle']),
                                             float(self.df.loc[i]['throttle']), 
                                             float(self.df.loc[i]['brake'])))

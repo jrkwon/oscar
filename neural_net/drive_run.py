@@ -27,20 +27,25 @@ class DriveRun:
 
    ###########################################################################
     #
-    def run(self, image, vel):
+    def run(self, input): # input is (image, (vel))
+        image = input[0]
+        if Config.neural_net['num_inputs'] == 2:
+            velocity = input[1]
         np_img = np.expand_dims(image, axis=0)
-        np_img = np.array(np_img).reshape(-1, 
-                                          Config.neural_net['input_image_height'],
-                                          Config.neural_net['input_image_width'],
-                                          Config.neural_net['input_image_depth'])
+        #np_img = np.array(np_img).reshape(-1, 
+        #                                  Config.neural_net['input_image_height'],
+        #                                  Config.neural_net['input_image_width'],
+        #                                  Config.neural_net['input_image_depth'])
         
-        if Config.neural_net['train_velocity'] is True:
-            vel = np.array(vel).reshape(-1, 1)
-            measurements = self.net_model.model.predict([np_img, vel])
-            throttle = measurements[0][1]
-            steering_angle = measurements[0][0] / Config.neural_net['steering_angle_scale']
-            return steering_angle, throttle
+        if Config.neural_net['num_inputs'] == 2:
+            velocity = np.array(velocity).reshape(-1, 1)
+            predict = self.net_model.model.predict([np_img, velocity])
         else:
-            measurements = self.net_model.model.predict(np_img)
-            measurements = measurements / Config.neural_net['steering_angle_scale']
-            return measurements
+            predict = self.net_model.model.predict(np_img)
+
+        # calc scaled steering angle
+        steering_angle = predict[0][0]
+        steering_angle /= Config.neural_net['steering_angle_scale']
+        predict[0][0] = steering_angle
+
+        return predict

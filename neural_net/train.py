@@ -25,7 +25,7 @@ def train(data_folder_name):
 if __name__ == '__main__':
     try:
         if (len(sys.argv) != 2):
-            exit('Usage:\n$ python train.py data_path')
+            exit('Usage:\n$ python {} data_path'.format(sys.argv[0]))
 
         train(sys.argv[1])
 

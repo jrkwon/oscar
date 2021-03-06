@@ -37,7 +37,6 @@ else:
 
 
 config = Config.neural_net
-
 velocity = 0
 
 
@@ -107,46 +106,51 @@ def main(weight_file_name):
     print('\nStart running. Vroom. Vroom. Vroooooom......')
     print('steer \tthrt: \tbrake \tvelocity')
 
+    use_predicted_throttle = True if config['num_outputs'] == 2 else False
     while not rospy.is_shutdown():
 
         if neural_control.image_processed is False:
             continue
         
         # predicted steering angle from an input image
-        if config['train_velocity'] is True:
-            steering_angle, throttle = neural_control.drive.run(neural_control.image, velocity)
-            # prediction is [ [] ] numpy.ndarray
-            joy_data.steer = steering_angle
-            joy_data.throttle = throttle
-        else:
-            steering_angle = neural_control.drive.run(neural_control.image)
-            # prediction is [ [] ] numpy.ndarray
-            joy_data.steer = steering_angle
+        if config['num_inputs'] == 2:
+            prediction = neural_control.drive.run((neural_control.image, velocity))
+            if config['num_outputs'] == 2:
+                # prediction is [ [] ] numpy.ndarray
+                joy_data.steer = prediction[0][0]
+                joy_data.throttle = prediction[0][1]
+            else: # num_outputs is 1
+                joy_data.steer = prediction[0][0]
+        else: # num_inputs is 1
+            prediction = neural_control.drive.run((neural_control.image, ))
+            if config['num_outputs'] == 2:
+                # prediction is [ [] ] numpy.ndarray
+                joy_data.steer = prediction[0][0]
+                joy_data.throttle = prediction[0][1]
+            else: # num_outputs is 1
+                joy_data.steer = prediction[0][0]
             
-            #############################
-            ## TODO: you need to change the vehicle speed wisely  
-            ## e.g. not too fast in a curved road and not too slow in a straight road
+        #############################
+        ## very very simple controller
+        ## 
 
-            is_sharp_turn = False
-            # if brake is not already applied and sharp turn
-            if neural_control.braking is False: 
-                if velocity < Config.run_neural['velocity_0']: # too slow then no braking
-                    joy_data.throttle = Config.run_neural['throttle_default'] # apply default throttle
-                    joy_data.brake = 0
-                elif abs(joy_data.steer) > Config.run_neural['sharp_turn_min']:
-                    #joy_data.steer *= 3
-                    is_sharp_turn = True
-                
-                if is_sharp_turn or velocity > Config.run_neural['max_vel']: 
-                    joy_data.throttle = Config.run_neural['throttle_sharp_turn']
-                    joy_data.brake = Config.run_neural['brake_val']
-                    neural_control.apply_brake()
-                    #joy_data.steer *= 1.5
-                else:
-                    joy_data.throttle = Config.run_neural['throttle_default']
-                    joy_data.brake = 0
+        is_sharp_turn = False
+        # if brake is not already applied and sharp turn
+        if neural_control.braking is False: 
+            if velocity < Config.run_neural['velocity_0']: # too slow then no braking
+                joy_data.throttle = Config.run_neural['throttle_default'] # apply default throttle
+                joy_data.brake = 0
+            elif abs(joy_data.steer) > Config.run_neural['sharp_turn_min']:
+                is_sharp_turn = True
+            
+            if is_sharp_turn or velocity > Config.run_neural['max_vel']: 
+                joy_data.throttle = Config.run_neural['throttle_sharp_turn']
+                joy_data.brake = Config.run_neural['brake_val']
+                neural_control.apply_brake()
             else:
-                joy_data.steer *= 3
+                if use_predicted_throttle is False:
+                    joy_data.throttle = Config.run_neural['throttle_default']
+                joy_data.brake = 0
 
         
         ##############################    
@@ -165,7 +169,7 @@ def main(weight_file_name):
 
 
         ## print out
-        cur_output = '{0:.3f} \t{1:.2f} \t{2:.2f} \t{3}\r'.format(joy_data.steer, 
+        cur_output = '{0:.3f} \t{1:.3f} \t{2:.3f} \t{3:.3f}\r'.format(joy_data.steer, 
                           joy_data.throttle, joy_data.brake, velocity)
 
         sys.stdout.write(cur_output)
