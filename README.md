@@ -2,6 +2,10 @@
 
 ## History
 
+- 3/06/2021: Version 1.6 released
+  - Input can have velocity in addition to image. See `config/neural_net [num_input]`. 
+  - Output can have throttle in addtion to steering angle. `See config/neural_net [num_output]`.
+  - Add `brake` in `config/data_collection` (config version # 0.92 was used previously).
 - 2/18/2021: Version 1.5 released.
   - Add 'brake' to the `data_collection`.
   - Update the modules that use data from `data_collection`.
