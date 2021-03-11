@@ -2,6 +2,10 @@
 
 ## History
 
+- 3/11/2021: 
+  - Removed unused plugins that are not compatible with Gazebo-11.
+  - Works with Gazebo-11 as well. 
+  - Tested in Ubuntu 20.04 and ROS Noetic. Only checked basic function and not yet fully tested.
 - 3/06/2021: Version 1.6 released
   - Input can have velocity in addition to image. See `config/neural_net [num_input]`. 
   - Output can have throttle in addtion to steering angle. `See config/neural_net [num_output]`.

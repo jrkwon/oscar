@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package (Qt5Widgets REQUIRED)
 find_package (Qt5Core REQUIRED)
-find_package(gazebo 9 REQUIRED)
+find_package(gazebo REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -144,29 +144,32 @@ add_library(ActorCollisionsPlugin SHARED plugins/ActorCollisionsPlugin.cc)
 target_link_libraries(ActorCollisionsPlugin ${GAZEBO_LIBRARIES})
 
 
-add_library(TrafficLightsGUIPlugin SHARED plugins/TrafficLightsGUIPlugin.cc)
-target_link_libraries(TrafficLightsGUIPlugin ${guiSrc}
-			${IGNITION-MSGS_LIBRARIES}
-                        ${Qt5Core_LIBRARIES}
-                       ${Qt5Widgets_LIBRARIES} 
-                        ${GAZEBO_LIBRARIES})
-add_dependencies(TrafficLightsGUIPlugin ${catkin_EXPORTED_TARGETS})
+## incompatible with gazebo-11
+#add_library(TrafficLightsGUIPlugin SHARED plugins/TrafficLightsGUIPlugin.cc)
+#target_link_libraries(TrafficLightsGUIPlugin ${guiSrc}
+#			${IGNITION-MSGS_LIBRARIES}
+#                        ${Qt5Core_LIBRARIES}
+#                       ${Qt5Widgets_LIBRARIES} 
+#                        ${GAZEBO_LIBRARIES})
+#add_dependencies(TrafficLightsGUIPlugin ${catkin_EXPORTED_TARGETS})
 
-add_library(LensFlareVisualPlugin SHARED plugins/LensFlareVisualPlugin.cc)
-target_link_libraries(TrafficLightsGUIPlugin ${guiSrc}
-			${IGNITION-MSGS_LIBRARIES}
-                        ${Qt5Core_LIBRARIES}
-                       ${Qt5Widgets_LIBRARIES} 
-                        ${GAZEBO_LIBRARIES})
-add_dependencies(LensFlareVisualPlugin ${catkin_EXPORTED_TARGETS})
+## incompatible with gazebo-11
+#add_library(LensFlareVisualPlugin SHARED plugins/LensFlareVisualPlugin.cc)
+#target_link_libraries(TrafficLightsGUIPlugin ${guiSrc}
+#			${IGNITION-MSGS_LIBRARIES}
+#                        ${Qt5Core_LIBRARIES}
+#                       ${Qt5Widgets_LIBRARIES} 
+#                        ${GAZEBO_LIBRARIES})
+#add_dependencies(LensFlareVisualPlugin ${catkin_EXPORTED_TARGETS})
 
-add_library(BloomVisualPlugin SHARED plugins/BloomVisualPlugin.cc)
-target_link_libraries(TrafficLightsGUIPlugin ${guiSrc}
-			${IGNITION-MSGS_LIBRARIES}
-                        ${Qt5Core_LIBRARIES}
-                       ${Qt5Widgets_LIBRARIES} 
-                        ${GAZEBO_LIBRARIES})
-add_dependencies(BloomVisualPlugin ${catkin_EXPORTED_TARGETS})
+## incompatible with gazebo-11
+#add_library(BloomVisualPlugin SHARED plugins/BloomVisualPlugin.cc)
+#target_link_libraries(TrafficLightsGUIPlugin ${guiSrc}
+#			${IGNITION-MSGS_LIBRARIES}
+#                        ${Qt5Core_LIBRARIES}
+#                       ${Qt5Widgets_LIBRARIES} 
+#                        ${GAZEBO_LIBRARIES})
+#add_dependencies(BloomVisualPlugin ${catkin_EXPORTED_TARGETS})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
