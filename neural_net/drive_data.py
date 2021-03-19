@@ -59,6 +59,11 @@ class DriveData:
                 print('\nBrake Command Statistics:')
                 # Throttle Command Statistics
                 print(self.df['brake'].describe())
+                
+            if Config.neural_net['num_outputs'] == 2:
+                print('\nVelocity Command Statistics:')
+                # Throttle Command Statistics
+                print(self.df['vel'].describe())
 
         ############################################
         # normalize data
