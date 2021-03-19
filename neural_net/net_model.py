@@ -12,7 +12,7 @@ History:
 
 from keras.models import Sequential, Model
 from keras.layers import Lambda, Dropout, Flatten, Dense, Activation, concatenate
-from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Input
+from keras.layers import Conv2D, Convolution2D, MaxPooling2D, BatchNormalization, Input
 from keras import losses, optimizers
 import keras.backend as K
 import tensorflow as tf
@@ -114,6 +114,42 @@ def model_convlstm():
         Dense(10),
         Dense(config['num_outputs'])])
 
+def model_convlstm_vel():
+    from keras.layers.recurrent import LSTM
+    from keras.layers.wrappers import TimeDistributed
+
+    # redefine input_shape to add one more dims
+    img_shape = (None, config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'])
+    vel_shape = (None, 1)
+    ######img model#######
+    input_img = Input(shape=img_shape, name='input_image')
+    lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb')(input_img)
+    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), strides=(2,2)), name='conv_1')(lamb)
+    conv_2    = TimeDistributed(Convolution2D(36, (5, 5), strides=(2,2)), name='conv_2')(conv_1)
+    conv_3    = TimeDistributed(Convolution2D(48, (5, 5), strides=(2,2)), name='conv_3')(conv_2)
+    conv_4    = TimeDistributed(Convolution2D(64, (3, 3)), name='conv_4')(conv_3)
+    conv_5    = TimeDistributed(Convolution2D(64, (3, 3)), name='conv2d_last')(conv_4)
+    flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
+    fc_1      = TimeDistributed(Dense(1000, activation='relu'), name='fc_1')(flat)
+    fc_2      = TimeDistributed(Dense(100, activation='relu' ), name='fc_2')(fc_1)
+    
+    ##########velocity###############
+    input_velocity = Input(shape=vel_shape, name='input_velocity')
+    fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(input_velocity)
+    #################################
+    ##########concat#################
+    concat    = concatenate([fc_2, fc_vel_1], name='concat')
+    lstm      = LSTM(10, return_sequences=False, name='lstm')(concat)
+    fc_3      = Dense(50, activation='relu', name='fc_3')(lstm)
+    fc_4      = Dense(10, activation='relu', name='fc_4')(fc_3)
+    fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_4)
+    
+    model = Model(inputs=[input_img, input_velocity], outputs=fc_last)
+    
+    return model
+
 class NetModel:
     def __init__(self, model_path):
         self.model = None
@@ -142,6 +178,8 @@ class NetModel:
             self.model = model_ce491()
         elif config['network_type'] == const.NET_TYPE_CONVLSTM:
             self.model = model_convlstm()
+        elif config['network_type'] == const.NET_TYPE_CONVLSTM_VEL:
+            self.model = model_convlstm_vel()
         else:
             exit('ERROR: Invalid neural network type.')
 
