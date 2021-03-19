@@ -233,9 +233,9 @@ class DriveTrain:
                             steering_angle = 0
                             
                         if config['num_outputs'] == 2:                
-                            measurements.append((steering_angle*config['steering_angle_scale'], throttle))
+                            measurements_timestep.append((steering_angle*config['steering_angle_scale'], throttle))
                         else:
-                            measurements.append(steering_angle*config['steering_angle_scale'])
+                            measurements_timestep.append(steering_angle*config['steering_angle_scale'])
 
                     # data augmentation?
                     """
@@ -263,21 +263,15 @@ class DriveTrain:
 
                         X_train = np.array(images)
                         y_train = np.array(measurements)
-
-                        # reshape for lstm
-                        X_train = X_train.reshape(-1, config['lstm_timestep'], 
-                                        config['input_image_height'],
-                                        config['input_image_width'],
-                                        config['input_image_depth'])
-                        y_train = y_train.reshape(-1, 1)
-
+                        
                         if config['num_inputs'] == 2:
-                            X_train_vel = np.array(velocities).reshape(-1, 1)
+                            X_train_vel = np.array(velocities).reshape(-1,config['lstm_timestep'],1)
                             X_train = [X_train, X_train_vel]
                         if config['num_outputs'] == 2:
-                            y_train = np.stack([steering_angles, throttles], axis=1).reshape(-1,2)
-
+                            y_train = np.stack(measurements).reshape(-1,config['num_outputs'])
+                            
                         yield X_train, y_train
+                        
                 else: 
                     samples = sklearn.utils.shuffle(samples)
 
@@ -295,10 +289,7 @@ class DriveTrain:
                         if config['num_inputs'] == 2:
                             X_train_vel = np.array(velocities).reshape(-1, 1)
                             X_train = [X_train, X_train_vel]
-                        #if config['num_outputs'] == 2:
-                        #    y_train = np.stack([steering_angles, throttles], axis=1).reshape(-1,2)
-                        
-                        #print(y_train)
+                            
                         yield X_train, y_train
         
         self.train_generator = _generator(self.train_data)
