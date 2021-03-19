@@ -21,6 +21,7 @@ import const
 from config import Config
 
 config = Config.neural_net
+config_rn = Config.run_neural
 
 def model_ce491():
     input_shape = (config['input_image_height'],
@@ -125,7 +126,7 @@ def model_convlstm_vel():
     vel_shape = (None, 1)
     ######img model#######
     input_img = Input(shape=img_shape, name='input_image')
-    lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb')(input_img)
+    lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb_img')(input_img)
     conv_1    = TimeDistributed(Convolution2D(24, (5, 5), strides=(2,2)), name='conv_1')(lamb)
     conv_2    = TimeDistributed(Convolution2D(36, (5, 5), strides=(2,2)), name='conv_2')(conv_1)
     conv_3    = TimeDistributed(Convolution2D(48, (5, 5), strides=(2,2)), name='conv_3')(conv_2)
@@ -137,7 +138,8 @@ def model_convlstm_vel():
     
     ##########velocity###############
     input_velocity = Input(shape=vel_shape, name='input_velocity')
-    fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(input_velocity)
+    lamb      = TimeDistributed(Lambda(lambda x: x / 38), name='lamb_vel')(input_velocity)
+    fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(lamb)
     #################################
     ##########concat#################
     concat    = concatenate([fc_2, fc_vel_1], name='concat')
