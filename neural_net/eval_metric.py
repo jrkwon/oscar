@@ -97,12 +97,15 @@ class Evalmetric:
 
     ###########################################################################
     #
-    def _calc_groundtruth(self):
-        # 1. 전체 지도의 정보를 받아옴 ( 타일 형태, 타일 길이 )
+
+        # 0. ./start_fusion으로 맵을 한번 실행시키면 맵에 대한 정보가 txt파일로 저장됨 (neural_net/map_info/map_info.txt)
+        # 1. 전체 지도의 정보를 읽음 ( 타일 형태, 타일 길이 )
         # 2. 초기 시작점 (0,0)을 기준으로 타일별 위치를 구함
         # 3. 맵의 중앙선을 계산
         
+    def _calc_mdc(self):
         pass
+    
     # def run(self):
         
         

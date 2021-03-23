@@ -1,0 +1,34 @@
+(DS) Straight Road - 200m_8             (DS) Straight Road - 200m
+(DS) Straight Road - 100m_0             (DS) Straight Road - 100m
+le 100   (DS) Curved Road - 100m_3      (DS) Left Road - 100m
+(DS) Straight Road - 50m                (DS) Straight Road - 50m
+le 50    (DS) Curved Road - 50m_7*      (DS) Left Road - 50m
+ri 50    (DS) Curved Road - 50m_9*      (DS) Right Road - 50m
+ri 50    (DS) Curved Road - 50m_8*      (DS) Right Road - 50m_0         
+(DS) Straight Road - 100m_6             (DS) Straight Road - 100m_0     
+le 100   (DS) Curved Road - 100m_8      (DS) Left Road - 100m_0             ----
+le 100   (DS) Curved Road - 100m_11     (DS) Left Road - 100m_1
+(DS) Straight Road - 200m_11            (DS) Straight Road - 200m_0
+le 50    (DS) Curved Road - 50m_11*     (DS) Left Road - 50m_0
+(DS) Straight Road - 100m_8             (DS) Straight Road - 100m_1
+ri 50    (DS) Curved Road - 50m_10*     (DS) Right Road - 50m_1
+ri 50    (DS) Curved Road - 50m	12*     (DS) Right Road - 50m_2
+(DS) Straight Road - 100m_7             (DS) Straight Road - 100m_2
+le 50    (DS) Curved Road - 50m	13*     (DS) Left Road - 50m_1
+(DS) Straight Road - 200m_9             (DS) Straight Road - 200m_1
+le 100   (DS) Curved Road - 100m_10*    (DS) Left Road - 100m_2
+le 100   (DS) Curved Road - 100m_9*     (DS) Left Road - 100m_3
+(DS) Straight Road - 100m_5             (DS) Straight Road - 100m_3
+ri 50    (DS) Curved Road - 50m	3*      (DS) Right Road - 50m_3
+ri 50    (DS) Curved Road - 50m	2*      (DS) Right Road - 50m_4
+le 50    (DS) Curved Road - 50m	1*      (DS) Left Road - 50m_2      
+(DS) Straight Road - 50m_2              (DS) Straight Road - 50m_0
+le 100   (DS) Curved Road - 100m_7*     (DS) Left Road - 100m_4
+
+ds_left_road_100m
+
+ds_right_road_100m
+
+ds_left_road_50m
+
+ds_right_road_50m
