@@ -15,9 +15,10 @@
 # limitations under the License.
 
 
-import rospy
+import rospy, math, sys
 from fusion.msg import Control
 from sensor_msgs.msg import Joy
+from nav_msgs.msg import Odometry
 
 #######################################
 ## Logitech G920 with Pedal and Shift
@@ -39,8 +40,8 @@ BRAKE_POINT = -0.9  # consider brake is applied if value is greater than this.
 
 # Gear shift
 # to be neutral, bothe SHIFT_FORWARD & SHIFT_REVERSE must be 0
-SHIFT_FORWARD = 14     # forward 1
-SHIFT_REVERSE = 15     # reverse 1
+SHIFT_FORWARD = 4     # forward 1
+SHIFT_REVERSE = 5     # reverse 1
 
 # Max speed and steering factor
 MAX_THROTTLE_FACTOR = 10
@@ -56,14 +57,31 @@ class Translator:
     def __init__(self):
         self.sub = rospy.Subscriber("joy", Joy, self.callback)
         self.pub = rospy.Publisher('fusion', Control, queue_size=1)
+        self.sub_vel = rospy.Subscriber("base_pose_ground_truth", Odometry, self.cbVel)
+        
         self.last_published_time = rospy.get_rostime()
         self.last_published = None
         self.timer = rospy.Timer(rospy.Duration(1./20.), self.timer_callback)
+        self.gear = 0
+        
+        self.command = Control()
+        print('steer \tthrt: \tbrake \tvelocity')
+        
         
     def timer_callback(self, event):
         if self.last_published and self.last_published_time < rospy.get_rostime() + rospy.Duration(1.0/20.):
             self.callback(self.last_published)
 
+    def cbVel(self, msg):
+        vel_x = msg.twist.twist.linear.x 
+        vel_y = msg.twist.twist.linear.y
+        vel_z = msg.twist.twist.linear.z
+        cur_output = '{0:.3f} \t{1:.3f} \t{2:.3f} \t{3:.3f}\r'.format(self.command.steer, 
+                          self.command.throttle, self.command.brake, math.sqrt(vel_x**2 + vel_y**2 + vel_z**2))
+
+        sys.stdout.write(cur_output)
+        sys.stdout.flush()
+    
     def callback(self, message):
         rospy.logdebug("joy_translater received axes %s",message.axes)
         command = Control()
@@ -84,10 +102,15 @@ class Translator:
             command.throttle = 0.0
 
         if message.buttons[SHIFT_FORWARD] == 1:
-            command.shift_gears = Control.FORWARD
-        elif message.buttons[SHIFT_FORWARD] == 0 and message.buttons[SHIFT_REVERSE] == 0 :
-            command.shift_gears = Control.NEUTRAL
+            self.gear = "forward"
         elif message.buttons[SHIFT_REVERSE] == 1:
+            self.gear = "reverse"
+        
+        if self.gear == "forward":
+            command.shift_gears = Control.FORWARD
+        # elif message.buttons[SHIFT_FORWARD] == 0 and message.buttons[SHIFT_REVERSE] == 0 :
+        #     self.command.shift_gears = Control.NEUTRAL
+        elif self.gear == "reverse":
             command.shift_gears = Control.REVERSE
         else:
             command.shift_gears = Control.NO_COMMAND
@@ -95,6 +118,7 @@ class Translator:
         command.steer = message.axes[STEERING_AXIS]
         self.last_published = message
         self.pub.publish(command)
+        self.command = command
 
 if __name__ == '__main__':
     rospy.init_node('joystick_translator')
