@@ -42,7 +42,8 @@ class DataCollection():
         self.throttle = 0
         self.brake = 0
 
-        self.vel_x = self.vel_y = self.vel_z = 0
+        self.vel_x = self.vel_y = self.vel_z = self.ang_z = 0
+        
         self.vel = 0
         self.pos_x = self.pos_y = self.pos_z = 0
 
@@ -85,7 +86,7 @@ class DataCollection():
         self.vel_y = value.twist.twist.linear.y
         self.vel_z = value.twist.twist.linear.z
         self.vel = self.calc_velocity(self.vel_x, self.vel_y, self.vel_z)
-
+        self.ang_z = value.twist.twist.angular.z
 
     def recorder_cb(self, data):
         img = self.img_cvt.imgmsg_to_opencv(data)
@@ -105,7 +106,7 @@ class DataCollection():
             cv2.imwrite(file_full_path, img)
         sys.stdout.write(file_full_path + '\r')
         if config['version'] >= 0.92:
-            line = "{}{},{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
+            line = "{}{},{},{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
                                                         self.steering, 
                                                         self.throttle,
                                                         self.brake,
@@ -114,6 +115,7 @@ class DataCollection():
                                                         self.vel_x,
                                                         self.vel_y,
                                                         self.vel_z,
+                                                        self.ang_z,
                                                         self.pos_x,
                                                         self.pos_y,
                                                         self.pos_z)
