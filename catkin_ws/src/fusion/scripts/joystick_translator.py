@@ -19,6 +19,7 @@ import rospy, math, sys
 from fusion.msg import Control
 from sensor_msgs.msg import Joy
 from nav_msgs.msg import Odometry
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 #######################################
 ## Logitech G920 with Pedal and Shift
@@ -31,7 +32,7 @@ BUTTON_A = 0        # speed step down
 BUTTON_B = 1        # steering step up
 BUTTON_X = 2        # steering step down
 BUTTON_Y = 3        # speed step up
-
+BUTTON_C = 10       # center Xbox button
 
 # Throttle and Brake
 THROTTLE_AXIS = 1   # release -1 --> press 1
@@ -76,6 +77,9 @@ class Translator:
         vel_x = msg.twist.twist.linear.x 
         vel_y = msg.twist.twist.linear.y
         vel_z = msg.twist.twist.linear.z
+        
+        
+        
         cur_output = '{0:.3f} \t{1:.3f} \t{2:.3f} \t{3:.3f}\r'.format(self.command.steer, 
                           self.command.throttle, self.command.brake, math.sqrt(vel_x**2 + vel_y**2 + vel_z**2))
 
@@ -105,13 +109,22 @@ class Translator:
             self.gear = "forward"
         elif message.buttons[SHIFT_REVERSE] == 1:
             self.gear = "reverse"
+        elif message.buttons[BUTTON_C] == 1:
+            self.gear = "parking"
         
         if self.gear == "forward":
+            # print("forward")
             command.shift_gears = Control.FORWARD
         # elif message.buttons[SHIFT_FORWARD] == 0 and message.buttons[SHIFT_REVERSE] == 0 :
         #     self.command.shift_gears = Control.NEUTRAL
         elif self.gear == "reverse":
+            # print("reverse")
             command.shift_gears = Control.REVERSE
+        elif self.gear == "parking":
+            # print("parking")
+            command.shift_gears = Control.NEUTRAL
+            command.throttle = 0.0
+            command.brake = 1.0
         else:
             command.shift_gears = Control.NO_COMMAND
 

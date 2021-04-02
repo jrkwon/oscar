@@ -13,7 +13,7 @@ version: 0.91
 network_type: 10        # refer to neural_net/const.py
 lstm: True
 
-lstm_timestep: 20
+lstm_timestep: 5
 lstm_lr: 0.00001        # 
 cnn_lr:  0.001          # default of Adam is 0.001 
 
@@ -25,9 +25,9 @@ normalize_data: True
 validation_rate: 0.3
 num_epochs: 200
 batch_size: 16
-num_inputs: 2     # input: image, velocity
-num_outputs: 2    # output: steering_angle, throttle
-early_stopping_patience: 200
+num_inputs: 1     # input: image, velocity
+num_outputs: 1    # output: steering_angle, throttle
+early_stopping_patience: 30
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/
 
@@ -43,6 +43,6 @@ input_image_depth: 3
 
 # steering data preprocessing
 # - steering angle adjustment
-steering_angle_scale: 5.0
+steering_angle_scale: 2.0
 # - steering wheel jitter tolerance
 steering_angle_jitter_tolerance: 0.01

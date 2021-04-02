@@ -94,7 +94,7 @@ class DriveTrain:
         num_samples = len(samples)
 
         # get the last index number      
-        steps = 1
+        steps = 3
         last_index = (num_samples - config['lstm_timestep'])//steps
         
         image_names = []
@@ -136,6 +136,8 @@ class DriveTrain:
                 if steering_angle > config['steering_angle_jitter_tolerance'] or \
                     steering_angle < -config['steering_angle_jitter_tolerance']:
                     image = self.data_aug.brightness(image)
+                if config['lstm'] is True:
+                    image = self.data_aug.lstm_brightness(image)
                 return True, image, steering_angle
 
             if config['data_aug_shift'] is True:    
@@ -261,6 +263,12 @@ class DriveTrain:
 
                         images, velocities, measurements = _prepare_lstm_batch_samples(batch_samples)        
 
+                        # lstm data augmentation
+                        if config['data_aug_bright'] is True:
+                            _, image_aug, measurements_aug = _data_augmentation(images, measurements)
+                            images.extend(image_aug)
+                            measurements.extend(measurements_aug)
+                        
                         X_train = np.array(images)
                         y_train = np.array(measurements)
                         
@@ -279,10 +287,7 @@ class DriveTrain:
                         batch_samples = samples[offset:offset+batch_size]
 
                         images, velocities, measurements = _prepare_batch_samples(batch_samples)
-                        X_train = np.array(images).reshape(-1, 
-                                          config['input_image_height'],
-                                          config['input_image_width'],
-                                          config['input_image_depth'])
+                        X_train = np.array(images)
                         y_train = np.array(measurements)
                         y_train = y_train.reshape(-1, 1)
                         

@@ -16,10 +16,11 @@ import datetime
 import time
 import sys
 from geometry_msgs.msg import Twist
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, Imu
 from std_msgs.msg import String
 #from geometry_msgs.msg import Vector3Stamped
 from nav_msgs.msg import Odometry
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import math
 
 import image_converter as ic
@@ -42,7 +43,8 @@ class DataCollection():
         self.throttle = 0
         self.brake = 0
 
-        self.vel_x = self.vel_y = self.vel_z = self.ang_z = 0
+        self.vel_x = self.vel_y = self.vel_z = 0
+        self.accel_x = self.accel_y = 0
         
         self.vel = 0
         self.pos_x = self.pos_y = self.pos_z = 0
@@ -64,6 +66,7 @@ class DataCollection():
             os.makedirs(path)
 
         self.text = open(str(path) + name_datatime + const.DATA_EXT, "w+")
+        self.text_accel = open(str(path) + name_datatime+'_accel' + const.DATA_EXT, "w+")
         self.path = path
 
 
@@ -86,8 +89,15 @@ class DataCollection():
         self.vel_y = value.twist.twist.linear.y
         self.vel_z = value.twist.twist.linear.z
         self.vel = self.calc_velocity(self.vel_x, self.vel_y, self.vel_z)
-        self.ang_z = value.twist.twist.angular.z
 
+    def imu_cb(self, value):
+        self.accel_x = value.linear_acceleration.x
+        # self.accel_y = value.linear_acceleration.y
+        self.accel_y = value.angular_velocity.z
+        if config['version'] >= 0.92:
+            line = "{},{}\r\n".format(self.accel_x, self.accel_y)
+        self.text_accel.write(line)
+    
     def recorder_cb(self, data):
         img = self.img_cvt.imgmsg_to_opencv(data)
 
@@ -106,7 +116,7 @@ class DataCollection():
             cv2.imwrite(file_full_path, img)
         sys.stdout.write(file_full_path + '\r')
         if config['version'] >= 0.92:
-            line = "{}{},{},{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
+            line = "{}{},{},{},{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
                                                         self.steering, 
                                                         self.throttle,
                                                         self.brake,
@@ -115,7 +125,8 @@ class DataCollection():
                                                         self.vel_x,
                                                         self.vel_y,
                                                         self.vel_z,
-                                                        self.ang_z,
+                                                        self.accel_x,
+                                                        self.accel_y,
                                                         self.pos_x,
                                                         self.pos_y,
                                                         self.pos_z)
@@ -141,6 +152,7 @@ def main():
     rospy.Subscriber(config['vehicle_control_topic'], Control, dc.steering_throttle_cb)
     rospy.Subscriber(config['base_pose_topic'], Odometry, dc.pos_vel_cb)
     rospy.Subscriber(config['camera_image_topic'], Image, dc.recorder_cb)
+    rospy.Subscriber(config['imu'], Imu, dc.imu_cb)
 
     try:
         rospy.spin()

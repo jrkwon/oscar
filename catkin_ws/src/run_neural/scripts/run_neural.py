@@ -26,6 +26,7 @@ from image_converter import ImageConverter
 from drive_run import DriveRun
 from config import Config
 from image_process import ImageProcess
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 if Config.data_collection['vehicle_name'] == 'fusion':
     from fusion.msg import Control
@@ -82,13 +83,19 @@ class NeuralControl:
       
 def pos_vel_cb(value):
     global velocity
+    global body_x, body_y
 
     vel_x = value.twist.twist.linear.x 
     vel_y = value.twist.twist.linear.y
     vel_z = value.twist.twist.linear.z
     
     velocity = math.sqrt(vel_x**2 + vel_y**2 + vel_z**2)
-
+    quat = [value.pose.pose.orientation.x, value.pose.pose.orientation.y,
+            value.pose.pose.orientation.z, value.pose.pose.orientation.w]
+    _ ,_ , theta = euler_from_quaternion(quat)
+        
+    body_x = vel_x * math.cos(theta) + vel_y * math.sin(theta)
+    body_y = -vel_x * math.sin(theta) + vel_y * math.cos(theta)
         
 def main(weight_file_name):
 
@@ -104,7 +111,7 @@ def main(weight_file_name):
         joy_pub4mavros = rospy.Publisher(Config.config['mavros_cmd_vel_topic'], Twist, queue_size=20)
 
     print('\nStart running. Vroom. Vroom. Vroooooom......')
-    print('steer \tthrt: \tbrake \tvelocity')
+    print('steer \tthrt: \tbrake \tvelocity \tbody_x \tbody_y')
 
     use_predicted_throttle = True if config['num_outputs'] == 2 else False
     while not rospy.is_shutdown():
@@ -169,8 +176,8 @@ def main(weight_file_name):
 
 
         ## print out
-        cur_output = '{0:.3f} \t{1:.3f} \t{2:.3f} \t{3:.3f}\r'.format(joy_data.steer, 
-                          joy_data.throttle, joy_data.brake, velocity)
+        cur_output = '{0:.3f} \t{1:.3f} \t{2:.3f} \t{3:.3f} \t{4:.3f} \t{5:.3f}\r'.format(joy_data.steer, 
+                          joy_data.throttle, joy_data.brake, velocity, body_x, body_y)
 
         sys.stdout.write(cur_output)
         sys.stdout.flush()

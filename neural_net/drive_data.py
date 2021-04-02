@@ -22,7 +22,7 @@ class DriveData:
     if Config.data_collection['brake'] is True:
         csv_header = ['image_fname', 'steering_angle', 'throttle', 'brake', 
                     'linux_time', 
-                    'vel', 'vel_x', 'vel_y', 'vel_z', 'ang_z',
+                    'vel', 'vel_x', 'vel_y', 'vel_z', 'accel_x', 'accel_y',
                     'pos_x', 'pos_y', 'pos_z' ]
     else:
         csv_header = ['image_fname', 'steering_angle', 'throttle', 
@@ -130,7 +130,8 @@ class DriveData:
                 self.velocities_xyz.append((float(self.df.loc[i]['vel_x']), 
                                             float(self.df.loc[i]['vel_y']), 
                                             float(self.df.loc[i]['vel_z']),
-                                            float(self.df.loc[i]['ang_z'])))
+                                            float(self.df.loc[i]['accel_x']), 
+                                            float(self.df.loc[i]['accel_y'])))
                 self.positions_xyz.append((float(self.df.loc[i]['pos_x']), 
                                             float(self.df.loc[i]['pos_y']), 
                                             float(self.df.loc[i]['pos_z'])))
