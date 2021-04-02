@@ -14,7 +14,7 @@ network_type: 10        # refer to neural_net/const.py
 lstm: True
 
 lstm_timestep: 5
-lstm_dataterm: 3
+lstm_dataterm: 1
 lstm_lr: 0.00001        # 
 cnn_lr:  0.001          # default of Adam is 0.001 
 

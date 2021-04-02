@@ -32,10 +32,6 @@ class DriveRun:
         if Config.neural_net['num_inputs'] == 2:
             velocity = input[1]
         np_img = np.expand_dims(image, axis=0)
-        #np_img = np.array(np_img).reshape(-1, 
-        #                                  Config.neural_net['input_image_height'],
-        #                                  Config.neural_net['input_image_width'],
-        #                                  Config.neural_net['input_image_depth'])
         
         if Config.neural_net['num_inputs'] == 2:
             velocity = np.array(velocity).reshape(-1, 1)

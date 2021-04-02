@@ -53,7 +53,9 @@ class NeuralControl:
         self.image_processed = False
         #self.config = Config()
         self.braking = False
-
+        self.lstm_image = []
+        self.lstm_vel = []
+        
     def _controller_cb(self, image): 
         img = self.ic.imgmsg_to_opencv(image)
         cropped = img[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
@@ -66,10 +68,14 @@ class NeuralControl:
 
         ## this is for CNN-LSTM net models
         if config['lstm'] is True:
-            self.image = np.array(self.image).reshape(1, 
-                                 config['input_image_height'],
-                                 config['input_image_width'],
-                                 config['input_image_depth'])
+            self.lstm_image.append(self.image)
+            if len(self.lstm_image) > config['lstm_timestep'] :
+                del self.lstm_image[0]
+            if config['num_inputs'] == 2:
+                self.lstm_vel.append(velocity)
+                if len(self.lstm_vel) > config['lstm_timestep']:
+                    del self.lstm_vel[0]
+                    
         self.image_processed = True
         
     def _timer_cb(self):
@@ -120,22 +126,34 @@ def main(weight_file_name):
             continue
         
         # predicted steering angle from an input image
-        if config['num_inputs'] == 2:
-            prediction = neural_control.drive.run((neural_control.image, velocity))
-            if config['num_outputs'] == 2:
-                # prediction is [ [] ] numpy.ndarray
-                joy_data.steer = prediction[0][0]
-                joy_data.throttle = prediction[0][1]
-            else: # num_outputs is 1
-                joy_data.steer = prediction[0][0]
-        else: # num_inputs is 1
-            prediction = neural_control.drive.run((neural_control.image, ))
-            if config['num_outputs'] == 2:
-                # prediction is [ [] ] numpy.ndarray
-                joy_data.steer = prediction[0][0]
-                joy_data.throttle = prediction[0][1]
-            else: # num_outputs is 1
-                joy_data.steer = prediction[0][0]
+        if config['lstm'] is True:
+            if len(neural_control.lstm_image) >= config['lstm_timestep'] :
+                if config['num_inputs'] == 2:
+                    if len(neural_control.lstm_vel) >= config['lstm_timestep']:
+                        steering_angle, throttle = neural_control.drive.run_vel(neural_control.lstm_image, neural_control.lstm_vel)
+                        joy_data.throttle = throttle
+                        joy_data.steer = steering_angle
+                else : #if config['train_velocity'] is False
+                    steering_angle = neural_control.drive.run(neural_control.lstm_image)
+                    joy_data.steer = steering_angle
+        
+        else :
+            if config['num_inputs'] == 2:
+                prediction = neural_control.drive.run((neural_control.image, velocity))
+                if config['num_outputs'] == 2:
+                    # prediction is [ [] ] numpy.ndarray
+                    joy_data.steer = prediction[0][0]
+                    joy_data.throttle = prediction[0][1]
+                else: # num_outputs is 1
+                    joy_data.steer = prediction[0][0]
+            else: # num_inputs is 1
+                prediction = neural_control.drive.run((neural_control.image, ))
+                if config['num_outputs'] == 2:
+                    # prediction is [ [] ] numpy.ndarray
+                    joy_data.steer = prediction[0][0]
+                    joy_data.throttle = prediction[0][1]
+                else: # num_outputs is 1
+                    joy_data.steer = prediction[0][0]
             
         #############################
         ## very very simple controller

@@ -264,14 +264,23 @@ class DriveTrain:
                             images.extend(image_aug)
                             measurements.extend(measurements)
                         
-                        X_train = np.array(images)
-                        y_train = np.array(measurements)
+                        # X_train = np.array(images)
+                        
+                        X_train = np.array(images).reshape(-1,
+                                                           config['lstm_timestep'],
+                                                           config['input_image_height'],
+                                                           config['input_image_width'],
+                                                           config['input_image_depth'])
+                        y_train = np.array(measurements).reshape(-1, 
+                                                                    config['num_outputs'])
                         
                         if config['num_inputs'] == 2:
                             X_train_vel = np.array(velocities).reshape(-1,config['lstm_timestep'],1)
                             X_train = [X_train, X_train_vel]
-                        if config['num_outputs'] == 2:
-                            y_train = np.stack(measurements).reshape(-1,config['num_outputs'])
+                            y_train = np.array(measurements).reshape(-1,
+                                                                    config['lstm_timestep'],
+                                                                    config['num_outputs'])
+                        
                             
                         yield X_train, y_train
                         
