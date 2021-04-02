@@ -93,34 +93,31 @@ class DriveTrain:
     def _prepare_lstm_data(self, samples):
         num_samples = len(samples)
 
-        # get the last index number      
-        steps = 3
-        last_index = (num_samples - config['lstm_timestep'])//steps
+        # get the last index number
+        last_index = (num_samples - config['lstm_timestep']*config['lstm_dataterm'])
         
         image_names = []
-        velocities = []
         measurements = []
-
-        for i in range(0, last_index, steps):
-            sub_samples = samples[ i : i+config['lstm_timestep'] ]
+        velocities = []
+        for i in range(0, last_index):
+            sub_samples = samples[ i : i+config['lstm_timestep']*config['lstm_dataterm'] :config['lstm_dataterm']]
             
             # print('num_batch_sample : ',len(batch_samples))
             sub_image_names = []
-            sub_velocities = []
             sub_measurements = []
-            for image_name, velocity, measurement in sub_samples:
+            sub_velocities = []
+            for image_name, measurment, velocity in sub_samples:
                 sub_image_names.append(image_name)
+                sub_measurements.append(measurment)
                 sub_velocities.append(velocity)
-                sub_measurements.append(measurement)
 
             image_names.append(sub_image_names)
-            velocities.append(sub_velocities)
             measurements.append(sub_measurements)
+            velocities.append(sub_velocities)
         
         samples = list(zip(image_names, velocities, measurements))
         return train_test_split(samples, test_size=config['validation_rate'], 
-                                shuffle=False)        
-
+                                shuffle=False) 
 
     ###########################################################################
     #
@@ -136,8 +133,6 @@ class DriveTrain:
                 if steering_angle > config['steering_angle_jitter_tolerance'] or \
                     steering_angle < -config['steering_angle_jitter_tolerance']:
                     image = self.data_aug.brightness(image)
-                if config['lstm'] is True:
-                    image = self.data_aug.lstm_brightness(image)
                 return True, image, steering_angle
 
             if config['data_aug_shift'] is True:    
@@ -265,9 +260,9 @@ class DriveTrain:
 
                         # lstm data augmentation
                         if config['data_aug_bright'] is True:
-                            _, image_aug, measurements_aug = _data_augmentation(images, measurements)
+                            image_aug = self.data_aug.lstm_brightness(images)
                             images.extend(image_aug)
-                            measurements.extend(measurements_aug)
+                            measurements.extend(measurements)
                         
                         X_train = np.array(images)
                         y_train = np.array(measurements)
