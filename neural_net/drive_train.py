@@ -264,7 +264,7 @@ class DriveTrain:
                                                                     config['lstm_timestep'],
                                                                     config['num_outputs'])
                         else:
-                            y_train = np.array(steering_angle).reshape(-1, 
+                            y_train = np.array(steering_angle).reshape(-1, config['lstm_timestep'],
                                                                     config['num_outputs'])
                             
                         yield X_train, y_train

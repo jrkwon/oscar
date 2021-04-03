@@ -7,11 +7,11 @@ version: 0.9
 ## neural network 
 
 # network definition
-network_type: 11        # refer to neural_net/const.py
+network_type: 10        # refer to neural_net/const.py
 lstm: True
 
-lstm_timestep: 10
-lstm_dataterm: 4
+lstm_timestep: 5
+lstm_dataterm: 3
 lstm_lr: 0.00001        # 
 cnn_lr:  0.001          # default of Adam is 0.001 
 
@@ -23,17 +23,17 @@ normalize_data: True
 validation_rate: 0.3
 num_epochs: 200
 batch_size: 16
-train_velocity: True
-num_outputs: 2
+train_velocity: False
+num_outputs: 1
 early_stopping_patience: 30
-num_gpus: 2
+num_gpus: 1
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/
 
 # data augmentation
 data_aug_flip: False
-data_aug_bright: True
-data_aug_shift: True
+data_aug_bright: False
+data_aug_shift: False
 
 # input image size to the neural network
 input_image_width: 160

@@ -59,28 +59,28 @@ def model_jaerock():
         Dense(10),
         Dense(config['num_outputs'])])    
 
-def model_convlstm():
-    from keras.layers.recurrent import LSTM
-    from keras.layers.wrappers import TimeDistributed
+# def model_convlstm():
+#     from keras.layers.recurrent import LSTM
+#     from keras.layers.wrappers import TimeDistributed
 
-    # redefine input_shape to add one more dims
-    input_shape = (None, config['input_image_height'],
-                            config['input_image_width'],
-                            config['input_image_depth'])
-    return Sequential([
-        TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), input_shape=input_shape),
-        TimeDistributed(Conv2D(24, (5, 5), strides=(2,2))),
-        TimeDistributed(Conv2D(36, (5, 5), strides=(2,2))),
-        TimeDistributed(Conv2D(48, (5, 5), strides=(2,2))),
-        TimeDistributed(Conv2D(64, (3, 3))),
-        TimeDistributed(Conv2D(64, (3, 3), name='conv2d_last')),
-        TimeDistributed(Flatten()),
-        LSTM(return_sequences=False, units=10),
-        Dense(1000),
-        Dense(100),
-        Dense(50),
-        Dense(10),
-        Dense(config['num_outputs'])])
+#     # redefine input_shape to add one more dims
+#     input_shape = (None, config['input_image_height'],
+#                             config['input_image_width'],
+#                             config['input_image_depth'])
+#     return Sequential([
+#         TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), input_shape=input_shape),
+#         TimeDistributed(Conv2D(24, (5, 5), strides=(2,2))),
+#         TimeDistributed(Conv2D(36, (5, 5), strides=(2,2))),
+#         TimeDistributed(Conv2D(48, (5, 5), strides=(2,2))),
+#         TimeDistributed(Conv2D(64, (3, 3))),
+#         TimeDistributed(Conv2D(64, (3, 3), name='conv2d_last')),
+#         TimeDistributed(Flatten()),
+#         Dense(1000),
+#         LSTM(return_sequences=False, units=10),
+#         Dense(100),
+#         Dense(50),
+#         Dense(10),
+#         Dense(config['num_outputs'])])
 
 def model_jaerock_lstm_vel():
     from keras.layers.recurrent import LSTM
@@ -104,18 +104,49 @@ def model_jaerock_lstm_vel():
     fc_2      = TimeDistributed(Dense(100, activation='relu' ), name='fc_2')(fc_1)
     
     ##########velocity###############
-    input_velocity = Input(shape=(None,  config['input_velocity']), name='input_velocity')
-    # lamb_vel  = TimeDistributed(Lambda(lambda x: x/(config['max_vel']/2.0) - 1.0), name='lamb')(input_velocity)
-    fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(input_velocity)
-    #################################
-    ##########concat#################
-    concat    = concatenate([fc_2, fc_vel_1], name='concat')
-    lstm      = LSTM(10, return_sequences=True, name='lstm')(concat)
+    # input_velocity = Input(shape=(None,  config['input_velocity']), name='input_velocity')
+    # # lamb_vel  = TimeDistributed(Lambda(lambda x: x/(config['max_vel']/2.0) - 1.0), name='lamb')(input_velocity)
+    # fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(input_velocity)
+    # #################################
+    # ##########concat#################
+    # concat    = concatenate([fc_2, fc_vel_1], name='concat')
+    lstm      = LSTM(10, return_sequences=False, name='lstm')(fc_2)
     fc_3      = TimeDistributed(Dense(50, activation='relu'), name='fc_3')(lstm)
     fc_4      = TimeDistributed(Dense(10, activation='relu'), name='fc_4')(fc_3)
     fc_last   = TimeDistributed(Dense(config['num_outputs'], activation='linear'), name='fc_str')(fc_4)
-    print(fc_last.shape)
-    model = Model(inputs=[input_img, input_velocity], outputs=fc_last)
+    # print(fc_last.shape)
+    model = Model(inputs=[input_img], outputs=fc_last)
+    # model = Model(inputs=[input_img, input_velocity], outputs=fc_last)
+    
+    return model
+
+def model_convlstm():
+    from keras.layers.recurrent import LSTM
+    from keras.layers.wrappers import TimeDistributed
+
+    # redefine input_shape to add one more dims
+    img_shape = (None, config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'])
+    
+    input_img = Input(shape=img_shape, name='input_image')
+    lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb_img')(input_img)
+    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), strides=(2,2)), name='conv_1')(lamb)
+    conv_2    = TimeDistributed(Convolution2D(36, (5, 5), strides=(2,2)), name='conv_2')(conv_1)
+    conv_3    = TimeDistributed(Convolution2D(48, (5, 5), strides=(2,2)), name='conv_3')(conv_2)
+    conv_4    = TimeDistributed(Convolution2D(64, (3, 3)), name='conv_4')(conv_3)
+    conv_5    = TimeDistributed(Convolution2D(64, (3, 3)), name='conv2d_last')(conv_4)
+    flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
+    fc_1      = TimeDistributed(Dense(1000, activation='relu'), name='fc_1')(flat)
+    fc_2      = TimeDistributed(Dense(100, activation='relu' ), name='fc_2')(fc_1)
+    
+    lstm      = LSTM(10, return_sequences=True, name='lstm')(fc_2)
+    fc_3      = TimeDistributed(Dense(50, activation='relu'), name='fc_3')(lstm)
+    fc_4      = TimeDistributed(Dense(10, activation='relu'), name='fc_4')(fc_3)
+    fc_last   = TimeDistributed(Dense(1, activation='linear'), name='fc_last')(fc_4)
+
+    model = Model(inputs=input_img, outputs=fc_last)
+        
     
     return model
 
