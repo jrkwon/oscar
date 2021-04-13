@@ -8,22 +8,93 @@ History:
 @author: jaerock
 """
 
-import sys
+import sys, os
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import cv2
+import numpy as np
 from vis.utils import utils
-from vis.visualization import visualize_saliency
 from vis.visualization import visualize_cam
-from vis.visualization import visualize_activation
 
 from drive_run import DriveRun
+from drive_data import DriveData
 from config import Config
 from image_process import ImageProcess
 
 
 ###############################################################################
 #       
+def images_saliency(model_path, image_folder_path):
+    image_process = ImageProcess()
+    image_folder_name = None
+    if image_folder_path[-1] == '/':
+        image_folder_path = image_folder_path[:-1]
+    loc_slash = image_folder_path.rfind('/')
+    if loc_slash != -1: # there is '/' in the data path
+        image_folder_name = image_folder_path[loc_slash+1:] 
+    csv_path = image_folder_path+'/'+image_folder_name+'.csv'
+    
+    data = DriveData(csv_path)
+    data.read(normalize=False)
+    
+    images_name = data.image_names
+    steering_angles = data.measurements
+    
+    drive_run = DriveRun(model_path)
+    
+    # image_process = ImageProcess()
+    for i in range(len(images_name)):
+        image_file_path = image_folder_path+'/'+images_name[i]
+        image = cv2.imread(image_file_path)
+        if Config.data_collection['crop'] is not True:
+            image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                        Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+        image = cv2.resize(image, 
+                            (Config.neural_net['input_image_width'],
+                            Config.neural_net['input_image_height']))
+        image = image_process.process(image, bgr=False)
+        measurement = drive_run.run((image, ))
+        
+        fig = plt.figure()
+        # plt.title('Prediction:\t' + str(measurement[0][0]) + '\nGroundTruth:\t' + str(steering_angles[i][0])
+        #           + '\nError:\t' + str(abs(steering_angles[i][0] - measurement[0][0])))
+        layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_last')
+        fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_str')
+        heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
+                    filter_indices=fc_last, seed_input=image, backprop_modifier='guided')
+
+        ax1 = fig.add_subplot(2,1,1)
+        ax1.set_title('Prediction :' + str(format(measurement[0][0], ".9f")) 
+                  + '\nGroundTruth:' + str(format(steering_angles[i][0], ".9f"))
+                  + '\nError      :' + str(format(abs(steering_angles[i][0]-measurement[0][0]), ".9f"))
+                  )
+        plt.imshow(image)
+        plt.imshow(heatmap, cmap='jet', alpha=0.5)   
+        ax2 = fig.add_subplot(2,1,2) 
+        plt.subplot(2,1,2)
+        plt.imshow(image)
+                
+        saliency_file_path = image_folder_path + '/saliency/' + images_name[i][:-4] + '_saliency.png'
+        plt.tight_layout()
+        # save fig    
+        if os.path.isdir(image_folder_path + '/saliency') is True:
+            plt.savefig(saliency_file_path, dpi=150)
+        else:
+            os.mkdir(image_folder_path + '/saliency')
+            plt.savefig(saliency_file_path, dpi=150)
+        
+        cur_output = '{0}/{1}\r'.format(i, len(images_name))
+
+        sys.stdout.write(cur_output)
+        sys.stdout.flush()
+        # print('Saved ' + saliency_file_path)
+        # print(image_path)
+    # measurement = drive_run.run((image, ))
+    
+    print("csv",csv_path)
+    
+    
+
 def main(model_path, image_file_path):
     image_process = ImageProcess()
 
@@ -66,8 +137,8 @@ def main(model_path, image_file_path):
     heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
                 filter_indices=None, seed_input=image, backprop_modifier='guided')
 
-    plt.imshow(image)
-    plt.imshow(heatmap, cmap='jet', alpha=0.5)
+    # plt.imshow(image)
+    # plt.imshow(heatmap, cmap='jet', alpha=0.5)
 
     # file name
     loc_slash = image_file_path.rfind('/')
@@ -94,7 +165,8 @@ if __name__ == '__main__':
         if (len(sys.argv) != 3):
             exit('Usage:\n$ python {} model_path, image_file_name'.format(sys.argv[0]))
 
-        main(sys.argv[1], sys.argv[2])
+        # main(sys.argv[1], sys.argv[2])
+        images_saliency(sys.argv[1], sys.argv[2])
 
     except KeyboardInterrupt:
         print ('\nShutdown requested. Exiting...')

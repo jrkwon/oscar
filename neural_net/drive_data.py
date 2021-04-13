@@ -79,7 +79,7 @@ class DriveData:
             ax1.set(title = 'original')
 
             remove_list = []
-            samples_per_bin = 200
+            samples_per_bin = Config.neural_net['samples_per_bin']
 
             for j in range(num_bins):
                 list_ = []

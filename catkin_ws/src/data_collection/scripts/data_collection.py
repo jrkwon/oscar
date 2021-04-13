@@ -66,7 +66,7 @@ class DataCollection():
             os.makedirs(path)
 
         self.text = open(str(path) + name_datatime + const.DATA_EXT, "w+")
-        self.text_accel = open(str(path) + name_datatime+'_accel' + const.DATA_EXT, "w+")
+        # self.text_accel = open(str(path) + name_datatime+'_accel' + const.DATA_EXT, "w+")
         self.path = path
 
 
@@ -94,9 +94,9 @@ class DataCollection():
         self.accel_x = value.linear_acceleration.x
         # self.accel_y = value.linear_acceleration.y
         self.accel_y = value.angular_velocity.z
-        if config['version'] >= 0.92:
-            line = "{},{}\r\n".format(self.accel_x, self.accel_y)
-        self.text_accel.write(line)
+        # if config['version'] >= 0.92:
+        #     line = "{},{}\r\n".format(self.accel_x, self.accel_y)
+        # self.text_accel.write(line)
     
     def recorder_cb(self, data):
         img = self.img_cvt.imgmsg_to_opencv(data)
@@ -125,11 +125,11 @@ class DataCollection():
                                                         self.vel_x,
                                                         self.vel_y,
                                                         self.vel_z,
-                                                        self.accel_x,
-                                                        self.accel_y,
                                                         self.pos_x,
                                                         self.pos_y,
-                                                        self.pos_z)
+                                                        self.pos_z,
+                                                        self.accel_x,
+                                                        self.accel_y)
         else:
             line = "{}{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
                                                         self.steering, 

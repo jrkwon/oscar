@@ -11,9 +11,9 @@ import rospy
 from gazebo_msgs.msg import ModelStates
 
 import sys, os, math
+import numpy as np
 from progressbar import ProgressBar
 from drive_data import DriveData
-from scipy import interpolate
 
 class MapInfoGenerator:
     def __init__(self, csv_path, follow_lane):
@@ -70,7 +70,7 @@ class MapInfoGenerator:
         self._build_txt(self.oscar_path+"/neural_net/map_info", self.track)
         self._cal_totalerror()
         # self._cal_groundtruth(self.oscar_path+"/neural_net/map_info")
-        # os.system("rosnode kill " + "mapinfo_generator")
+        os.system("rosnode kill " + "mapinfo_generator")
         
     def _build_txt(self, data_path, data):
         if data_path[-1] != '/':
@@ -223,9 +223,22 @@ class MapInfoGenerator:
             # print(self.car_pose)
             self._cal_roadformula([self.car_pose[i][0], self.car_pose[i][1]])
 
-        print('mdc : '+str(self._cal_mdc(self.total_error)))
-        print('mce : '+str(format(self._cal_mce(self.car_steering), ".9f")))
+        print('mdc  : '  +str(format(self._cal_mdc(self.total_error), ".9f")))
+        print('emdc : '  +str(format(self._cal_emdc(self.total_error), ".9f")))
+        print('mce  : '  +str(format(self._cal_mce(self.car_steering), ".9f")))
+        print('mddc : ' +str(format(self._cal_mddc(self.total_error, self.car_times), ".9f")))
+        print('emddc : ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
+        print('var : ' +str(format(self._cal_var(self.total_error), ".9f")))
         self._cal_ggdiagram(self.car_velocities, self.car_times)
+        error_txt=[]
+        error_txt.append('mdc  : ' +str(format(self._cal_mdc(self.total_error), ".9f")))
+        error_txt.append('emdc : ' +str(format(self._cal_emdc(self.total_error), ".9f")))
+        error_txt.append('mce  : ' +str(format(self._cal_mce(self.car_steering), ".9f")))
+        error_txt.append('mddc : ' +str(format(self._cal_mddc(self.total_error, self.car_times), ".9f")))
+        error_txt.append('emddc : ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
+        error_txt.append('var  : ' +str(format(self._cal_var(self.total_error), ".9f")))
+        
+        self._build_txt(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
         # print('total error : ',self.total_error)
         
         
@@ -234,7 +247,7 @@ class MapInfoGenerator:
         last_position = [0, 0]
         for i in range(0, len(self.track[0])):
             road_dist = float(self.track[1][i])
-            curve_margin = 2.3
+            curve_margin = 2.333
             road_box = [0, 0, 0]
             box_margin = 50.0
             if self.track[0][i] == "Straight":
@@ -372,8 +385,42 @@ class MapInfoGenerator:
                 self.quadrant = 4
             elif self.quadrant == 5:
                 self.quadrant = 1
+    
+    def _cal_var(self, error):
+        variance = np.array(error)
+        variance = np.var(variance)
+        return variance
+    
+    def _cal_emddc(self, error, t):
+        emdc = self._cal_emdc(error)
+        mddc = self._cal_mddc(error, t)
+        a = 0.5
+        return (1-a)*emdc + a*mddc
+    
+    def _cal_emdc(self, error):
+        error_emdc = 0
+        num_data = len(error)
+        for i in range(num_data):
+            if abs(error[i]) > 1.15:
+                error_emdc += error[i]
+            elif abs(error[i]) < 0.7071:
+                error_emdc += 0
+            else:
+                error_emdc += 5.256 * ( 0.2*(error[i]**4) - 0.1*(error[i]**2) )
+        error_emdc /= num_data
+        return error_emdc
+    
+    def _cal_mddc(self, error, t):
+        error_mddc = 0
+        num_data = len(error) - 1
+        for i in range(num_data):
+            de = abs(error[i+1] - error[i])
+            dt = t[i+1] - t[i]
+            error_mddc += de/dt
             
-                        
+        error_mddc /= num_data
+        return error_mddc
+    
     def _cal_mdc(self, error):
         error_mdc = 0
         num_data = len(error)
@@ -397,47 +444,24 @@ class MapInfoGenerator:
         import pandas as pd
         import numpy as np
         
-        # ax = []
-        # ay = []
-        av_ax=[]
-        av_ay=[]
-        # ax_b = []
-        # ay_b = []
-        # 가속도 계산
+        ax = []
+        ay = []
+        av_ax_g = []
+        av_ay_g = []
         num_data = len(v) - 1
-        data_count = 0
-        av_ax_data = []
-        av_ay_data = []
-        av_num = 20
+        av_num = 20 #Simple Moving Average
         for i in range(num_data):
-            # ax.append(v[i][3]/9.8)
-            # ay.append(v[i][4])
             dvx = v[i+1][0] - v[i][0]
             dvy = v[i+1][1] - v[i][1]
-            # dvx_b = v[i+1][3] - v[i][3]
-            # dvy_b = v[i+1][4] - v[i][4]
             dt = t[i+1] - t[i]
-            # if dt is not 0:
-            #     ax.append((dvx/dt)/9.8)
-            #     ay.append(v[i][4])
-            #     # ay.append((dvy/dt)/9.8)
-            #     # ax_b.append((dvx_b/dt)/9.8)
-            #     # ay_b.append((dvy_b/dt)/9.8)
-            #     data_count += 1
-            #     print("ax : "+str(dvx/dt)+"  ay : "+str(dvy/dt))
-            
-            # av_ax_data.append(v[i][3])
-            av_ax_data.append(dvx/dt)
-            av_ay_data.append(dvy/dt)
-            if len(av_ax_data) is av_num:
-                ax = sum(av_ax_data) / av_num
-                ay = sum(av_ay_data) / av_num
-                av_ax.append(ax/9.8)
-                av_ay.append(ay/9.8)
-                # ay.append(v[i][4])
-                data_count += 1
-                del av_ax_data[0]
-                del av_ay_data[0]
+            ax.append(dvx/dt)
+            ay.append(dvy/dt)
+            if len(ax) is av_num:
+                av_ax = sum(ax) / av_num
+                av_ay = sum(ay) / av_num
+                av_ax_g.append(av_ax/9.8)
+                av_ay_g.append(av_ay/9.8)
+                del ax[0], ay[0]
            
         ##########local frame vel###########
         plt.rcParams["figure.figsize"] = (10,4)
@@ -448,7 +472,7 @@ class MapInfoGenerator:
         plt.ylabel('Ax(g)', fontsize=14)
         plt.ylim([-1.5, 1.5])
         # plt.scatter(range(0, len(ax[:-1])), ax[:-1], s=.1)
-        plt.plot(range(0, len(av_ax)), av_ax,'-', color = 'red', markersize=1)
+        plt.plot(range(0, len(av_ax_g)), av_ax_g,'-', color = 'red', markersize=1)
         self._savefigs(plt, self.csv_path[:-len(self.csv_path.split('/')[-1])]+'Ax-t_Diagram')
         
         plt.rcParams["figure.figsize"] = (10,4)
@@ -459,7 +483,7 @@ class MapInfoGenerator:
         plt.ylabel('Ay(g)', fontsize=14)
         plt.ylim([-1.5, 1.5])
         # plt.scatter(range(0, len(av_ay)), av_ay, s=.1)
-        plt.plot(range(0, len(av_ay)), av_ay,'-', color = 'blue', markersize=1)
+        plt.plot(range(0, len(av_ay_g)), av_ay_g,'-', color = 'blue', markersize=1)
         self._savefigs(plt, self.csv_path[:-len(self.csv_path.split('/')[-1])]+'Ay-t_Diagram')
         
         # print(ax, ay)
@@ -479,54 +503,13 @@ class MapInfoGenerator:
         plt.ylabel('Ay(g)', fontsize=14)
         plt.xlim([-1.5, 1.5])
         plt.ylim([-1.5, 1.5])
-        plt.scatter(av_ax[500:1500], av_ay[500:1500], s=.1)
+        plt.scatter(av_ax_g[500:1500], av_ay_g[500:1500], s=.1)
         self._savefigs(plt, self.csv_path[:-len(self.csv_path.split('/')[-1])]+'G-G_Diagram')
         
-        # ##########body frame vel############
-        
-        # plt.rcParams["figure.figsize"] = (10,4)
-        # plt.rcParams['axes.grid'] = True
-        # plt.figure()
-        # plt.title('Ax_b-t diagram', fontsize=20)
-        # plt.xlabel('t', fontsize=14)
-        # plt.ylabel('Ax_b(g)', fontsize=14)
-        # plt.ylim([-1.5, 1.5])
-        # plt.plot(range(0, len(ax[674:1168])), ax_b[674:1168])
-        # self._savefigs(plt, self.csv_path[:-len(self.csv_path.split('/')[-1])]+'Ax_b-t_Diagram')
-        
-        # plt.rcParams["figure.figsize"] = (10,4)
-        # plt.rcParams['axes.grid'] = True
-        # plt.figure()
-        # plt.title('Ay_b-t diagram', fontsize=20)
-        # plt.xlabel('t', fontsize=14)
-        # plt.ylabel('Ay_b(g)', fontsize=14)
-        # plt.ylim([-1.5, 1.5])
-        # plt.plot(range(0, len(ay[674:1168])), ay_b[674:1168])
-        # self._savefigs(plt, self.csv_path[:-len(self.csv_path.split('/')[-1])]+'Ay_b-t_Diagram')
-        
-        # # print(ax, ay)
-        # plt.rcParams['axes.grid'] = True
-        # plt.figure()
-        # # plt.plot(ax[0], ay[1])
-        # plt.axis('equal')
-        # _, axes = plt.subplots()
-        # c_center = (0,0)
-        # c_radius = 1
-        # draw_circle = plt.Circle(c_center, c_radius, fc='w', ec='r', fill=False, linestyle='--')
-        # axes.set_aspect(1)
-        # axes.add_artist(draw_circle)
-        
-        # plt.title('G-G_b diagram', fontsize=20)
-        # plt.xlabel('A_b(g)', fontsize=14)
-        # plt.ylabel('A_b(g)', fontsize=14)
-        # plt.xlim([-1.5, 1.5])
-        # plt.ylim([-1.5, 1.5])
-        # plt.scatter(ax_b[674:1168], ay_b[674:1168], s=.1)
-        # self._savefigs(plt, self.csv_path[:-len(self.csv_path.split('/')[-1])]+'G-G_b_Diagram')
     
     def _savefigs(self, plt, filename):
         plt.savefig(filename + '.png', dpi=150)
-        plt.savefig(filename + '.pdf', dpi=150)
+        # plt.savefig(filename + '.pdf', dpi=150)
         print('Saved ' + filename + '.png & .pdf.')
         
 def main(csv_path, follow_lane):
@@ -538,7 +521,7 @@ def main(csv_path, follow_lane):
 if __name__ == '__main__':
     try:
         if (len(sys.argv) != 3):
-            exit('Usage:\n$ rosrun mapinfo_generator {} data_path baseline(right, left, center)'.format(sys.argv[0]))
+            exit('Usage:\n$ rosrun mapinfo_generator {} ground_truth_path baseline(right, left, center)'.format(sys.argv[0]))
 
         main(sys.argv[1], sys.argv[2])
 

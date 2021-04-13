@@ -20,7 +20,6 @@ class DataAugmentation():
         self.shift_range = (40,5)
         self.brightness_multiplier = None
         self.image_hsv = None
-        self.images_hsv = None
         self.rows = None
         self.cols = None
         self.ch = None
@@ -42,12 +41,14 @@ class DataAugmentation():
     
     def lstm_brightness(self,images):
         self.brightness_multiplier = 1.0 + np.random.uniform(low=self.bright_limit[0], high=self.bright_limit[1])
+        images_hsv = []
         for i in range(len(images)):
-            self.image_hsv = cv2.cvtColor(images[i], cv2.COLOR_RGB2HSV)
-            self.image_hsv[:,:,2] = self.image_hsv[:,:,2] * self.brightness_multiplier
-            bright_image = cv2.cvtColor(self.image_hsv, cv2.COLOR_HSV2RGB)
-            self.images_hsv.append(bright_image)
-        return self.images_hsv
+            for j in range(len(images[i])):
+                self.image_hsv = cv2.cvtColor(images[i][j], cv2.COLOR_RGB2HSV)
+                self.image_hsv[:,:,2] = self.image_hsv[:,:,2] * self.brightness_multiplier
+                bright_image = cv2.cvtColor(self.image_hsv, cv2.COLOR_HSV2RGB)
+                images_hsv.append(bright_image)
+        return images_hsv
 
     def shift(self, img, steering):
         self.rows, self.cols, self.ch = img.shape

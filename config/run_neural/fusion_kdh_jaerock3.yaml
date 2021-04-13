@@ -20,6 +20,10 @@ throttle_default: 1
 throttle_sharp_turn: 0.1
 # velocity threshold for not moving
 velocity_0: 0.03
+
+# lstm
+lstm_dataterm : 1
+
 # scale factors
 scale_factor_throttle: 1
 scale_factor_steering: 1

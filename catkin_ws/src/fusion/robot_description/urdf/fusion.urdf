@@ -12,7 +12,7 @@
     <parent link="base_link"/>
     <child link="chassis"/>
     <!-- <origin xyz="0 0 0" rpy="0 0 0"/> -->
-    <origin xyz="0 0 0" rpy="0 0 1.57079632"/>
+    <origin xyz="0 0 -0.3" rpy="0 0 1.57079632"/>
     <axis xyz="1 0 0"/>
   </joint>
 
@@ -117,8 +117,8 @@
     <collision name="front_left_wheel_collision">
       <origin xyz="0 0 0" rpy="0 1.57 0"/>
       <geometry>
-        <!-- <sphere radius="0.47"/> -->
-        <cylinder radius="0.47" length="0.47"/>
+        <sphere radius="0.47"/>
+        <!-- <cylinder radius="0.47" length="0.47"/> -->
       </geometry>
     </collision>
     <visual>
@@ -137,8 +137,8 @@
     <collision name="front_right_wheel_collision">
       <origin xyz="0 0 0" rpy="0 1.57 0"/>
       <geometry>
-        <!-- <sphere radius="0.47"/> -->
-        <cylinder radius="0.47" length="0.47"/>
+        <sphere radius="0.47"/>
+        <!-- <cylinder radius="0.47" length="0.47"/> -->
       </geometry>
     </collision>
     <visual>
@@ -160,8 +160,8 @@
     <collision name="rear_left_wheel_collision">
       <origin xyz="0 0 0" rpy="0 1.57 0"/>
       <geometry>
-        <!-- <sphere radius="0.47"/> -->
-        <cylinder radius="0.47" length="0.47"/>
+        <sphere radius="0.47"/>
+        <!-- <cylinder radius="0.47" length="0.47"/> -->
       </geometry>
     </collision>
     <visual>
@@ -180,8 +180,8 @@
     <collision name="rear_right_wheel_collision">
       <origin xyz="0 0 0" rpy="0 1.57 0"/>
       <geometry>
-        <!-- <sphere radius="0.47"/> -->
-        <cylinder radius="0.47" length="0.47"/>
+        <sphere radius="0.47"/>
+        <!-- <cylinder radius="0.47" length="0.47"/> -->
       </geometry>
     </collision>
     <visual>
@@ -337,22 +337,23 @@
   <link name="gps_link">
     <inertial>
       <mass value="1" />
-      <origin xyz="0 0 0" />
+      <origin xyz="0 0 0.5" />
       <inertia ixx="0.001" ixy="0.0" ixz="0.0"
                iyy="0.001" iyz="0.0" 
                izz="0.001" />
     </inertial>     
-    <visual>
+    <!-- <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
           <box size = "0.1 0.1 0.1"/> 
       </geometry>
-    </visual>
-    <collision>         
-        <geometry>
-            <box size = "0.1 0.1 0.1"/> 
-        </geometry>
-    </collision>     
+    </visual> -->
+    <!-- <collision>
+      <origin xyz="0.0 0 0.0" rpy="0 0 0" />
+      <geometry>
+          <box size = "0.1 0.1 0.1"/> 
+      </geometry>
+    </collision> -->
   </link>
   <joint name="gps_joint" type="fixed">
     <axis xyz="0 0 0"/>

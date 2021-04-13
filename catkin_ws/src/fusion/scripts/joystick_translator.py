@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-import rospy, math, sys
+import rospy, math, sys, os
 from fusion.msg import Control
 from sensor_msgs.msg import Joy
 from nav_msgs.msg import Odometry
@@ -64,7 +64,7 @@ class Translator:
         self.last_published = None
         self.timer = rospy.Timer(rospy.Duration(1./20.), self.timer_callback)
         self.gear = 0
-        
+        self.kill_data_collection = False
         self.command = Control()
         print('steer \tthrt: \tbrake \tvelocity')
         
@@ -104,13 +104,17 @@ class Translator:
             command.brake = 0.0
         else:
             command.throttle = 0.0
-
+        
         if message.buttons[SHIFT_FORWARD] == 1:
             self.gear = "forward"
         elif message.buttons[SHIFT_REVERSE] == 1:
             self.gear = "reverse"
         elif message.buttons[BUTTON_C] == 1:
             self.gear = "parking"
+            # print(os.system("data_collection"))
+            if self.kill_data_collection is False:
+                os.system("rosnode kill " + "data_collection")
+                self.kill_data_collection = True
         
         if self.gear == "forward":
             # print("forward")
