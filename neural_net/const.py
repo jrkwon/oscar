@@ -11,10 +11,16 @@ History:
 # constant definition
 
 # network model type
-NET_TYPE_JAEROCK     = 0
-NET_TYPE_JAEROCK_VEL = 2
-NET_TYPE_CE491       = 1
-NET_TYPE_CONVLSTM    = 10
+NET_TYPE_JAEROCK      = 0
+NET_TYPE_CE491        = 1
+NET_TYPE_JAEROCK_VEL  = 2
+NET_TYPE_DONGHYUN     = 3
+NET_TYPE_DONGHYUN2_ELU= 4
+NET_TYPE_JAEROCK_ELU  = 5
+NET_TYPE_DONGHYUN_ELU = 6
+NET_TYPE_DONGHYUN3_ELU= 7
+NET_TYPE_LRCN         = 10
+NET_TYPE_SPTEMLSTM    = 11
 
 # file extension
 DATA_EXT             = '.csv'

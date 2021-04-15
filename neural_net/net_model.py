@@ -17,6 +17,7 @@ from keras import losses, optimizers
 import keras.backend as K
 import tensorflow as tf
 
+import os
 import const
 from config import Config
 
@@ -58,7 +59,122 @@ def model_jaerock():
         Dense(100),
         Dense(50),
         Dense(10),
-        Dense(config['num_outputs'])])
+        Dense(config['num_outputs'])], name='fc_str')
+
+def model_jaerock_elu():
+    input_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'])
+
+    return Sequential([
+        Lambda(lambda x: x/127.5 - 1.0, input_shape=input_shape),
+        Conv2D(24, (5, 5), strides=(2,2), activation='elu'),
+        Conv2D(36, (5, 5), strides=(2,2), activation='elu'),
+        Conv2D(48, (5, 5), strides=(2,2), activation='elu'),
+        Conv2D(64, (3, 3), activation='elu'),
+        Conv2D(64, (3, 3), activation='elu', name='conv2d_last'),
+        Flatten(),
+        Dense(1000, activation='elu'),
+        Dense(100, activation='elu'),
+        Dense(50, activation='elu'),
+        Dense(10, activation='elu'),
+        Dense(config['num_outputs'])], name='fc_str')
+
+def model_donghyun(): #3
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(24, (8, 8), strides=(4,4))(lamb)
+    conv_2 = Conv2D(36, (6, 6), strides=(2,2))(conv_1)
+    conv_3 = Conv2D(48, (5, 5), strides=(2,2))(conv_2)
+    conv_4 = Conv2D(64, (3, 3))(conv_3)
+    conv_5 = Conv2D(64, (2, 2), name='conv2d_last')(conv_4)
+    flat = Flatten()(conv_5)
+    # fc_1 = Dense(1000, name='fc_1', activation='elu')(flat)
+    fc_2 = Dense(100, name='fc_2')(flat)
+    fc_3 = Dense(50, name='fc_3')(fc_2)
+    fc_4 = Dense(10, name='fc_4')(fc_3)
+    fc_last = Dense(1, name='fc_str')(fc_4)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
+def model_donghyun_elu(): #6
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(24, (8, 8), strides=(2,2), activation='elu')(lamb)
+    conv_2 = Conv2D(36, (6, 6), strides=(2,2), activation='elu')(conv_1)
+    conv_3 = Conv2D(48, (5, 5), strides=(2,2), activation='elu')(conv_2)
+    conv_4 = Conv2D(64, (3, 3), activation='elu')(conv_3)
+    conv_5 = Conv2D(64, (2, 2), name='conv2d_last', activation='elu')(conv_4)
+    flat = Flatten()(conv_5)
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
+    fc_last = Dense(1, name='fc_str')(fc_4)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+    
+def model_donghyun2_elu(): #4
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
+    conv_2 = Conv2D(48, (6, 6), strides=(2,2), activation='elu')(conv_1)
+    conv_3 = Conv2D(36, (5, 5), strides=(2,2), activation='elu')(conv_2)
+    conv_4 = Conv2D(24, (3, 3), activation='elu')(conv_3)
+    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conv_4)
+    flat = Flatten()(conv_5)
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
+    fc_last = Dense(1, name='fc_str')(fc_4)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
+def model_donghyun3_elu():
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
+    conv_2 = Conv2D(48, (8, 8), strides=(2,2), activation='elu')(conv_1)
+    conv_3 = Conv2D(36, (6, 6), strides=(2,2), activation='elu')(conv_2)
+    conv_4 = Conv2D(24, (5, 5), activation='elu')(conv_3)
+    conv_5 = Conv2D(24, (5, 5), activation='elu', name='conv2d_last')(conv_4)
+    flat = Flatten()(conv_5)
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
+    fc_last = Dense(1, name='fc_str')(fc_4)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
     
 def model_jaerock_vel():
     img_shape = (config['input_image_height'],
@@ -90,8 +206,36 @@ def model_jaerock_vel():
     model = Model(inputs=[img_input, vel_input], output=fc_last)
 
     return model
+def model_spatiotemporallstm():
+    from keras.layers import ConvLSTM2D, Convolution3D
+    from keras.layers.wrappers import TimeDistributed
+    
+    img_shape = (None, config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'])
+    
+    leaky_relu = tf.nn.leaky_relu
+    
+    input_img  = Input(shape=img_shape, name='input_image')
+    lamb       = Lambda(lambda x: x/127.5 - 1.0, name='lamb_img')(input_img)
+    convlstm_1 = ConvLSTM2D(64, (3, 3), strides=(2,2), activation='relu', return_sequences=True, name='convlstm_1')(lamb)
+    batch_1    = BatchNormalization()(convlstm_1)
+    convlstm_2 = ConvLSTM2D(32, (3, 3), strides=(2,2), activation='relu', return_sequences=True, name='convlstm_2')(batch_1)
+    batch_2    = BatchNormalization()(convlstm_2)
+    convlstm_3 = ConvLSTM2D(16, (3, 3), strides=(2,2), activation='relu', return_sequences=True, name='convlstm_3')(batch_2)
+    batch_3    = BatchNormalization()(convlstm_3)
+    convlstm_4 = ConvLSTM2D(8, (3, 3), activation='relu', return_sequences=True, name='convlstm_4')(batch_3)
+    batch_4    = BatchNormalization()(convlstm_4)
+    conv3d_1   = Convolution3D(3, (3, 3, 3), activation='relu', name='conv2d_last')(batch_4)
+    flat       = Flatten(name='flat')(conv3d_1)
+    fc_1       = Dense(512, activation=leaky_relu, name='fc_1')(flat)
+    fc_last    = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_1)
 
-def model_convlstm():
+    model = Model(inputs=input_img, outputs=fc_last)
+        
+    return model
+
+def model_lrcn():
     from keras.layers.recurrent import LSTM
     from keras.layers.wrappers import TimeDistributed
 
@@ -125,7 +269,7 @@ def model_convlstm():
         lamb      = TimeDistributed(Lambda(lambda x: x / 38), name='lamb_vel')(input_velocity)
         fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(lamb)
         concat    = concatenate([fc_2, fc_vel_1], name='concat')
-        lstm      = LSTM(10, return_sequences=False, name='lstm')(concat)
+        lstm      = LSTM(3, return_sequences=False, name='lstm')(concat)
         fc_3      = Dense(50, activation='relu', name='fc_3')(lstm)
         fc_4      = Dense(10, activation='relu', name='fc_4')(fc_3)
         fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_4)
@@ -145,10 +289,11 @@ class NetModel:
 
         # to address the error:
         #   Could not create cudnn handle: CUDNN_STATUS_INTERNAL_ERROR
+        os.environ["CUDA_VISIBLE_DEVICES"]=str(config['gpus'])
+        
         gpu_options = tf.GPUOptions(allow_growth=True)
         sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
         K.tensorflow_backend.set_session(sess)
-
         self._model()
 
     ###########################################################################
@@ -160,8 +305,20 @@ class NetModel:
             self.model = model_jaerock_vel()
         elif config['network_type'] == const.NET_TYPE_CE491:
             self.model = model_ce491()
-        elif config['network_type'] == const.NET_TYPE_CONVLSTM:
-            self.model = model_convlstm()
+        elif config['network_type'] == const.NET_TYPE_LRCN:
+            self.model = model_lrcn()
+        elif config['network_type'] == const.NET_TYPE_SPTEMLSTM:
+            self.model = model_spatiotemporallstm()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN:
+            self.model = model_donghyun()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN_ELU:
+            self.model = model_donghyun_elu()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN2_ELU:
+            self.model = model_donghyun2_elu()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN3_ELU:
+            self.model = model_donghyun3_elu()
+        elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU:
+            self.model = model_jaerock_elu()
         else:
             exit('ERROR: Invalid neural network type.')
 
@@ -185,9 +342,9 @@ class NetModel:
             learning_rate = config['lstm_lr']
         else:
             learning_rate = config['cnn_lr']
-
+        decay = config['decay']
         self.model.compile(loss=losses.mean_squared_error,
-                    optimizer=optimizers.Adam(lr=learning_rate), 
+                    optimizer=optimizers.Adam(lr=learning_rate, decay=decay), 
                     metrics=['accuracy'])
         # if config['steering_angle_tolerance'] == 0.0:
         #     self.model.compile(loss=losses.mean_squared_error,

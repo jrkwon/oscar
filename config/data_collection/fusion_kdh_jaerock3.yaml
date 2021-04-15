@@ -36,10 +36,10 @@ imu: /imu
 
 # crop (capture) area from a camera image
 # - gazebo simulated camera resolution: 800x800
-image_crop_x1: 0
+image_crop_x1: 100   #0
 image_crop_y1: 380   # 373
-image_crop_x2: 800
-image_crop_y2: 530   #530 # 516
+image_crop_x2: 700   #800
+image_crop_y2: 516   #530 # 516
 
 image_width: 800
 image_height: 800

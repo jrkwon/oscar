@@ -100,20 +100,19 @@ class DriveTrain:
         measurements = []
         velocities = []
         for i in range(0, last_index):
-            sub_samples = samples[ i : i+config['lstm_timestep']*config['lstm_dataterm'] :config['lstm_dataterm']]
+            timestep_samples = samples[ i : i+config['lstm_timestep']*config['lstm_dataterm'] :config['lstm_dataterm']]
             
-            # print('num_batch_sample : ',len(sub_samples))
-            sub_image_names = []
-            sub_measurements = []
-            sub_velocities = []
-            for image_name, velocity, measurment in sub_samples:
-                sub_image_names.append(image_name)
-                sub_measurements.append(measurment)
-                sub_velocities.append(velocity)
+            timestep_image_names = []
+            timestep_measurements = []
+            timestep_velocities = []
+            for image_name, velocity, measurment in timestep_samples:
+                timestep_image_names.append(image_name)
+                timestep_measurements.append(measurment)
+                timestep_velocities.append(velocity)
 
-            image_names.append(sub_image_names)
-            measurements.append(sub_measurements)
-            velocities.append(sub_velocities)
+            image_names.append(timestep_image_names)
+            measurements.append(timestep_measurements)
+            velocities.append(timestep_velocities)
         
         samples = list(zip(image_names, velocities, measurements))
         return train_test_split(samples, test_size=config['validation_rate'], 
@@ -157,6 +156,8 @@ class DriveTrain:
                                     (config['input_image_width'],
                                     config['input_image_height']))
                 image = self.image_process.process(image)
+                # cv2.imwrite('/home/kdh/oscar/oscar/e2e_fusion_data/test/aug/'+image_name, image)
+                
                 images.append(image)
                 
                 velocities.append(velocity)
@@ -171,10 +172,13 @@ class DriveTrain:
                     measurements.append((steering_angle*config['steering_angle_scale'], throttle))
                 else:
                     measurements.append(steering_angle*config['steering_angle_scale'])
-
+                    # print("1 : ", steering_angle)
+                
+                # cv2.imwrite('/home/kdh/oscar/oscar/e2e_fusion_data/test/aug/'+image_name, image)
                 # data augmentation
                 append, image, steering_angle = _data_augmentation(image, steering_angle)
                 if append is True:
+                    # cv2.imwrite('/home/kdh/oscar/oscar/e2e_fusion_data/test/aug/'+image_name, image)
                     images.append(image)
                     velocities.append(velocity)
                     if config['num_outputs'] == 2:                
@@ -236,12 +240,7 @@ class DriveTrain:
                     for offset in range(0, (num_samples//batch_size)*batch_size, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
                         images, velocities, measurements = _prepare_lstm_batch_samples(batch_samples)
-                        
-                        # if config['data_aug_bright'] is True: # lstm data augmentation 
-                        #     image_aug = self.data_aug.lstm_brightness(images)
-                        #     images.extend(image_aug)
-                        #     measurements.extend(measurements)
-                        
+                                                
                         if config['num_inputs'] == 1:
                             X_train = np.array(images)
                         elif config['num_inputs'] == 2:
@@ -249,18 +248,24 @@ class DriveTrain:
                             X_train = [X_train, X_train_vel]
                         
                         y_train = np.array(measurements)
-                            
                         yield X_train, y_train
                         
                         if config['data_aug_bright'] is True: # lstm data augmentation 
                             image_aug = self.data_aug.lstm_brightness(images)
-                            X_train = np.array(image_aug).reshape(-1
-                                                                  , config['lstm_timestep']
-                                                                  , config['input_image_width']
+                            X_train = np.array(image_aug).reshape(-1, config['lstm_timestep']
                                                                   , config['input_image_height']
+                                                                  , config['input_image_width']
                                                                   , config['input_image_depth'])
                             y_train = np.array(measurements)
-                        yield X_train, y_train
+                            yield X_train, y_train
+                        if config['data_aug_shuffle'] is True: # lstm data augmentation 
+                            image_aug = self.data_aug.lstm_channelshuffle(images)
+                            X_train = np.array(image_aug).reshape(-1, config['lstm_timestep']
+                                                                  , config['input_image_height']
+                                                                  , config['input_image_width']
+                                                                  , config['input_image_depth'])
+                            y_train = np.array(measurements)
+                            yield X_train, y_train
                         
                         
                 else: 
@@ -268,17 +273,17 @@ class DriveTrain:
 
                     for offset in range(0, num_samples, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
-
+                        
                         images, velocities, measurements = _prepare_batch_samples(batch_samples)
                         X_train = np.array(images)
                         y_train = np.array(measurements)
-                        y_train = y_train.reshape(-1, 1)
+                        # y_train = y_train.reshape(-1, 1)
                         
                         if config['num_inputs'] == 2:
                             X_train_vel = np.array(velocities).reshape(-1, 1)
                             X_train = [X_train, X_train_vel]
-                            
-                        yield X_train, y_train
+                        # print(y_train)
+                        yield sklearn.utils.shuffle(X_train, y_train)
         
         self.train_generator = _generator(self.train_data)
         self.valid_generator = _generator(self.valid_data)
@@ -301,7 +306,7 @@ class DriveTrain:
         callbacks = []
         #weight_filename = self.data_path + '_' + Config.config_yaml_name \
         #    + '_N' + str(config['network_type']) + '_ckpt'
-        checkpoint = ModelCheckpoint(self.model_ckpt_name +'.{epoch:02d}-{val_loss:.2f}.h5',
+        checkpoint = ModelCheckpoint(self.model_ckpt_name +'.{epoch:02d}-{val_loss:.3f}.h5',
                                      monitor='val_loss', 
                                      verbose=1, save_best_only=True, mode='min')
         callbacks.append(checkpoint)
@@ -317,7 +322,6 @@ class DriveTrain:
         tensorboard = TensorBoard(log_dir=logdir)
         callbacks.append(tensorboard)
 
-
         self.train_hist = self.net_model.model.fit_generator(
                 self.train_generator, 
                 steps_per_epoch=self.num_train_samples//config['batch_size'], 
@@ -326,8 +330,7 @@ class DriveTrain:
                 validation_steps=self.num_valid_samples//config['batch_size'],
                 verbose=1, callbacks=callbacks, 
                 use_multiprocessing=True)
-    
-
+        
     ###########################################################################
     #
     def _plot_training_history(self):

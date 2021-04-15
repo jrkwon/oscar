@@ -13,8 +13,8 @@ import numpy as np
 
 class ImageProcess:
 
-    def process(self, img):
-        return self._normalize(img)
+    def process(self, img, bgr = True):
+        return self._normalize(img, bgr=bgr)
         
     # img is expected as BGR         
     def _equalize_histogram(self, img, bgr = True):
