@@ -169,7 +169,7 @@ def model_donghyun3(): #필터사이즈를 donghyun2에 비해 전체적으로 �
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
     conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
     conv_2 = Conv2D(48, (8, 8), strides=(2,2), activation='elu')(conv_1)
-    conv_3 = Conv2D(36, (6, 6), strides=(2,2), activation='elu')(conv_2)
+    conv_3 = Conv2D(36, (5, 5), activation='elu')(conv_2)
     conv_4 = Conv2D(24, (5, 5), activation='elu')(conv_3)
     conv_5 = Conv2D(24, (5, 5), activation='elu', name='conv2d_last')(conv_4)
     flat = Flatten()(conv_5)
@@ -183,7 +183,13 @@ def model_donghyun3(): #필터사이즈를 donghyun2에 비해 전체적으로 �
 
     return model
 
-def model_donghyun4(): #필터사이즈를 donghyun3에 비해 전체적으로 더 크게
+# conv_1 output (32, 177) 
+# conv_2 output (13,  85) 
+# conv_3 output ( 9,  81) 
+# conv_4 output ( 5,  77) 
+# conv_5 output ( 1,  73)  
+
+def model_donghyun4(): #레이어줄이기
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
@@ -191,12 +197,11 @@ def model_donghyun4(): #필터사이즈를 donghyun3에 비해 전체적으로 �
     ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(64, (8, 8), strides=(4,4), activation='elu')(lamb)
+    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
     conv_2 = Conv2D(48, (8, 8), strides=(2,2), activation='elu')(conv_1)
-    conv_3 = Conv2D(36, (6, 6), strides=(2,2), activation='elu')(conv_2)
-    conv_4 = Conv2D(24, (5, 5), activation='elu')(conv_3)
-    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conv_4)
-    flat = Flatten()(conv_5)
+    conv_3 = Conv2D(36, (5, 5), activation='elu')(conv_2)
+    conv_4 = Conv2D(48, (5, 5), activation='elu')(conv_3)
+    flat = Flatten()(conv_4)
     fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
     fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
     fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
@@ -207,8 +212,6 @@ def model_donghyun4(): #필터사이즈를 donghyun3에 비해 전체적으로 �
 
     return model
 
-
-
 def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
@@ -217,11 +220,11 @@ def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
     ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(64, (8, 8), strides=(4,4), activation='elu')(lamb)
+    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
     conv_2 = Conv2D(48, (8, 8), strides=(2,2), activation='elu', name='conv2d_2')(conv_1)
-    conv_3 = Conv2D(36, (6, 6), strides=(2,2), activation='elu', name='conv2d_3')(conv_2)
+    conv_3 = Conv2D(36, (5, 5), activation='elu', name='conv2d_3')(conv_2)
     conv_4 = Conv2D(24, (5, 5), activation='elu', name='conv2d_4')(conv_3)
-    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conv_4)
+    conv_5 = Conv2D(24, (5, 5), activation='elu', name='conv2d_last')(conv_4)
     flat_1 = Flatten()(conv_2)
     flat_2 = Flatten()(conv_3)
     flat_3 = Flatten()(conv_4)
@@ -238,7 +241,6 @@ def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
     return model
 
 
-    
 def model_spatiotemporallstm():
     from keras.layers import ConvLSTM2D, Convolution3D
     from keras.layers.wrappers import TimeDistributed
