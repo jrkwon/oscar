@@ -242,30 +242,30 @@ def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
 
 
 def model_spatiotemporallstm():
-    from keras.layers import ConvLSTM2D, Conv3D
+    from keras.layers import ConvLSTM2D, Convolution3D, LeakyReLU
     from keras.layers.wrappers import TimeDistributed
     
     img_shape = (3, config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'])
     
-    leaky_relu = tf.nn.leaky_relu
-    
     input_img  = Input(shape=img_shape, name='input_image')
     lamb       = Lambda(lambda x: x/127.5 - 1.0, name='lamb_img')(input_img)
-    convlstm_1 = ConvLSTM2D(64, 3, activation='relu', padding='same', return_sequences=True, name='convlstm_1')(lamb)
+    convlstm_1 = ConvLSTM2D(64, nb_row=3, nb_col=3, activation='relu', border_mode='same', return_sequences=True, name='convlstm_1')(lamb)
     batch_1    = BatchNormalization()(convlstm_1)
-    convlstm_2 = ConvLSTM2D(32, 3, activation='relu', padding='same',return_sequences=True, name='convlstm_2')(batch_1)
+    convlstm_2 = ConvLSTM2D(32, nb_row=3, nb_col=3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_2')(batch_1)
     batch_2    = BatchNormalization()(convlstm_2)
-    convlstm_3 = ConvLSTM2D(16, 3, activation='relu', padding='same',return_sequences=True, name='convlstm_3')(batch_2)
+    convlstm_3 = ConvLSTM2D(16, nb_row=3, nb_col=3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_3')(batch_2)
     batch_3    = BatchNormalization()(convlstm_3)
-    convlstm_4 = ConvLSTM2D(8, 3, activation='relu', padding='same',return_sequences=True, name='convlstm_4')(batch_3)
+    convlstm_4 = ConvLSTM2D(8, nb_row=3, nb_col=3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_4')(batch_3)
     batch_4    = BatchNormalization()(convlstm_4)
-    conv3d_1   = Conv3D(3, 3, activation='relu', padding='same', name='conv3d_last')(batch_4)
+    conv3d_1   = Convolution3D(nb_filter=3, kernel_dim1=3, kernel_dim2=3,
+                          kernel_dim3=3, activation='relu', border_mode='same', name='conv3d_last')(batch_4)
     # batch_5    = BatchNormalization()(conv3d_1)
     flat       = Flatten(name='flat')(conv3d_1)
-    fc_1       = Dense(512, activation=leaky_relu, name='fc_1')(flat)
-    fc_last    = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_1)
+    fc_1       = Dense(512,name='fc_1')(flat)
+    leaky      = LeakyReLU(alpha=0.2)(fc_1)
+    fc_last    = Dense(config['num_outputs'], activation='linear', name='fc_last')(leaky)
 
     model = Model(inputs=input_img, outputs=fc_last)
         
@@ -276,7 +276,7 @@ def model_lrcn():
     from keras.layers.wrappers import TimeDistributed
 
     # redefine input_shape to add one more dims
-    img_shape = (None, config['input_image_height'],
+    img_shape = (3, config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'])
     vel_shape = (None, 1)
@@ -312,12 +312,13 @@ class NetModel:
 
         # to address the error:
         #   Could not create cudnn handle: CUDNN_STATUS_INTERNAL_ERROR
-        os.environ["CUDA_VISIBLE_DEVICES"]=str(config['gpus'])
+        # os.environ["CUDA_VISIBLE_DEVICES"]=str(config['gpus'])
         
-        gpu_options = tf.GPUOptions(allow_growth=True)
-        sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
-        K.tensorflow_backend.set_session(sess)
-        self._model()
+        # gpu_options = tf.GPUOptions(allow_growth=True)
+        # sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+        # K.tensorflow_backend.set_session(sess)
+        with tf.device('/cpu:0'):
+            self._model()
 
     ###########################################################################
     #

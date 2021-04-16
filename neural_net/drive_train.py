@@ -233,101 +233,32 @@ class DriveTrain:
                 
             return images, velocities, measurements
         
-        def _prepare_stlstm_batch_samples(batch_samples):
-            images = []
-            velocities = []
-            measurements = []
-            for i in range(0, config['batch_size']):
-                images_timestep = []
-                velocities_timestep = []
-                measurements_timestep = []
-                images_r = []
-                images_g = []
-                images_b = []
-                for j in range(0, 3):
-                    image_name = batch_samples[i][0][j]
-                    image_path = self.data_path + '/' + image_name
-                    image = cv2.imread(image_path)
-                    # if collected data is not cropped then crop here
-                    # otherwise do not crop.
-                    if Config.data_collection['crop'] is not True:
-                        image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
-                                    Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
-                    image = cv2.resize(image, 
-                                    (config['input_image_width'],
-                                    config['input_image_height']))
-                    image = self.image_process.process(image)
-                    # images_timestep.append(image)
-                    #rgb or bgr dont care
-                    images_r.append(image[:,:,0])
-                    images_g.append(image[:,:,1])
-                    images_b.append(image[:,:,2])
-                    
-                    velocity = batch_samples[i][1][j]
-                    velocities_timestep.append(velocity)
-                    
-                    if j is config['lstm_timestep']-1:
-                        measurement = batch_samples[i][2][j]
-                        # if no brake data in collected data, brake values are dummy
-                        steering_angle, throttle, brake = measurement
-                        
-                        if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
-                            steering_angle = 0
-                            
-                        if config['num_outputs'] == 2:                
-                            measurements_timestep.append((steering_angle*config['steering_angle_scale'], throttle))
-                        else:
-                            measurements_timestep.append(steering_angle*config['steering_angle_scale'])
-                images_timestep.append(images_r)
-                images_timestep.append(images_g)
-                images_timestep.append(images_b)
-                images.append(images_timestep)
-                velocities.append(velocities_timestep)
-                measurements.append(measurements_timestep)
-            return images, velocities, measurements
-        
         def _generator(samples, batch_size=config['batch_size']):
             num_samples = len(samples)
             while True: # Loop forever so the generator never terminates
                 if config['lstm'] is True:
                     for offset in range(0, (num_samples//batch_size)*batch_size, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
-                        if config['network_type'] is 22:
-                            images, velocities, measurements = _prepare_stlstm_batch_samples(batch_samples)
-                        else :
-                            images, velocities, measurements = _prepare_lstm_batch_samples(batch_samples)
-                         
-                        if config['num_inputs'] == 1 and config['network_type'] is not 22:
+
+                        images, velocities, measurements = _prepare_lstm_batch_samples(batch_samples)
+                        
+                        if config['num_inputs'] == 1:
                             X_train = np.array(images)
                         elif config['num_inputs'] == 2:
                             X_train_vel = np.array(velocities).reshape(-1,config['lstm_timestep'],1)
                             X_train = [X_train, X_train_vel]
-                        elif config['network_type'] is 22:
-                            X_train = np.array(images).reshape(-1, 3
-                                                                  , config['input_image_height']
-                                                                  , config['input_image_width']
-                                                                  , config['input_image_depth'])
-                            print(X_train.shape)
                         
                         y_train = np.array(measurements)
                         yield X_train, y_train
                         
-                        if config['data_aug_bright'] is True: # lstm data augmentation 
-                            image_aug = self.data_aug.lstm_brightness(images)
-                            X_train = np.array(image_aug).reshape(-1, config['lstm_timestep']
-                                                                  , config['input_image_height']
-                                                                  , config['input_image_width']
-                                                                  , config['input_image_depth'])
-                            y_train = np.array(measurements)
-                            yield X_train, y_train
-                        if config['data_aug_shuffle'] is True: # lstm data augmentation 
-                            image_aug = self.data_aug.lstm_channelshuffle(images)
-                            X_train = np.array(image_aug).reshape(-1, config['lstm_timestep']
-                                                                  , config['input_image_height']
-                                                                  , config['input_image_width']
-                                                                  , config['input_image_depth'])
-                            y_train = np.array(measurements)
-                            yield X_train, y_train
+                        # if config['data_aug_bright'] is True: # lstm data augmentation 
+                        #     image_aug = self.data_aug.lstm_brightness(images)
+                        #     X_train = np.array(image_aug).reshape(-1, config['lstm_timestep']
+                        #                                           , config['input_image_height']
+                        #                                           , config['input_image_width']
+                        #                                           , config['input_image_depth'])
+                        #     y_train = np.array(measurements)
+                        #     yield X_train, y_train
                         
                         
                 else: 
