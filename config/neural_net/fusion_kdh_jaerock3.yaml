@@ -10,7 +10,7 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 7        # refer to neural_net/const.py
+network_type: 0        # refer to neural_net/const.py
 gpus: 1
 
 lstm: False

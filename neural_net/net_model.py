@@ -60,121 +60,6 @@ def model_jaerock():
         Dense(50),
         Dense(10),
         Dense(config['num_outputs'])], name='fc_str')
-
-def model_jaerock_elu():
-    input_shape = (config['input_image_height'],
-                    config['input_image_width'],
-                    config['input_image_depth'])
-
-    return Sequential([
-        Lambda(lambda x: x/127.5 - 1.0, input_shape=input_shape),
-        Conv2D(24, (5, 5), strides=(2,2), activation='elu'),
-        Conv2D(36, (5, 5), strides=(2,2), activation='elu'),
-        Conv2D(48, (5, 5), strides=(2,2), activation='elu'),
-        Conv2D(64, (3, 3), activation='elu'),
-        Conv2D(64, (3, 3), activation='elu', name='conv2d_last'),
-        Flatten(),
-        Dense(1000, activation='elu'),
-        Dense(100, activation='elu'),
-        Dense(50, activation='elu'),
-        Dense(10, activation='elu'),
-        Dense(config['num_outputs'])], name='fc_str')
-
-def model_donghyun(): #3
-    img_shape = (config['input_image_height'],
-                    config['input_image_width'],
-                    config['input_image_depth'],)
-    
-    ######img model#######
-    img_input = Input(shape=img_shape)
-    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(24, (8, 8), strides=(4,4))(lamb)
-    conv_2 = Conv2D(36, (6, 6), strides=(2,2))(conv_1)
-    conv_3 = Conv2D(48, (5, 5), strides=(2,2))(conv_2)
-    conv_4 = Conv2D(64, (3, 3))(conv_3)
-    conv_5 = Conv2D(64, (2, 2), name='conv2d_last')(conv_4)
-    flat = Flatten()(conv_5)
-    # fc_1 = Dense(1000, name='fc_1', activation='elu')(flat)
-    fc_2 = Dense(100, name='fc_2')(flat)
-    fc_3 = Dense(50, name='fc_3')(fc_2)
-    fc_4 = Dense(10, name='fc_4')(fc_3)
-    fc_last = Dense(1, name='fc_str')(fc_4)
-    
-    model = Model(inputs=img_input, output=fc_last)
-
-    return model
-
-def model_donghyun_elu(): #6
-    img_shape = (config['input_image_height'],
-                    config['input_image_width'],
-                    config['input_image_depth'],)
-    
-    ######img model#######
-    img_input = Input(shape=img_shape)
-    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(24, (8, 8), strides=(2,2), activation='elu')(lamb)
-    conv_2 = Conv2D(36, (6, 6), strides=(2,2), activation='elu')(conv_1)
-    conv_3 = Conv2D(48, (5, 5), strides=(2,2), activation='elu')(conv_2)
-    conv_4 = Conv2D(64, (3, 3), activation='elu')(conv_3)
-    conv_5 = Conv2D(64, (2, 2), name='conv2d_last', activation='elu')(conv_4)
-    flat = Flatten()(conv_5)
-    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
-    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
-    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
-    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
-    fc_last = Dense(1, name='fc_str')(fc_4)
-    
-    model = Model(inputs=img_input, output=fc_last)
-
-    return model
-    
-def model_donghyun2_elu(): #4
-    img_shape = (config['input_image_height'],
-                    config['input_image_width'],
-                    config['input_image_depth'],)
-    
-    ######img model#######
-    img_input = Input(shape=img_shape)
-    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
-    conv_2 = Conv2D(48, (6, 6), strides=(2,2), activation='elu')(conv_1)
-    conv_3 = Conv2D(36, (5, 5), strides=(2,2), activation='elu')(conv_2)
-    conv_4 = Conv2D(24, (3, 3), activation='elu')(conv_3)
-    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conv_4)
-    flat = Flatten()(conv_5)
-    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
-    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
-    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
-    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
-    fc_last = Dense(1, name='fc_str')(fc_4)
-    
-    model = Model(inputs=img_input, output=fc_last)
-
-    return model
-
-def model_donghyun3_elu():
-    img_shape = (config['input_image_height'],
-                    config['input_image_width'],
-                    config['input_image_depth'],)
-    
-    ######img model#######
-    img_input = Input(shape=img_shape)
-    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
-    conv_2 = Conv2D(48, (8, 8), strides=(2,2), activation='elu')(conv_1)
-    conv_3 = Conv2D(36, (6, 6), strides=(2,2), activation='elu')(conv_2)
-    conv_4 = Conv2D(24, (5, 5), activation='elu')(conv_3)
-    conv_5 = Conv2D(24, (5, 5), activation='elu', name='conv2d_last')(conv_4)
-    flat = Flatten()(conv_5)
-    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
-    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
-    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
-    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
-    fc_last = Dense(1, name='fc_str')(fc_4)
-    
-    model = Model(inputs=img_input, output=fc_last)
-
-    return model
     
 def model_jaerock_vel():
     img_shape = (config['input_image_height'],
@@ -206,6 +91,154 @@ def model_jaerock_vel():
     model = Model(inputs=[img_input, vel_input], output=fc_last)
 
     return model
+
+def model_jaerock_elu():
+    input_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'])
+
+    return Sequential([
+        Lambda(lambda x: x/127.5 - 1.0, input_shape=input_shape),
+        Conv2D(24, (5, 5), strides=(2,2), activation='elu'),
+        Conv2D(36, (5, 5), strides=(2,2), activation='elu'),
+        Conv2D(48, (5, 5), strides=(2,2), activation='elu'),
+        Conv2D(64, (3, 3), activation='elu'),
+        Conv2D(64, (3, 3), activation='elu', name='conv2d_last'),
+        Flatten(),
+        Dense(1000, activation='elu'),
+        Dense(100, activation='elu'),
+        Dense(50, activation='elu'),
+        Dense(10, activation='elu'),
+        Dense(config['num_outputs'])], name='fc_str')
+
+def model_donghyun(): #jaerock과 동일하지만 필터사이즈를 초반에는 크게
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(24, (8, 8), strides=(2,2), activation='elu')(lamb)
+    conv_2 = Conv2D(36, (6, 6), strides=(2,2), activation='elu')(conv_1)
+    conv_3 = Conv2D(48, (5, 5), strides=(2,2), activation='elu')(conv_2)
+    conv_4 = Conv2D(64, (3, 3), activation='elu')(conv_3)
+    conv_5 = Conv2D(64, (3, 3), name='conv2d_last', activation='elu')(conv_4)
+    flat = Flatten()(conv_5)
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
+    fc_last = Dense(config['num_outputs'], name='fc_str')(fc_4)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+    
+def model_donghyun2(): #donghyun과 동일하지만 큰 필터개수를 더 많게
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
+    conv_2 = Conv2D(48, (6, 6), strides=(2,2), activation='elu')(conv_1)
+    conv_3 = Conv2D(36, (5, 5), strides=(2,2), activation='elu')(conv_2)
+    conv_4 = Conv2D(24, (3, 3), activation='elu')(conv_3)
+    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conv_4)
+    flat = Flatten()(conv_5)
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
+    fc_last = Dense(1, name='fc_str')(fc_4)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
+def model_donghyun3(): #필터사이즈를 donghyun2에 비해 전체적으로 더 크게
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
+    conv_2 = Conv2D(48, (8, 8), strides=(2,2), activation='elu')(conv_1)
+    conv_3 = Conv2D(36, (6, 6), strides=(2,2), activation='elu')(conv_2)
+    conv_4 = Conv2D(24, (5, 5), activation='elu')(conv_3)
+    conv_5 = Conv2D(24, (5, 5), activation='elu', name='conv2d_last')(conv_4)
+    flat = Flatten()(conv_5)
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
+    fc_last = Dense(1, name='fc_str')(fc_4)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
+def model_donghyun4(): #필터사이즈를 donghyun3에 비해 전체적으로 더 크게
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(64, (8, 8), strides=(4,4), activation='elu')(lamb)
+    conv_2 = Conv2D(48, (8, 8), strides=(2,2), activation='elu')(conv_1)
+    conv_3 = Conv2D(36, (6, 6), strides=(2,2), activation='elu')(conv_2)
+    conv_4 = Conv2D(24, (5, 5), activation='elu')(conv_3)
+    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conv_4)
+    flat = Flatten()(conv_5)
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
+    fc_last = Dense(1, name='fc_str')(fc_4)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
+
+
+def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(64, (8, 8), strides=(4,4), activation='elu')(lamb)
+    conv_2 = Conv2D(48, (8, 8), strides=(2,2), activation='elu', name='conv2d_2')(conv_1)
+    conv_3 = Conv2D(36, (6, 6), strides=(2,2), activation='elu', name='conv2d_3')(conv_2)
+    conv_4 = Conv2D(24, (5, 5), activation='elu', name='conv2d_4')(conv_3)
+    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conv_4)
+    flat_1 = Flatten()(conv_2)
+    flat_2 = Flatten()(conv_3)
+    flat_3 = Flatten()(conv_4)
+    flat_4 = Flatten()(conv_5)
+    concat = concatenate([flat_1, flat_2, flat_3, flat_4])
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(concat)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
+    fc_last = Dense(1, name='fc_str')(fc_4)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
+
+    
 def model_spatiotemporallstm():
     from keras.layers import ConvLSTM2D, Convolution3D
     from keras.layers.wrappers import TimeDistributed
@@ -299,26 +332,31 @@ class NetModel:
     ###########################################################################
     #
     def _model(self):
-        if config['network_type'] == const.NET_TYPE_JAEROCK:
-            self.model = model_jaerock()
-        elif config['network_type'] == const.NET_TYPE_JAEROCK_VEL:
-            self.model = model_jaerock_vel()
+        # if config['network_type'] == const.NET_TYPE_JAEROCK:
+        #     self.model = model_jaerock()
+        if config['network_type'] == const.NET_TYPE_JAEROCK_ELU:
+            self.model = model_jaerock_elu()
         elif config['network_type'] == const.NET_TYPE_CE491:
             self.model = model_ce491()
+        elif config['network_type'] == const.NET_TYPE_JAEROCK_VEL:
+            self.model = model_jaerock_vel()
+        elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU_850:
+            self.model = model_jaerock_elu()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN:
+            self.model = model_donghyun()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN2:
+            self.model = model_donghyun2()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN3:
+            self.model = model_donghyun3()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN4:
+            self.model = model_donghyun4()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN5:
+            self.model = model_donghyun5()
+            
         elif config['network_type'] == const.NET_TYPE_LRCN:
             self.model = model_lrcn()
         elif config['network_type'] == const.NET_TYPE_SPTEMLSTM:
             self.model = model_spatiotemporallstm()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN:
-            self.model = model_donghyun()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN_ELU:
-            self.model = model_donghyun_elu()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN2_ELU:
-            self.model = model_donghyun2_elu()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN3_ELU:
-            self.model = model_donghyun3_elu()
-        elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU:
-            self.model = model_jaerock_elu()
         else:
             exit('ERROR: Invalid neural network type.')
 
