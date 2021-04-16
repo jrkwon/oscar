@@ -242,10 +242,10 @@ def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
 
 
 def model_spatiotemporallstm():
-    from keras.layers import ConvLSTM2D, Convolution3D
+    from keras.layers import ConvLSTM2D, Conv3D
     from keras.layers.wrappers import TimeDistributed
     
-    img_shape = (None, config['input_image_height'],
+    img_shape = (3, config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'])
     
@@ -253,15 +253,16 @@ def model_spatiotemporallstm():
     
     input_img  = Input(shape=img_shape, name='input_image')
     lamb       = Lambda(lambda x: x/127.5 - 1.0, name='lamb_img')(input_img)
-    convlstm_1 = ConvLSTM2D(64, (3, 3), strides=(2,2), activation='relu', return_sequences=True, name='convlstm_1')(lamb)
+    convlstm_1 = ConvLSTM2D(64, 3, activation='relu', padding='same', return_sequences=True, name='convlstm_1')(lamb)
     batch_1    = BatchNormalization()(convlstm_1)
-    convlstm_2 = ConvLSTM2D(32, (3, 3), strides=(2,2), activation='relu', return_sequences=True, name='convlstm_2')(batch_1)
+    convlstm_2 = ConvLSTM2D(32, 3, activation='relu', padding='same',return_sequences=True, name='convlstm_2')(batch_1)
     batch_2    = BatchNormalization()(convlstm_2)
-    convlstm_3 = ConvLSTM2D(16, (3, 3), strides=(2,2), activation='relu', return_sequences=True, name='convlstm_3')(batch_2)
+    convlstm_3 = ConvLSTM2D(16, 3, activation='relu', padding='same',return_sequences=True, name='convlstm_3')(batch_2)
     batch_3    = BatchNormalization()(convlstm_3)
-    convlstm_4 = ConvLSTM2D(8, (3, 3), activation='relu', return_sequences=True, name='convlstm_4')(batch_3)
+    convlstm_4 = ConvLSTM2D(8, 3, activation='relu', padding='same',return_sequences=True, name='convlstm_4')(batch_3)
     batch_4    = BatchNormalization()(convlstm_4)
-    conv3d_1   = Convolution3D(3, (3, 3, 3), activation='relu', name='conv2d_last')(batch_4)
+    conv3d_1   = Conv3D(3, 3, activation='relu', padding='same', name='conv3d_last')(batch_4)
+    # batch_5    = BatchNormalization()(conv3d_1)
     flat       = Flatten(name='flat')(conv3d_1)
     fc_1       = Dense(512, activation=leaky_relu, name='fc_1')(flat)
     fc_last    = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_1)
@@ -291,25 +292,12 @@ def model_lrcn():
     fc_1      = TimeDistributed(Dense(1000, activation='relu'), name='fc_1')(flat)
     fc_2      = TimeDistributed(Dense(100, activation='relu' ), name='fc_2')(fc_1)
     
-    if config['num_inputs'] == 1:
-        lstm      = LSTM(10, return_sequences=False, name='lstm')(fc_2)
-        fc_3      = Dense(50, activation='relu', name='fc_3')(lstm)
-        fc_4      = Dense(10, activation='relu', name='fc_4')(fc_3)
-        fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_4)
-    
-        model = Model(inputs=input_img, outputs=fc_last)
-        
-    elif config['num_inputs'] == 2:
-        input_velocity = Input(shape=vel_shape, name='input_velocity')
-        lamb      = TimeDistributed(Lambda(lambda x: x / 38), name='lamb_vel')(input_velocity)
-        fc_vel_1  = TimeDistributed(Dense(50, activation='relu'), name='fc_vel')(lamb)
-        concat    = concatenate([fc_2, fc_vel_1], name='concat')
-        lstm      = LSTM(3, return_sequences=False, name='lstm')(concat)
-        fc_3      = Dense(50, activation='relu', name='fc_3')(lstm)
-        fc_4      = Dense(10, activation='relu', name='fc_4')(fc_3)
-        fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_4)
+    lstm      = LSTM(10, return_sequences=False, name='lstm')(fc_2)
+    fc_3      = Dense(50, activation='relu', name='fc_3')(lstm)
+    fc_4      = Dense(10, activation='relu', name='fc_4')(fc_3)
+    fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_4)
 
-        model = Model(inputs=[input_img, input_velocity], outputs=fc_last)
+    model = Model(inputs=input_img, outputs=fc_last)
     
     return model
 
