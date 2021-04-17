@@ -235,6 +235,7 @@ def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
     return model
 
 def model_donghyun6(): # resnet 처럼
+    from keras.layers import add, Concatenate, ELU, UpSampling2D
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
@@ -242,14 +243,31 @@ def model_donghyun6(): # resnet 처럼
     ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
-    conv_2 = Conv2D(48, (5, 5), strides=(2,2), activation='elu')(conv_1)
-    conv_3 = Conv2D(36, (5, 5), strides=(2,2), activation='elu')(conv_2)
-    conc_1 = concatenate([conv_1, conv_3])
-    conv_4 = Conv2D(24, (3, 3), activation='elu')(conc_1)
-    conc_2 = concatenate([conv_2, conv_4])
-    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conc_2)
-    fc_1 = Dense(100, activation='elu', name='fc_1')(conv_5)
+    conv_1 = Conv2D(64, (5, 5), activation='elu', name='b1_conv_1')(lamb)
+    print(conv_1.shape)
+    conv_2 = Conv2D(32, (5, 5), strides=(2,2), padding='same', activation='elu')(conv_1)
+    print(conv_2.shape)
+    conv_3  = Conv2D(32, (3, 3), strides=(2,2), padding='same', activation='elu', name='b2_conv_1')(conv_1)
+    print(conv_3.shape)
+    conc_1 = Concatenate(axis=3)([conv_2, conv_3])
+    print('conc_1 : ',conc_1.shape)
+    conv_4 = Conv2D(64, (5, 5), activation='elu')(conc_1)
+    print(conv_4.shape)
+    conv_5 = Conv2D(32, (5, 5), strides=(2,2), padding='same', activation='elu')(conv_4)
+    print(conv_5.shape)
+    conv_6 = Conv2D(32, (3, 3), strides=(2,2), padding='same', activation='elu')(conv_4)
+    print(conv_6.shape)
+    # upsp_1 = UpSampling2D(size=(2,2), name='b3_up_1')(conv_5)
+    conc_2 = Concatenate(axis=3)([conv_5, conv_6])
+    print('conc_2 : ',conc_2.shape)
+    conv_6 = Conv2D(32, (3, 3), activation='elu')(conc_2)
+    conv_7 = Conv2D(32, (3, 3), activation='elu')(conv_6)
+    print(conv_6.shape)
+    print(conv_7.shape)
+    flat_1 = Flatten()(conv_7)
+    flat_2 = Flatten()(conc_2)
+    conc_3 = Concatenate()([flat_1, flat_2])
+    fc_1 = Dense(100, activation='elu', name='fc_1')(conc_3)
     fc_2 = Dense(50,  activation='elu', name='fc_2')(fc_1)
     fc_3 = Dense(10,   activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(1, name='fc_str')(fc_3)
