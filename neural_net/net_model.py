@@ -31,16 +31,16 @@ def model_ce491():
 
     return Sequential([
         Lambda(lambda x: x/127.5 - 1.0, input_shape=input_shape),
-        Conv2D(24, (5, 5), strides=(2,2), activation='relu'),
-        Conv2D(36, (5, 5), strides=(2,2), activation='relu'),
-        Conv2D(48, (5, 5), strides=(2,2), activation='relu'),
-        Conv2D(64, (3, 3), activation='relu'),
+        Conv2D(24, (5, 5), strides=(2,2), activation='relu', name='conv2d_1'),
+        Conv2D(36, (5, 5), strides=(2,2), activation='relu', name='conv2d_2'),
+        Conv2D(48, (5, 5), strides=(2,2), activation='relu', name='conv2d_3'),
+        Conv2D(64, (3, 3), activation='relu', name='conv2d_4'),
         Conv2D(64, (3, 3), activation='relu', name='conv2d_last'),
         Flatten(),
-        Dense(100, activation='relu'),
-        Dense(50, activation='relu'),
-        Dense(10, activation='relu'),
-        Dense(config['num_outputs'])])
+        Dense(100, activation='relu', name='fc_1'),
+        Dense(50, activation='relu', name='fc_2'),
+        Dense(10, activation='relu', name='fc_3'),
+        Dense(config['num_outputs'], name='fc_str')])
 
 def model_jaerock():
     input_shape = (config['input_image_height'],
@@ -183,12 +183,6 @@ def model_donghyun3(): #필터사이즈를 donghyun2에 비해 전체적으로 �
 
     return model
 
-# conv_1 output (32, 177) 
-# conv_2 output (13,  85) 
-# conv_3 output ( 9,  81) 
-# conv_4 output ( 5,  77) 
-# conv_5 output ( 1,  73)  
-
 def model_donghyun4(): #레이어줄이기
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
@@ -240,9 +234,94 @@ def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
 
     return model
 
+def model_donghyun6(): # resnet 처럼
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(64, (8, 8), strides=(2,2), activation='elu')(lamb)
+    conv_2 = Conv2D(48, (5, 5), strides=(2,2), activation='elu')(conv_1)
+    conv_3 = Conv2D(36, (5, 5), strides=(2,2), activation='elu')(conv_2)
+    conc_1 = concatenate([conv_1, conv_3])
+    conv_4 = Conv2D(24, (3, 3), activation='elu')(conc_1)
+    conc_2 = concatenate([conv_2, conv_4])
+    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conc_2)
+    fc_1 = Dense(100, activation='elu', name='fc_1')(conv_5)
+    fc_2 = Dense(50,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(10,   activation='elu', name='fc_3')(fc_2)
+    fc_last = Dense(1, name='fc_str')(fc_3)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
+def model_sap():
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(3, (1, 1), activation='elu')(lamb)
+    conv_2 = Conv2D(32, (3, 3), activation='elu', name='conv2d_2')(conv_1)
+    conv_3 = Conv2D(32, (3, 3), activation='elu', name='conv2d_3')(conv_2)
+    pool_1 = MaxPooling2D(pool_size=(2, 2), name='maxpool_1')(conv_3)
+    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv2d_5')(pool_1)
+    conv_5 = Conv2D(64, (3, 3), activation='elu', name='conv2d_6')(conv_4)
+    pool_2 = MaxPooling2D(pool_size=(2, 2), name='maxpool_2')(conv_5)
+    conv_6 = Conv2D(128, (3, 3), activation='elu', name='conv2d_8')(pool_2)
+    conv_7 = Conv2D(128, (3, 3), activation='elu', name='conv2d_last')(conv_6)
+    pool_3 = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_7)
+    flat_1 = Flatten()(pool_3)
+    fc_1 = Dense(512, activation='elu', name='fc_1')(flat_1)
+    fc_2 = Dense(64,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(16,   activation='elu', name='fc_3')(fc_2)
+    fc_last = Dense(1, name='fc_str')(fc_3)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
+def model_vgg16():    
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+        
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(64, (3, 3), padding="same", activation='relu', name='conv_1')(lamb)
+    conv_2 = Conv2D(64, (3, 3), padding="same", activation='relu', name='conv_2')(conv_1)
+    pool_1 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='maxpool_1')(conv_2)
+    conv_3 = Conv2D(128, (3, 3), padding="same", activation='relu', name='conv_3')(pool_1)
+    conv_4 = Conv2D(128, (3, 3), padding="same", activation='relu', name='conv_4')(conv_3)
+    pool_2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='maxpool_2')(conv_4)
+    conv_5 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_5')(pool_2)
+    conv_6 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_6')(conv_5)
+    conv_7 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_7')(conv_6)
+    pool_3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='maxpool_3')(conv_7)
+    conv_8 = Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_8')(pool_3)
+    conv_9 = Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_9')(conv_8)
+    conv_10= Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_10')(conv_9)
+    pool_4 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='maxpool_4')(conv_10)
+    conv_11= Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_11')(pool_4)
+    conv_12= Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_12')(conv_11)
+    conv_13= Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_13')(conv_12)
+    pool_5 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='maxpool_5')(conv_13)
+    flat = Flatten()(pool_5)
+    fc_1 = Dense(4096, activation='relu', name='fc_1')(flat)
+    fc_2 = Dense(4096, activation='relu', name='fc_2')(fc_1)
+    fc_last = Dense(1, activation='linear', name='fc_str')(fc_2)
+    
+    model = Model(inputs=img_input, output=fc_last)
+    
+    return model
 
 def model_spatiotemporallstm():
-    from keras.layers import ConvLSTM2D, Convolution3D, LeakyReLU
+    from keras.layers import ConvLSTM2D, Conv3D, LeakyReLU
     from keras.layers.wrappers import TimeDistributed
     
     img_shape = (3, config['input_image_height'],
@@ -251,16 +330,15 @@ def model_spatiotemporallstm():
     
     input_img  = Input(shape=img_shape, name='input_image')
     lamb       = Lambda(lambda x: x/127.5 - 1.0, name='lamb_img')(input_img)
-    convlstm_1 = ConvLSTM2D(64, nb_row=3, nb_col=3, activation='relu', border_mode='same', return_sequences=True, name='convlstm_1')(lamb)
+    convlstm_1 = ConvLSTM2D(64, 3, activation='relu', border_mode='same', return_sequences=True, name='convlstm_1')(lamb)
     batch_1    = BatchNormalization()(convlstm_1)
-    convlstm_2 = ConvLSTM2D(32, nb_row=3, nb_col=3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_2')(batch_1)
+    convlstm_2 = ConvLSTM2D(32, 3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_2')(batch_1)
     batch_2    = BatchNormalization()(convlstm_2)
-    convlstm_3 = ConvLSTM2D(16, nb_row=3, nb_col=3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_3')(batch_2)
+    convlstm_3 = ConvLSTM2D(16, 3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_3')(batch_2)
     batch_3    = BatchNormalization()(convlstm_3)
-    convlstm_4 = ConvLSTM2D(8, nb_row=3, nb_col=3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_4')(batch_3)
+    convlstm_4 = ConvLSTM2D(8, 3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_4')(batch_3)
     batch_4    = BatchNormalization()(convlstm_4)
-    conv3d_1   = Convolution3D(nb_filter=3, kernel_dim1=3, kernel_dim2=3,
-                          kernel_dim3=3, activation='relu', border_mode='same', name='conv3d_last')(batch_4)
+    conv3d_1   = Conv3D(3, 3, activation='relu', border_mode='same', name='conv3d_last')(batch_4)
     # batch_5    = BatchNormalization()(conv3d_1)
     flat       = Flatten(name='flat')(conv3d_1)
     fc_1       = Dense(512,name='fc_1')(flat)
@@ -276,26 +354,58 @@ def model_lrcn():
     from keras.layers.wrappers import TimeDistributed
 
     # redefine input_shape to add one more dims
-    img_shape = (3, config['input_image_height'],
+    img_shape = (None, config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'])
-    vel_shape = (None, 1)
     
     input_img = Input(shape=img_shape, name='input_image')
     lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb_img')(input_img)
-    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), strides=(2,2)), name='conv_1')(lamb)
-    conv_2    = TimeDistributed(Convolution2D(36, (5, 5), strides=(2,2)), name='conv_2')(conv_1)
-    conv_3    = TimeDistributed(Convolution2D(48, (5, 5), strides=(2,2)), name='conv_3')(conv_2)
-    conv_4    = TimeDistributed(Convolution2D(64, (3, 3)), name='conv_4')(conv_3)
-    conv_5    = TimeDistributed(Convolution2D(64, (3, 3)), name='conv2d_last')(conv_4)
+    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), activation='elu', strides=(2,2)), name='conv_1')(lamb)
+    conv_2    = TimeDistributed(Convolution2D(36, (5, 5), activation='elu', strides=(2,2)), name='conv_2')(conv_1)
+    conv_3    = TimeDistributed(Convolution2D(48, (5, 5), activation='elu', strides=(2,2)), name='conv_3')(conv_2)
+    conv_4    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv_4')(conv_3)
+    conv_5    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv2d_last')(conv_4)
     flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
-    fc_1      = TimeDistributed(Dense(1000, activation='relu'), name='fc_1')(flat)
-    fc_2      = TimeDistributed(Dense(100, activation='relu' ), name='fc_2')(fc_1)
-    
-    lstm      = LSTM(10, return_sequences=False, name='lstm')(fc_2)
-    fc_3      = Dense(50, activation='relu', name='fc_3')(lstm)
-    fc_4      = Dense(10, activation='relu', name='fc_4')(fc_3)
+    lstm      = LSTM(64, return_sequences=False, name='lstm')(flat)
+    fc_1      = Dense(1000, activation='elu', name='fc_1')(lstm)
+    fc_2      = Dense( 100, activation='elu', name='fc_2')(fc_1)
+    fc_3      = Dense(  50, activation='elu', name='fc_3')(fc_2)
+    fc_4      = Dense(  10, activation='elu', name='fc_4')(fc_3)
     fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_4)
+
+    model = Model(inputs=input_img, outputs=fc_last)
+    
+    return model
+
+def model_cooplrcn():
+    from keras.layers.recurrent import LSTM
+    from keras.layers.wrappers import TimeDistributed
+
+    # redefine input_shape to add one more dims
+    img_shape = (None, config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'])
+    
+    input_img = Input(shape=img_shape, name='input_image')
+    lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb_img')(input_img)
+    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), activation='relu', strides=(5,4)), name='conv_1')(lamb)
+    print(conv_1.shape)
+    conv_2    = TimeDistributed(Convolution2D(32, (5, 5), activation='relu', strides=(3,2)), name='conv_2')(conv_1)
+    print(conv_2.shape)
+    conv_3    = TimeDistributed(Convolution2D(48, (5, 5), activation='relu', strides=(5,4)), name='conv_3')(conv_2)
+    print(conv_3.shape)
+    conv_4    = TimeDistributed(Convolution2D(64, (5, 5), activation='relu', strides=(1,1)), name='conv_4')(conv_3)
+    print(conv_4.shape)
+    conv_5    = TimeDistributed(Convolution2D(128, (5, 5), activation='relu', strides=(1,2)), name='conv2d_last')(conv_4)
+    print(conv_5.shape)
+    flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
+    lstm_1    = LSTM(64, return_sequences=True, name='lstm_1')(flat)
+    lstm_2    = LSTM(64, return_sequences=True, name='lstm_2')(lstm_1)
+    lstm_3    = LSTM(64, return_sequences=False, name='lstm_3')(lstm_2)
+    fc_1      = Dense(100, activation='relu', name='fc_1')(lstm_3)
+    fc_2      = Dense(50, activation='relu' , name='fc_2')(fc_1)
+    fc_3      = Dense(10, activation='relu', name='fc_3')(fc_2)
+    fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_3)
 
     model = Model(inputs=input_img, outputs=fc_last)
     
@@ -312,13 +422,13 @@ class NetModel:
 
         # to address the error:
         #   Could not create cudnn handle: CUDNN_STATUS_INTERNAL_ERROR
-        # os.environ["CUDA_VISIBLE_DEVICES"]=str(config['gpus'])
+        os.environ["CUDA_VISIBLE_DEVICES"]=str(config['gpus'])
         
-        # gpu_options = tf.GPUOptions(allow_growth=True)
-        # sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
-        # K.tensorflow_backend.set_session(sess)
-        with tf.device('/cpu:0'):
-            self._model()
+        gpu_options = tf.GPUOptions(allow_growth=True)
+        sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+        K.tensorflow_backend.set_session(sess)
+        # with tf.device('/cpu:0'):
+        self._model()
 
     ###########################################################################
     #
@@ -331,8 +441,12 @@ class NetModel:
             self.model = model_ce491()
         elif config['network_type'] == const.NET_TYPE_JAEROCK_VEL:
             self.model = model_jaerock_vel()
-        elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU_850:
+        elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU_360:
             self.model = model_jaerock_elu()
+        elif config['network_type'] == const.NET_TYPE_SAP:
+            self.model = model_sap()
+        elif config['network_type'] == const.NET_TYPE_VGG16:
+            self.model = model_vgg16()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN:
             self.model = model_donghyun()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN2:
@@ -343,11 +457,15 @@ class NetModel:
             self.model = model_donghyun4()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN5:
             self.model = model_donghyun5()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN6:
+            self.model = model_donghyun6()
             
         elif config['network_type'] == const.NET_TYPE_LRCN:
             self.model = model_lrcn()
         elif config['network_type'] == const.NET_TYPE_SPTEMLSTM:
             self.model = model_spatiotemporallstm()
+        elif config['network_type'] == const.NET_TYPE_COOPLRCN:
+            self.model = model_cooplrcn()
         else:
             exit('ERROR: Invalid neural network type.')
 
