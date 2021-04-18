@@ -330,6 +330,36 @@ def model_vgg16():
     
     return model
 
+def model_alexnet(): 
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+        
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(96, (11, 11), strides=(4,4), padding="same", activation='relu', name='conv_1')(lamb)
+    conv_1_bn = BatchNormalization()(conv_1)
+    conv_1_pl = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='maxpool_1')(conv_1_bn)
+    
+    conv_2 = Conv2D(256, (5, 5), padding="same", activation='relu', name='conv_2')(conv_1_pl)
+    conv_2_bn = BatchNormalization()(conv_2)
+    conv_2_pl = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='maxpool_2')(conv_2_bn)
+    
+    conv_3 = Conv2D(384, (3, 3), padding="same", activation='relu', name='conv_3')(conv_2_pl)
+    conv_4 = Conv2D(384, (3, 3), padding="same", activation='relu', name='conv_4')(conv_3)
+    conv_5 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_5')(conv_4)
+    conv_5_pl = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='maxpool_3')(conv_5)
+    
+    flat = Flatten()(conv_5_pl)
+    fc_1 = Dense(4096, activation='relu', name='fc_1')(flat)
+    fc_2 = Dense(4096, activation='relu', name='fc_2')(fc_1)
+    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
+    
+    model = Model(inputs=img_input, output=fc_last)
+    
+    return model
+    
+
 def model_spatiotemporallstm():
     from keras.layers import ConvLSTM2D, Conv3D, LeakyReLU
     from keras.layers.wrappers import TimeDistributed
@@ -457,6 +487,8 @@ class NetModel:
             self.model = model_sap()
         elif config['network_type'] == const.NET_TYPE_VGG16:
             self.model = model_vgg16()
+        elif config['network_type'] == const.NET_TYPE_ALEXNET:
+            self.model = model_alexnet()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN:
             self.model = model_donghyun()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN2:
