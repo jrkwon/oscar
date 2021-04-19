@@ -268,6 +268,40 @@ def model_donghyun6(): # resnet 처럼
 
     return model
 
+def model_donghyun7(): # resnet 처럼
+    from keras.layers import add, Concatenate, ELU, UpSampling2D
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1  = Conv2D(64, (8, 8), strides=(2,2), activation='elu', name='conv_1')(lamb)
+    conv_2  = Conv2D(64, (6, 6), strides=(2,2), activation='elu', name='conv_2')(conv_1)
+    conv_3_1= Conv2D(128, (5, 5), strides=(2,2), padding='same', activation='elu', name='conv_3_1')(conv_2)
+    conv_3_2= Conv2D(128, (3, 3), strides=(2,2), padding='same', activation='elu', name='conv_3_2')(conv_2)
+    conc_1  = Concatenate(axis=3)([conv_3_1, conv_3_2])
+    
+    conv_4_1= Conv2D(256, (3, 3), activation='elu')(conc_1)
+    conv_4_2= Conv2D(256, (3, 3), activation='elu')(conv_3_2)
+    conc_2  = Concatenate(axis=3)([conv_4_1, conv_4_2])
+    
+    conv_5_1= Conv2D(512, (3, 3), activation='elu', name='conv_5_1')(conc_2)
+    conv_5_2= Conv2D(512, (3, 3), activation='elu', name='conv_5_2')(conv_4_2)
+    conc_3  = Concatenate(axis=3)([conv_5_1, conv_5_2])
+    conv_6  = Conv2D(512, (3, 3), activation='elu', name='conv2d_last')(conc_3)
+    
+    flat_1  = Flatten()(conv_6)
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat_1)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_last = Dense(1, name='fc_str')(fc_3)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
 def model_sap():
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
