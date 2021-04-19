@@ -535,6 +535,8 @@ class NetModel:
             self.model = model_donghyun5()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN6:
             self.model = model_donghyun6()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN7:
+            self.model = model_donghyun7()
             
         elif config['network_type'] == const.NET_TYPE_LRCN:
             self.model = model_lrcn()
