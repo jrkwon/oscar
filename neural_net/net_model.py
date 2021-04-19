@@ -330,6 +330,30 @@ def model_sap():
 
     return model
 
+def model_dave2sky():
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(24, (5, 5), strides=(2,2), activation='relu')(lamb)
+    conv_1_bn = BatchNormalization()(conv_1)
+    conv_2 = Conv2D(36, (5, 5), strides=(2,2), activation='relu')(conv_1_bn)
+    conv_2_bn = BatchNormalization()(conv_2)
+    conv_3 = Conv2D(48, (5, 5), strides=(2,2), activation='relu')(conv_2_bn)
+    conv_3_bn = BatchNormalization()(conv_3)
+    conv_4 = Conv2D(64, (3, 3), activation='relu')(conv_3_bn)
+    conv_5 = Conv2D(64, (3, 3), name='conv2d_last', activation='relu')(conv_4)
+    flat = Flatten()(conv_5)
+    fc_1 = Dense(32, name='fc_1')(flat)
+    fc_last = Dense(config['num_outputs'], name='fc_str')(fc_1)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
 def model_vgg16():    
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
@@ -519,6 +543,8 @@ class NetModel:
             self.model = model_jaerock_elu()
         elif config['network_type'] == const.NET_TYPE_SAP:
             self.model = model_sap()
+        elif config['network_type'] == const.NET_TYPE_DAVE2SKY:
+            self.model = model_dave2sky()
         elif config['network_type'] == const.NET_TYPE_VGG16:
             self.model = model_vgg16()
         elif config['network_type'] == const.NET_TYPE_ALEXNET:
