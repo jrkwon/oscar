@@ -5,7 +5,7 @@ Created on Sat Sep 23 13:49:23 2017
 History:
 11/28/2020: modified for OSCAR 
 
-@author: jaerock
+@author: jaerock, donghyun
 """
 
 import sys, os
@@ -62,10 +62,10 @@ def images_saliency(model_path, image_folder_path):
         #           + '\nError:\t' + str(abs(steering_angles[i][0] - measurement[0][0])))
         layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_last')
         penultimate_layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_4')
-        fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_str')
-        # fc_last = utils.find_layer_idx(drive_run.net_model.model, 'dense_5')
+        # fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_str')
+        fc_last = utils.find_layer_idx(drive_run.net_model.model, 'dense_5')
         heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
-                    filter_indices=fc_last, seed_input=image, backprop_modifier='guided', penultimate_layer_idx=penultimate_layer_idx)
+                    filter_indices=fc_last, seed_input=image, backprop_modifier='guided', penultimate_layer_idx=None)
 
         ax1 = fig.add_subplot(2,1,1)
         ax1.set_title('Prediction :' + str(format(measurement[0][0], ".9f")) 
@@ -120,38 +120,43 @@ def show_layer_saliency(model_path, image_folder_path):
     
     for j in range(len(dir_img_list)):
         first_layer = True
-        fig = plt.figure()
+        fig = plt.figure(figsize=(3,10))
+        # fig, ax = plt.subplots(1, num_conv_layer-1)
+        
         num_layer = 1
         for i in range(len(drive_run.net_model.model.layers)):
             if "Conv2D" in str(drive_run.net_model.model.layers[i]):
                 if first_layer is True:
                     first_layer = False
-                    continue
-                # print(drive_run.net_model.model.get_layer(index = i).name)
-                
-                image_file_path = image_folder_path+'/'+dir_img_list[j]
-                image = cv2.imread(image_file_path)
-                
-                if Config.data_collection['crop'] is not True:
-                    image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
-                                Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
-                image = cv2.resize(image, 
-                                    (Config.neural_net['input_image_width'],
-                                    Config.neural_net['input_image_height']))
-                image = image_process.process(image, bgr=False)
-                
-                layer_idx = utils.find_layer_idx(drive_run.net_model.model, drive_run.net_model.model.get_layer(index = i).name)
-                penultimate_layer_idx = utils.find_layer_idx(drive_run.net_model.model, drive_run.net_model.model.get_layer(index = i-1).name)
-                # fc_last = utils.find_layer_idx(drive_run.net_model.model, 'dense_5')
-                fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_str')
-                heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
-                            filter_indices=fc_last, seed_input=image, backprop_modifier='guided', penultimate_layer_idx=penultimate_layer_idx)
-                
-                fig.add_subplot(num_conv_layer,1, num_layer)
-                plt.imshow(image)
-                plt.imshow(heatmap, cmap='jet', alpha=0.5)
-                num_layer += 1
-        
+                else:
+                    # print(drive_run.net_model.model.get_layer(index = i).name)
+                    
+                    image_file_path = image_folder_path+'/'+dir_img_list[j]
+                    image = cv2.imread(image_file_path)
+                    
+                    if Config.data_collection['crop'] is not True:
+                        image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                                    Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+                    image = cv2.resize(image, 
+                                        (Config.neural_net['input_image_width'],
+                                        Config.neural_net['input_image_height']))
+                    image = image_process.process(image, bgr=False)
+                    
+                    layer_idx = utils.find_layer_idx(drive_run.net_model.model, drive_run.net_model.model.get_layer(index = i).name)
+                    penultimate_layer_idx = utils.find_layer_idx(drive_run.net_model.model, drive_run.net_model.model.get_layer(index = i-1).name)
+                    fc_last = utils.find_layer_idx(drive_run.net_model.model, 'dense_5')
+                    # fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_str')
+                    heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
+                                filter_indices=fc_last, seed_input=image, backprop_modifier='guided', penultimate_layer_idx=penultimate_layer_idx)
+
+                    # ax[num_layer-1].imshow(image)
+                    # ax[num_layer-1].imshow(heatmap, cmap='jet', alpha=0.5)
+                    ax = fig.add_subplot(num_conv_layer-1,1, num_layer)
+                    # ax[num_layer-1].set_axis_off()
+                    plt.imshow(image)
+                    plt.imshow(heatmap, cmap='jet', alpha=0.5)
+                    num_layer += 1
+        plt.subplots_adjust(wspace=0, hspace=1)
         plt.tight_layout()
         saliency_file_path = image_folder_path + '/saliency' + '_' + model_path[-2:] + '/' + dir_img_list[j][:-4] + '_saliency_layers.png'
         # save fig    
@@ -161,6 +166,7 @@ def show_layer_saliency(model_path, image_folder_path):
 
         sys.stdout.write(cur_output)
         sys.stdout.flush()
+        del fig
 
 def main(model_path, image_file_path):
     image_process = ImageProcess()

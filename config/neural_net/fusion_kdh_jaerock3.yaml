@@ -10,8 +10,10 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 34        # refer to neural_net/const.py
-gpus: 1
+network_type: 32        # refer to neural_net/const.py
+gpus: 3
+
+load: True
 
 lstm: False
 lstm_timestep: 5
@@ -20,7 +22,7 @@ lstm_lr: 0.0000001        #
 
 cnn_lr:  0.0001          # default of Adam is 0.001
 
-decay: 0.0000001
+decay: 0.0000001        #0.00000001
 # normalize data
 normalize_data: True
 samples_per_bin: 4000

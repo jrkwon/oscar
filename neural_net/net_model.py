@@ -559,12 +559,14 @@ class NetModel:
 
     ###########################################################################
     # model_path = '../data/2007-09-22-12-12-12.
-    def load(self):
+    def load(self, load_model_name):
 
         from keras.models import model_from_json
 
-        self.model = model_from_json(open(self.model_path+'.json').read())
-        self.model.load_weights(self.model_path+'.h5')
+        json_string = self.model.to_json()
+        open(load_model_name+'.json', 'w').write(json_string)
+        self.model = model_from_json(open(load_model_name+'.json').read())
+        self.model.load_weights(load_model_name)
         self._compile()
 
     ###########################################################################

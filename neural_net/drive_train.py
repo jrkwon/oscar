@@ -54,7 +54,7 @@ class DriveTrain:
         
         self.data_path = data_path
         #self.model_name = model_name
-
+        
         self.model_name = data_path + '_' + Config.neural_net_yaml_name \
             + '_N' + str(config['network_type'])
         self.model_ckpt_name = self.model_name + '_ckpt'
@@ -346,11 +346,14 @@ class DriveTrain:
         
     ###########################################################################
     #
-    def train(self, show_summary=True):
+    def train(self, show_summary=True, load_model_name=None):
         
         self._prepare_data()
+        if config['load'] is True:
+            self.net_model.load(load_model_name)
         self._build_model(show_summary)
         self._start_training()
         self.net_model.save(self.model_name)
+            
         self._plot_training_history()
         Config.summary()
