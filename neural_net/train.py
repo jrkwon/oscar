@@ -24,7 +24,7 @@ def train(data_folder_name, load_model_name=None):
 #
 if __name__ == '__main__':
     try:
-        if Config.neural_net['load'] is True:
+        if Config.neural_net['weight_load'] is True:
             if (len(sys.argv) != 3):
                 exit('Usage:\n$ python {} data_path load_model_name'.format(sys.argv[0]))
             train(sys.argv[1], sys.argv[2])

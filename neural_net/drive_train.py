@@ -52,15 +52,20 @@ class DriveTrain:
         
         #self.config = Config() #model_name)
         
-        self.data_path = data_path
         #self.model_name = model_name
         
         self.model_name = data_path + '_' + Config.neural_net_yaml_name \
             + '_N' + str(config['network_type'])
         self.model_ckpt_name = self.model_name + '_ckpt'
 
-        
-        self.data = DriveData(self.csv_path)
+        if config['data_split'] is True:
+            self.data = DriveData(self.csv_path)
+            self.data_path = data_path
+        else:
+            self.t_data = DriveData(data_path+'/train/'+ model_name+'/'+ model_name + const.DATA_EXT)
+            self.v_data = DriveData(data_path+'/valid/'+ model_name+'/'+ model_name + const.DATA_EXT)
+            self.t_data_path = data_path+'/train/'+ model_name
+            self.v_data_path = data_path+'/valid/'+ model_name
         self.net_model = NetModel(data_path)
         self.image_process = ImageProcess()
         self.data_aug = DataAugmentation()
@@ -69,18 +74,28 @@ class DriveTrain:
     ###########################################################################
     #
     def _prepare_data(self):
-    
-        self.data.read()
         
-        # put velocities regardless we use them or not for simplicity.
-        samples = list(zip(self.data.image_names, self.data.velocities, self.data.measurements))
-
-        if config['lstm'] is True:
-            self.train_data, self.valid_data = self._prepare_lstm_data(samples)
-        else:    
-            self.train_data, self.valid_data = train_test_split(samples, 
-                                       test_size=config['validation_rate'])
-        
+        if config['data_split'] is True:
+            self.data.read()
+            # put velocities regardless we use them or not for simplicity.
+            samples = list(zip(self.data.image_names, self.data.velocities, self.data.measurements))
+            if config['lstm'] is True:
+                self.train_data, self.valid_data = self._prepare_lstm_data(samples)
+            else:    
+                self.train_data, self.valid_data = train_test_split(samples, 
+                                        test_size=config['validation_rate'])
+        else:
+            self.t_data.read()
+            self.v_data.read()
+            # put velocities regardless we use them or not for simplicity.
+            train_samples = list(zip(self.t_data.image_names, self.t_data.velocities, self.t_data.measurements))
+            valid_samples = list(zip(self.v_data.image_names, self.v_data.velocities, self.v_data.measurements))
+            if config['lstm'] is True:
+                self.train_data, self.valid_data = self._prepare_lstm_data(samples)
+            else:
+                self.train_data = train_samples
+                self.valid_data = valid_samples
+            
         self.num_train_samples = len(self.train_data)
         self.num_valid_samples = len(self.valid_data)
         
@@ -140,12 +155,19 @@ class DriveTrain:
 
             return False, image, steering_angle
 
-        def _prepare_batch_samples(batch_samples):
+        def _prepare_batch_samples(batch_samples, data=None):
             images = []
             velocities = []
             measurements = []
+            if data is None:
+                data_path = self.data_path
+            elif data == 'train':
+                data_path = self.t_data_path
+            elif data == 'valid':
+                data_path = self.v_data_path
             for image_name, velocity, measurement in batch_samples:
-                image_path = self.data_path + '/' + image_name
+                image_path = data_path + '/' + image_name
+                # print(image_path)
                 image = cv2.imread(image_path)
                 # if collected data is not cropped then crop here
                 # otherwise do not crop.
@@ -233,7 +255,7 @@ class DriveTrain:
                 
             return images, velocities, measurements
         
-        def _generator(samples, batch_size=config['batch_size']):
+        def _generator(samples, batch_size=config['batch_size'], data=None):
             num_samples = len(samples)
             while True: # Loop forever so the generator never terminates
                 if config['lstm'] is True:
@@ -267,7 +289,7 @@ class DriveTrain:
                     for offset in range(0, num_samples, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
                         
-                        images, velocities, measurements = _prepare_batch_samples(batch_samples)
+                        images, velocities, measurements = _prepare_batch_samples(batch_samples, data)
                         X_train = np.array(images)
                         y_train = np.array(measurements)
                         # y_train = y_train.reshape(-1, 1)
@@ -277,9 +299,12 @@ class DriveTrain:
                             X_train = [X_train, X_train_vel]
                         # print(y_train)
                         yield sklearn.utils.shuffle(X_train, y_train)
-        
-        self.train_generator = _generator(self.train_data)
-        self.valid_generator = _generator(self.valid_data)
+        if config['data_split'] is True:
+            self.train_generator = _generator(self.train_data)
+            self.valid_generator = _generator(self.valid_data)       
+        else:
+            self.train_generator = _generator(self.train_data, data='train')
+            self.valid_generator = _generator(self.valid_data, data='valid')
         
         if (show_summary):
             self.net_model.model.summary()
@@ -349,8 +374,8 @@ class DriveTrain:
     def train(self, show_summary=True, load_model_name=None):
         
         self._prepare_data()
-        if config['load'] is True:
-            self.net_model.load(load_model_name)
+        if config['weight_load'] is True:
+            self.net_model.weight_load(load_model_name)
         self._build_model(show_summary)
         self._start_training()
         self.net_model.save(self.model_name)

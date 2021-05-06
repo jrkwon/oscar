@@ -69,7 +69,7 @@ class MapInfoGenerator:
         self._oscar_path_check()
         self._build_txt(self.oscar_path+"/neural_net/map_info", self.track)
         self._cal_totalerror()
-        # self._cal_groundtruth(self.oscar_path+"/neural_net/map_info")
+        self._cal_groundtruth(self.oscar_path+"/neural_net/map_info")
         os.system("rosnode kill " + "mapinfo_generator")
         
     def _build_txt(self, data_path, data):
@@ -97,106 +97,190 @@ class MapInfoGenerator:
         
     def _cal_groundtruth(self, data_path):
         new_csv = []
+        
+        last_position = [0, 0]
         for i in range(0, len(self.track[0])):
-            new_csv.append(self.track[0][i]+" "+self.track[1][i]+"m"+'\n')
+            road_dist = float(self.track[1][i])
+            curve_margin = 2.333
+            road_box = [0, 0, 0]
+            box_margin = 5.0
+            # box_margin = 50.0
+            sample = 10
             if self.track[0][i] == "Straight":
-                road_dist = float(self.track[1][i]) #도로의 길이 (m). 
-                data_term = 1                       #1cm 마다 pose를 구할것임
-                for _ in range(0, int(road_dist/data_term)):
+                for j in range(sample):
+                    start_pnt = last_position
                     if self.quadrant == 1:
-                        self.last_position = [self.last_position[0]+data_term , self.last_position[1]          ]
+                        end_pnt = [start_pnt[0]+road_dist, start_pnt[1]]
+                        road_box = [ [start_pnt[0]  , start_pnt[1]-box_margin] 
+                                , [end_pnt[0]    , end_pnt[1]-box_margin] 
+                                , [start_pnt[0]  , start_pnt[1]+box_margin] ]
+                        new_csv.append(str(start_pnt[0]+road_dist*(j+1)/sample)+', '+ str(start_pnt[1]))
                     elif self.quadrant == 2:
-                        self.last_position = [self.last_position[0]           , self.last_position[1]+data_term]
+                        end_pnt = [start_pnt[0], start_pnt[1]+road_dist]
+                        road_box = [ [start_pnt[0]-box_margin  , start_pnt[1]] 
+                                , [start_pnt[0]+box_margin  , start_pnt[1]] 
+                                , [end_pnt[0]-box_margin    , end_pnt[1]] ]
+                        new_csv.append(str(start_pnt[0])+', '+ str(start_pnt[1]+road_dist*(j+1)/sample))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
                     elif self.quadrant == 3:
-                        self.last_position = [self.last_position[0]-data_term , self.last_position[1]          ]
+                        end_pnt = [start_pnt[0]-road_dist, start_pnt[1]]
+                        road_box = [ [end_pnt[0]    , end_pnt[1]-box_margin] 
+                                , [start_pnt[0]  , start_pnt[1]-box_margin] 
+                                , [end_pnt[0]    , end_pnt[1]+box_margin] ]
+                        new_csv.append(str(start_pnt[0]-road_dist*(j+1)/sample)+', '+ str(start_pnt[1]))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
                     elif self.quadrant == 4:
-                        self.last_position = [self.last_position[0]           , self.last_position[1]-data_term]
-                    
-                    for n in range(len(self.last_position)):
-                        if self.last_position[n] < 0.0001 and self.last_position[n] > -0.0001:
-                            self.last_position[n] = 0
-                    new_csv.append(str(self.last_position[0])+" "+str(self.last_position[1])+'\n')
-                
-            elif self.track[0][i] == "Left" or self.track[0][i] == "Right":
-                road_dist = float(self.track[1][i]) #도로의 길이 (m). 
-                data_term = 1                       #1cm 마다 pose를 구할것임
-                theta = math.pi / (2 * (road_dist/data_term))
-                
-                rotate_result = [0,0]
-                rotate_position = [road_dist, 0]
-                pose = [0, 0]
-                if self.track[0][i] == "Left":
-                    for j in range(0, int(road_dist/data_term)):
-                        rotate_result[0] = rotate_position[0]*math.cos((j+1)*theta) - rotate_position[1]*math.sin((j+1)*theta)
-                        rotate_result[1] = rotate_position[0]*math.sin((j+1)*theta) + rotate_position[1]*math.cos((j+1)*theta)
-                        
-                        print("rotate result : ",rotate_result)
-                        print("last position : ",self.last_position)
-                        if self.quadrant == 1:
-                            pose = [self.last_position[0] + rotate_result[1]               , self.last_position[1] + (road_dist - rotate_result[0])]
-                        elif self.quadrant == 2:
-                            pose = [self.last_position[0] - (road_dist - rotate_result[0]) , self.last_position[1] + rotate_result[1]              ]
-                        elif self.quadrant == 3:
-                            pose = [self.last_position[0] - rotate_result[1]               , self.last_position[1] - (road_dist - rotate_result[0])]
-                        elif self.quadrant == 4:
-                            pose = [self.last_position[0] + (road_dist - rotate_result[0]) , self.last_position[1] - rotate_result[1]              ]
-                        
-                        for n in range(len(pose)):
-                            if pose[n] < 0.0001 and pose[n] > -0.0001:
-                                pose[n] = 0
-                        new_csv.append(str(pose[0])+" "+str(pose[1])+'\n')
-                        
-                    if self.quadrant == 1:
-                        self.last_position = [self.last_position[0] + rotate_result[1]               , self.last_position[1] + (road_dist - rotate_result[0])]
-                    elif self.quadrant == 2:
-                        self.last_position = [self.last_position[0] - (road_dist - rotate_result[0]) , self.last_position[1] + rotate_result[1]              ]
-                    elif self.quadrant == 3:
-                        self.last_position = [self.last_position[0] - rotate_result[1]               , self.last_position[1] - (road_dist - rotate_result[0])]
-                    elif self.quadrant == 4:
-                        self.last_position = [self.last_position[0] + (road_dist - rotate_result[0]) , self.last_position[1] - rotate_result[1]              ]
-                        
-                    self.quadrant += 1
-                    
-                elif self.track[0][i] == "Right":
-                    for j in range(0, int(road_dist/data_term)):
-                        rotate_result[0] = rotate_position[0]*math.cos((j+1)*theta) - rotate_position[1]*math.sin((j+1)*theta)
-                        rotate_result[1] = rotate_position[0]*math.sin((j+1)*theta) + rotate_position[1]*math.cos((j+1)*theta)
-                        
-                        print("rotate result : ",rotate_result)
-                        print("last position : ",self.last_position)
-                        if self.quadrant == 1:
-                            pose = [self.last_position[0] + rotate_result[1]               , self.last_position[1] - (road_dist - rotate_result[0])]
-                        elif self.quadrant == 2:
-                            pose = [self.last_position[0] + (road_dist - rotate_result[0]) , self.last_position[1] + rotate_result[1]              ]
-                        elif self.quadrant == 3:
-                            pose = [self.last_position[0] - rotate_result[1]               , self.last_position[1] + (road_dist - rotate_result[0])]
-                        elif self.quadrant == 4:
-                            pose = [self.last_position[0] - (road_dist - rotate_result[0]) , self.last_position[1] - rotate_result[1]              ]
+                        end_pnt = [start_pnt[0], start_pnt[1]-road_dist]
+                        road_box = [ [end_pnt[0]-box_margin     , end_pnt[1]] 
+                                , [end_pnt[0]+box_margin     , end_pnt[1]] 
+                                , [start_pnt[0]-box_margin   , start_pnt[1]] ]
+                        new_csv.append(str(start_pnt[0])+', '+ str(start_pnt[1]-road_dist*(j+1)/sample))
+                        print(str([start_pnt[0], start_pnt[1]-road_dist*(j+1)/sample]))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
 
-                        for n in range(len(pose)):
-                            if pose[n] < 0.0001 and pose[n] > -0.0001:
-                                pose[n] = 0
-                        new_csv.append(str(pose[0])+" "+str(pose[1])+'\n')
-                        
+                last_position = end_pnt
+                # print(str(i)+'st  '+str(end_pnt[0])+' '+str(end_pnt[1]))
+            
+            elif self.track[0][i] == "Left":
+                if self.follow_lane == "left":
+                    road_dist -= curve_margin
+                elif self.follow_lane == "right":
+                    road_dist += curve_margin
+                else:
+                    pass
+                for j in range(sample):
+                    start_pnt = last_position
                     if self.quadrant == 1:
-                        self.last_position = [self.last_position[0] + rotate_result[1]               , self.last_position[1] - (road_dist - rotate_result[0])]
+                        end_pnt = [start_pnt[0]+road_dist, start_pnt[1]+road_dist]
+                        center = [start_pnt[0], start_pnt[1]+road_dist]
+                        x = start_pnt[0]
+                        y = start_pnt[1]
+                        a = center[0]
+                        b = center[1]
+                        r = (math.pi/2) * (j+1)/sample
+                        x_ = (x - a) * math.cos(r) - (y-b) * math.sin(r) + a
+                        y_ = (x - a) * math.sin(r) + (y-b) * math.cos(r) + b
+                        
+                        new_csv.append(str(x_)+', '+ str(y_))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
+                        
                     elif self.quadrant == 2:
-                        self.last_position = [self.last_position[0] + (road_dist - rotate_result[0]) , self.last_position[1] + rotate_result[1]              ]
-                    elif self.quadrant == 3:
-                        self.last_position = [self.last_position[0] - rotate_result[1]               , self.last_position[1] + (road_dist - rotate_result[0])]
-                    elif self.quadrant == 4:
-                        self.last_position = [self.last_position[0] - (road_dist - rotate_result[0]) , self.last_position[1] - rotate_result[1]              ]
+                        end_pnt = [start_pnt[0]-road_dist, start_pnt[1]+road_dist]
+                        center = [start_pnt[0]-road_dist, start_pnt[1]]
+                        x = start_pnt[0]
+                        y = start_pnt[1]
+                        a = center[0]
+                        b = center[1]
+                        r = (math.pi/2) * (j+1)/sample
+                        x_ = (x - a) * math.cos(r) - (y-b) * math.sin(r) + a
+                        y_ = (x - a) * math.sin(r) + (y-b) * math.cos(r) + b
+                        new_csv.append(str(x_)+', '+ str(y_))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
                             
-                    self.quadrant -= 1
+                    elif self.quadrant == 3:
+                        end_pnt = [start_pnt[0]-road_dist, start_pnt[1]-road_dist]
+                        center = [start_pnt[0], start_pnt[1]-road_dist]
+                        x = start_pnt[0]
+                        y = start_pnt[1]
+                        a = center[0]
+                        b = center[1]
+                        r = (math.pi/2) * (j+1)/sample
+                        x_ = (x - a) * math.cos(r) - (y-b) * math.sin(r) + a
+                        y_ = (x - a) * math.sin(r) + (y-b) * math.cos(r) + b
+                        new_csv.append(str(x_)+', '+ str(y_))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
+                            
+                    elif self.quadrant == 4:
+                        end_pnt = [start_pnt[0]+road_dist, start_pnt[1]-road_dist]
+                        center = [start_pnt[0]+road_dist, start_pnt[1]]
+                        x = start_pnt[0]
+                        y = start_pnt[1]
+                        a = center[0]
+                        b = center[1]
+                        r = (math.pi/2) * (j+1)/sample
+                        x_ = (x - a) * math.cos(r) - (y-b) * math.sin(r) + a
+                        y_ = (x - a) * math.sin(r) + (y-b) * math.cos(r) + b
+                        new_csv.append(str(x_)+', '+ str(y_))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
+                self.quadrant += 1
+                
                 if self.quadrant == 0:
                     self.quadrant = 4
                 elif self.quadrant == 5:
                     self.quadrant = 1
-                    
+                last_position = end_pnt
+                    # print(str(i)+'st  '+str(end_pnt[0])+' '+str(end_pnt[1]))
+                
+            elif self.track[0][i] == "Right":
+                if self.follow_lane == "left":
+                    road_dist += curve_margin
+                elif self.follow_lane == "right":
+                    road_dist -= curve_margin
+                else:
+                    pass
+                
+                for j in range(sample):
+                    start_pnt = last_position
+                    if self.quadrant == 1:
+                        end_pnt = [start_pnt[0]+road_dist, start_pnt[1]-road_dist]
+                        center = [start_pnt[0], start_pnt[1]-road_dist]
+                        x = start_pnt[0]
+                        y = start_pnt[1]
+                        a = center[0]
+                        b = center[1]
+                        r = - (math.pi/2) * (j+1)/sample
+                        x_ = (x - a) * math.cos(r) - (y-b) * math.sin(r) + a
+                        y_ = (x - a) * math.sin(r) + (y-b) * math.cos(r) + b
+                        new_csv.append(str(x_)+', '+ str(y_))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
+                    elif self.quadrant == 2:
+                        end_pnt = [start_pnt[0]+road_dist, start_pnt[1]+road_dist]
+                        center = [start_pnt[0]+road_dist, start_pnt[1]]
+                        x = start_pnt[0]
+                        y = start_pnt[1]
+                        a = center[0]
+                        b = center[1]
+                        r = - (math.pi/2) * (j+1)/sample
+                        x_ = (x - a) * math.cos(r) - (y-b) * math.sin(r) + a
+                        y_ = (x - a) * math.sin(r) + (y-b) * math.cos(r) + b
+                        new_csv.append(str(x_)+', '+ str(y_))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
+                    elif self.quadrant == 3:
+                        end_pnt = [start_pnt[0]-road_dist, start_pnt[1]+road_dist]
+                        center = [start_pnt[0], start_pnt[1]+road_dist]
+                        x = start_pnt[0]
+                        y = start_pnt[1]
+                        a = center[0]
+                        b = center[1]
+                        r = - (math.pi/2) * (j+1)/sample
+                        x_ = (x - a) * math.cos(r) - (y-b) * math.sin(r) + a
+                        y_ = (x - a) * math.sin(r) + (y-b) * math.cos(r) + b
+                        new_csv.append(str(x_)+', '+ str(y_))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
+                    elif self.quadrant == 4:
+                        end_pnt = [start_pnt[0]-road_dist, start_pnt[1]-road_dist]
+                        center = [start_pnt[0]-road_dist, start_pnt[1]]
+                        x = start_pnt[0]
+                        y = start_pnt[1]
+                        a = center[0]
+                        b = center[1]
+                        r = - (math.pi/2) * (j+1)/sample
+                        x_ = (x - a) * math.cos(r) - (y-b) * math.sin(r) + a
+                        y_ = (x - a) * math.sin(r) + (y-b) * math.cos(r) + b
+                        new_csv.append(str(x_)+', '+ str(y_))
+                        # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
+                self.quadrant -= 1
+                # print(str(i)+'st  '+str(end_pnt[0])+' '+str(end_pnt[1]))
+                if self.quadrant == 0:
+                    self.quadrant = 4
+                elif self.quadrant == 5:
+                    self.quadrant = 1
+                last_position = end_pnt
+        
         # write a new csv
         new_csv_fh = open(data_path + "/ground_truth.csv", 'w')
         for i in range(len(new_csv)):
-            new_csv_fh.write(new_csv[i])
+            new_csv_fh.write(new_csv[i]+ '\n')
         new_csv_fh.close()
     
     ###########################################################################
@@ -222,7 +306,6 @@ class MapInfoGenerator:
             # print('',i,'st')
             # print(self.car_pose)
             self._cal_roadformula([self.car_pose[i][0], self.car_pose[i][1]])
-
         print('mdc  : '  +str(format(self._cal_mdc(self.total_error), ".9f")))
         print('emdc : '  +str(format(self._cal_emdc(self.total_error), ".9f")))
         print('mce  : '  +str(format(self._cal_mce(self.car_steering), ".9f")))
@@ -249,7 +332,8 @@ class MapInfoGenerator:
             road_dist = float(self.track[1][i])
             curve_margin = 2.333
             road_box = [0, 0, 0]
-            box_margin = 50.0
+            box_margin = 5.0
+            # box_margin = 50.0
             if self.track[0][i] == "Straight":
                 start_pnt = last_position
                 if self.quadrant == 1:
@@ -380,6 +464,7 @@ class MapInfoGenerator:
                 last_position = end_pnt
                 self.quadrant -= 1
                 # print(str(i)+'st  '+str(end_pnt[0])+' '+str(end_pnt[1]))
+            # print(str(i)+'st  '+str(end_pnt[0])+' '+str(end_pnt[1]))
                 
             if self.quadrant == 0:
                 self.quadrant = 4
@@ -413,6 +498,8 @@ class MapInfoGenerator:
     def _cal_mddc(self, error, t):
         error_mddc = 0
         num_data = len(error) - 1
+        # print(len(error))
+        # print(len(t))
         for i in range(num_data):
             de = abs(error[i+1] - error[i])
             dt = t[i+1] - t[i]

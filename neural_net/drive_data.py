@@ -22,8 +22,8 @@ class DriveData:
     if Config.data_collection['brake'] is True:
         csv_header = ['image_fname', 'steering_angle', 'throttle', 'brake', 
                     'linux_time', 
-                    'vel', 'vel_x', 'vel_y', 'vel_z', 'accel_x', 'accel_y',
-                    'pos_x', 'pos_y', 'pos_z' ]
+                    'vel', 'vel_x', 'vel_y', 'vel_z',
+                    'pos_x', 'pos_y', 'pos_z', 'accel_x', 'accel_y']
     else:
         csv_header = ['image_fname', 'steering_angle', 'throttle', 
                     'linux_time', 

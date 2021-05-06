@@ -22,7 +22,7 @@ class DriveRun:
     def __init__(self, model_path):
         
         #self.config = Config()
-        self.net_model = NetModel(model_path)   
+        self.net_model = NetModel(model_path)
         self.net_model.load()
 
    ###########################################################################
