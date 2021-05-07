@@ -86,7 +86,7 @@ class DriveData:
                 for i in range(len(self.df['steering_angle'])):
                     if self.df.loc[i,'steering_angle'] >= bins[j] and self.df.loc[i,'steering_angle'] <= bins[j+1]:
                         list_.append(i)
-                random.shuffle(list_)
+                # random.shuffle(list_)
                 list_ = list_[samples_per_bin:]
                 remove_list.extend(list_)
             

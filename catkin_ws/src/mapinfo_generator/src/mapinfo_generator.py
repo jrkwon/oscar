@@ -278,7 +278,7 @@ class MapInfoGenerator:
                 last_position = end_pnt
         
         # write a new csv
-        new_csv_fh = open(data_path + "/ground_truth.csv", 'w')
+        new_csv_fh = open(data_path + "/ground_truth.csv", 'a')
         for i in range(len(new_csv)):
             new_csv_fh.write(new_csv[i]+ '\n')
         new_csv_fh.close()

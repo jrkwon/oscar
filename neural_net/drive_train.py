@@ -91,7 +91,8 @@ class DriveTrain:
             train_samples = list(zip(self.t_data.image_names, self.t_data.velocities, self.t_data.measurements))
             valid_samples = list(zip(self.v_data.image_names, self.v_data.velocities, self.v_data.measurements))
             if config['lstm'] is True:
-                self.train_data, self.valid_data = self._prepare_lstm_data(samples)
+                self.train_data,_ = self._prepare_lstm_data(train_samples)
+                self.valid_data,_ = self._prepare_lstm_data(valid_samples)
             else:
                 self.train_data = train_samples
                 self.valid_data = valid_samples
@@ -128,10 +129,16 @@ class DriveTrain:
             image_names.append(timestep_image_names)
             measurements.append(timestep_measurements)
             velocities.append(timestep_velocities)
-        
-        samples = list(zip(image_names, velocities, measurements))
-        return train_test_split(samples, test_size=config['validation_rate'], 
-                                shuffle=False) 
+        if config['data_split'] is True:
+            samples = list(zip(image_names, velocities, measurements))
+            train_data, valid_data = train_test_split(samples, 
+                                        test_size=config['validation_rate'])
+        else:
+            # put velocities regardless we use them or not for simplicity.
+            train_data = list(zip(image_names, velocities, measurements))
+            valid_data = None
+            
+        return train_data, valid_data
 
     ###########################################################################
     #
@@ -210,17 +217,23 @@ class DriveTrain:
 
             return images, velocities, measurements
 
-        def _prepare_lstm_batch_samples(batch_samples):
+        def _prepare_lstm_batch_samples(batch_samples, data=None):
             images = []
             velocities = []
             measurements = []
+            if data is None:
+                data_path = self.data_path
+            elif data == 'train':
+                data_path = self.t_data_path
+            elif data == 'valid':
+                data_path = self.v_data_path
             for i in range(0, config['batch_size']):
                 images_timestep = []
                 velocities_timestep = []
                 measurements_timestep = []
                 for j in range(0, config['lstm_timestep']):
                     image_name = batch_samples[i][0][j]
-                    image_path = self.data_path + '/' + image_name
+                    image_path = data_path + '/' + image_name
                     image = cv2.imread(image_path)
                     # if collected data is not cropped then crop here
                     # otherwise do not crop.
@@ -262,7 +275,7 @@ class DriveTrain:
                     for offset in range(0, (num_samples//batch_size)*batch_size, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
 
-                        images, velocities, measurements = _prepare_lstm_batch_samples(batch_samples)
+                        images, velocities, measurements = _prepare_lstm_batch_samples(batch_samples, data)
                         
                         if config['num_inputs'] == 1:
                             X_train = np.array(images)

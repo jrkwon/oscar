@@ -10,22 +10,22 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 17       # refer to neural_net/const.py
-gpus: 1
+network_type: 21       # refer to neural_net/const.py
+gpus: 0
 
 weight_load: False
 
-lstm: False
-lstm_timestep: 5
+lstm: True
+lstm_timestep: 3
 lstm_dataterm: 1
-lstm_lr: 0.0000001        # 
+lstm_lr: 0.000001        # 
 
 cnn_lr:  0.0001          # default of Adam is 0.001
 
 decay: 0.0000001        #0.00000001
 # normalize data
 data_split: False
-normalize_data: True
+normalize_data: False
 samples_per_bin: 4000
 # training 
 # data_shuffle: True
@@ -43,8 +43,8 @@ data_aug_flip: False
 data_aug_bright: False
 data_aug_shift: False
 # input image size to the neural network
-input_image_width : 360 #160 #270 # 160 # 512
-input_image_height: 70 #160 #90  # 160 # 96
+input_image_width : 160 #160 #270 # 160 # 512
+input_image_height: 160 #160 #90  # 160 # 96
 input_image_depth : 3
 
 # steering data preprocessing
