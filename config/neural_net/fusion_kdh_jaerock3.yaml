@@ -11,7 +11,7 @@ version: 0.92
 
 # network definition
 network_type: 21       # refer to neural_net/const.py
-gpus: 0
+gpus: 1
 
 weight_load: False
 
