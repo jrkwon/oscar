@@ -339,16 +339,6 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='Fast Food_3'>
-        <pose frame=''>-16.1507 -391.847 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose frame=''>-16.1507 -391.847 3.15931 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
       <model name='Gas Station'>
         <pose frame=''>131.028 -350.905 0 0 -0 0.819055</pose>
         <scale>1 1 1</scale>
@@ -7672,55 +7662,6 @@
         <kinematic>0</kinematic>
       </link>
       <pose frame=''>-9.24197 -367.076 0 0 -0 0</pose>
-    </model>
-    <model name='Fast Food_3'>
-      <static>1</static>
-      <link name='link'>
-        <pose frame=''>0 0 3.15931 0 -0 0</pose>
-        <collision name='collision'>
-          <geometry>
-            <mesh>
-              <scale>3 3 2</scale>
-              <uri>model://fast_food/meshes/fast_food.dae</uri>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <scale>3 3 2</scale>
-              <uri>model://fast_food/meshes/fast_food.dae</uri>
-            </mesh>
-          </geometry>
-          <material>
-            <script>
-              <uri>model://fast_food/materials/scripts</uri>
-              <uri>model://fast_food/materials/textures</uri>
-              <name>FastFood/Diffuse</name>
-            </script>
-            <shader type='normal_map_tangent_space'>
-              <normal_map>FastFood_Normal.png</normal_map>
-            </shader>
-          </material>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <pose frame=''>-16.1507 -391.847 0 0 -0 0</pose>
     </model>
     <model name='parking_garage_1'>
       <static>1</static>

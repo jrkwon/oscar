@@ -57,8 +57,9 @@ class DataCollection():
         # create csv data file
         name_datatime = str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
         #path = '../data/' + sys.argv[1] + '/' + name_datatime + '/'
-        path = rospy.get_param('path_to_e2e_data', 
-                        './e2e_data') + '/' + sys.argv[1] + '/' + name_datatime + '/'
+        # path = rospy.get_param('path_to_e2e_data', 
+        #                 './e2e_data') + '/' + sys.argv[1] + '/' + name_datatime + '/'
+        path = sys.argv[1] + '/' + str(Config.neural_net['network_type']) + '/' + name_datatime + '/' 
         if os.path.exists(path):
             print('path exists. continuing...')
         else:
@@ -165,6 +166,6 @@ def main():
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Usage: ')
-        exit('$ rosrun data_collection data_collection.py your_data_id')
+        exit('$ rosrun data_collection data_collection.py save_path')
 
     main()
