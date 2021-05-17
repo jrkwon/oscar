@@ -608,7 +608,7 @@ def main(csv_path, follow_lane):
 if __name__ == '__main__':
     try:
         if (len(sys.argv) != 3):
-            exit('Usage:\n$ rosrun mapinfo_generator {} ground_truth_path baseline(right, left, center)'.format(sys.argv[0]))
+            exit('Usage:\n$ rosrun mapinfo_generator {} csv_path baseline(right, left, center)'.format(sys.argv[0]))
 
         main(sys.argv[1], sys.argv[2])
 

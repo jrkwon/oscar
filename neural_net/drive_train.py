@@ -22,6 +22,7 @@ from drive_data import DriveData
 from config import Config
 from image_process import ImageProcess
 from data_augmentation import DataAugmentation
+from progressbar import ProgressBar
 
 config = Config.neural_net
 
@@ -382,6 +383,20 @@ class DriveTrain:
         plt.savefig(self.model_name + '_model.png', dpi=150)
         plt.savefig(self.model_name + '_model.pdf', dpi=150)
         
+        new_txt = []
+        bar = ProgressBar()
+        for i in bar(range(len(self.train_hist.history['loss']))):
+            new_txt.append(
+                i
+                + ', '
+                + str(self.train_hist.history['loss'][i])
+                + ', '
+                + str(self.train_hist.history['val_loss'][i]))
+            
+        new_txt_fh = open(self.model_name + '_loss.csv', 'w')
+        for i in range(len(new_txt)):
+            new_txt_fh.write(new_txt[i])
+        new_txt_fh.close()
         
     ###########################################################################
     #
