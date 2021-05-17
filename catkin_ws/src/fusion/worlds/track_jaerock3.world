@@ -2779,16 +2779,6 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='sand_plane'>
-        <pose frame=''>14.0533 -8.42198 0 0 -0 1.5708</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose frame=''>14.0533 -8.42198 0 0 -0 1.5708</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
       <model name='school'>
         <pose frame=''>59.9365 523.426 0 0 -0 0</pose>
         <scale>1 1 1</scale>
@@ -13242,53 +13232,6 @@
         <kinematic>0</kinematic>
       </link>
       <pose frame=''>516.387 427.423 0 0 -0 0</pose>
-    </model>
-    <model name='sand_plane'>
-      <static>1</static>
-      <link name='link'>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>10 30 0.1</size>
-            </box>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <cast_shadows>0</cast_shadows>
-          <geometry>
-            <box>
-              <size>10 30 0.1</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <uri>model://sand_plane/materials/scripts</uri>
-              <uri>model://sand_plane/materials/textures</uri>
-              <name>sand_plane/Image</name>
-            </script>
-            <shader type='normal_map_object_space'>
-              <normal_map>sand_plane.png</normal_map>
-            </shader>
-          </material>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <pose frame=''>11.1644 -18.5544 0 0 -0 0</pose>
     </model>
     <model name='jersey_barrier'>
       <static>1</static>
