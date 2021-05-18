@@ -10,8 +10,13 @@ version: 0.92
 ## neural network 
 
 # network definition
+<<<<<<< HEAD
 network_type: 16       # refer to neural_net/const.py
 gpus: 0
+=======
+network_type: 3       # refer to neural_net/const.py
+gpus: 3
+>>>>>>> be9c60d04b054b59cbc379013bf513a193325053
 
 weight_load: False
 
@@ -34,7 +39,11 @@ num_epochs: 2000
 batch_size: 16
 num_inputs: 1     # input: image, velocity
 num_outputs: 1    # output: steering_angle, throttle
+<<<<<<< HEAD
 early_stopping_patience: 10
+=======
+early_stopping_patience: 50
+>>>>>>> be9c60d04b054b59cbc379013bf513a193325053
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/
 
