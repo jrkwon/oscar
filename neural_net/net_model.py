@@ -243,25 +243,49 @@ def model_donghyun6(): # resnet 처럼
     ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1  = Conv2D(64, (8, 8), strides=(2,2), activation='elu', name='conv_1')(lamb)
-    conv_2  = Conv2D(64, (6, 6), strides=(2,2), activation='elu', name='conv_2')(conv_1)
-    conv_3_1= Conv2D(64, (5, 5), strides=(2,2), padding='same', activation='elu', name='conv_3_1')(conv_2)
-    conv_3_2= Conv2D(64, (3, 3), strides=(2,2), padding='same', activation='elu', name='conv_3_2')(conv_2)
+    conv_1  = Conv2D(64, (8, 8), strides=(2,2), name='conv_1')(lamb)
+    conv_1_bn = BatchNormalization()(conv_1)
+    conv_1_elu = ELU()(conv_1_bn)
+    
+    conv_2  = Conv2D(64, (6, 6), strides=(2,2), name='conv_2')(conv_1_elu)
+    conv_2_bn = BatchNormalization()(conv_2)
+    conv_2_elu = ELU()(conv_2_bn)
+    
+    conv_3_1= Conv2D(64, (5, 5), strides=(2,2), padding='same', name='conv_3_1')(conv_2_elu)
+    conv_3_2= Conv2D(64, (3, 3), strides=(2,2), padding='same', name='conv_3_2')(conv_2_elu)
     conc_1  = Concatenate(axis=3)([conv_3_1, conv_3_2])
+    conv_3_bn = BatchNormalization()(conc_1)
+    conv_3_elu = ELU()(conv_3_bn)
     
-    conv_4_1= Conv2D(128, (3, 3), activation='elu')(conc_1)
-    conv_4_2= Conv2D(64, (3, 3), activation='elu')(conv_3_2)
+    conv_3_2_bn = BatchNormalization()(conv_3_2)
+    conv_3_2_elu = ELU()(conv_3_2_bn)
+    
+    conv_4_1= Conv2D(128, (3, 3))(conv_3_elu)
+    conv_4_2= Conv2D(64, (3, 3))(conv_3_2_elu)
     conc_2  = Concatenate(axis=3)([conv_4_1, conv_4_2])
+    conv_4_bn = BatchNormalization()(conc_2)
+    conv_4_elu = ELU()(conv_4_bn)
     
-    conv_5_1= Conv2D(128, (3, 3), activation='elu', name='conv_5_1')(conc_2)
-    conv_5_2= Conv2D(64, (3, 3), activation='elu', name='conv_5_2')(conv_4_2)
+    conv_4_2_bn = BatchNormalization()(conv_4_2)
+    conv_4_2_elu = ELU()(conv_4_2_bn)
+    
+    conv_5_1= Conv2D(128, (3, 3), name='conv_5_1')(conv_4_elu)
+    conv_5_2= Conv2D(64, (3, 3), name='conv_5_2')(conv_4_2_elu)
     conc_3  = Concatenate(axis=3)([conv_5_1, conv_5_2])
-    conv_6  = Conv2D(64, (3, 3), activation='elu', name='conv2d_last')(conc_3)
+    
+    conv_5_bn = BatchNormalization()(conc_3)
+    conv_5_elu = ELU()(conv_5_bn)
+    
+    conv_6  = Conv2D(64, (3, 3), name='conv2d_last')(conv_5_elu)
     
     flat_1  = Flatten()(conv_6)
-    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat_1)
-    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
-    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    
+    fc_1 = Dense(100, activation='elu', name='fc_1')(flat_1)
+    drop_1 = Dropout(0.2)(fc_1)
+    fc_2 = Dense(50,  activation='elu', name='fc_2')(drop_1)
+    drop_2 = Dropout(0.2)(fc_2)
+    fc_3 = Dense(10,   activation='elu', name='fc_3')(drop_2)
+    
     fc_last = Dense(1, name='fc_str')(fc_3)
     
     model = Model(inputs=img_input, output=fc_last)
@@ -464,10 +488,10 @@ def model_lrcn():
     conv_4    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv_4')(conv_3)
     conv_5    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv2d_last')(conv_4)
     flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
-    fc_1      = Dense(1000, activation='elu', name='fc_1')(flat)
+    lstm      = LSTM(10, return_sequences=False, name='lstm')(flat)
+    fc_1      = Dense(1000, activation='elu', name='fc_1')(lstm)
     fc_2      = Dense( 100, activation='elu', name='fc_2')(fc_1)
-    lstm      = LSTM(10, return_sequences=False, name='lstm')(fc_2)
-    fc_3      = Dense(  50, activation='elu', name='fc_3')(lstm)
+    fc_3      = Dense(  50, activation='elu', name='fc_3')(fc_2)
     fc_4      = Dense(  10, activation='elu', name='fc_4')(fc_3)
     fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_4)
 
@@ -587,9 +611,9 @@ class NetModel:
     ###########################################################################
     #
     def _model(self):
-        # if config['network_type'] == const.NET_TYPE_JAEROCK:
-        #     self.model = model_jaerock()
-        if config['network_type'] == const.NET_TYPE_JAEROCK_ELU:
+        if config['network_type'] == const.NET_TYPE_JAEROCK:
+            self.model = model_jaerock()
+        elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU:
             self.model = model_jaerock_elu()
         elif config['network_type'] == const.NET_TYPE_CE491:
             self.model = model_ce491()
