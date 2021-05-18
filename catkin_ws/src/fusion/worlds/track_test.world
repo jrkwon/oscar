@@ -85,7 +85,10 @@
             <script>
               <uri>file://media/materials/scripts/ds_sim.material</uri>
               <!-- <name>DSSim/GrassBackground</name> -->
-              <name>DSSim/BlackBackground</name>
+              <!-- <name>DSSim/SandBackground</name> -->
+              <!-- <name>DSSim/GravelBackground</name> -->
+              <name>DSSim/OceanBackground</name>
+              <!-- <name>DSSim/BlackBackground</name> -->
             </script>
           </material>
         </visual>
@@ -310,10 +313,10 @@
         </link>
       </model>
       <model name='Fast Food_0'>
-        <pose frame=''>1.78364 -225.611 0 0 -0 0</pose>
+        <pose frame=''>2.37719 -232.058 0 0 0 -2.02441</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>1.78364 -225.611 3.15931 0 -0 0</pose>
+          <pose frame=''>2.37719 -232.058 3.15931 0 0 -2.02441</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>

@@ -387,7 +387,7 @@ class DriveTrain:
         bar = ProgressBar()
         for i in bar(range(len(self.train_hist.history['loss']))):
             new_txt.append(
-                i
+                str(i)
                 + ', '
                 + str(self.train_hist.history['loss'][i])
                 + ', '
