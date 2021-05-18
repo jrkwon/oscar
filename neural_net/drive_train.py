@@ -187,6 +187,8 @@ class DriveTrain:
                                     config['input_image_height']))
                 image = self.image_process.process(image)
                 # cv2.imwrite('/home/kdh/oscar/oscar/e2e_fusion_data/test/aug/'+image_name, image)
+                if data == 'train':
+                    cv2.imwrite('/mnt/Data/oscar/train_data/'+image_name, image)
                 
                 images.append(image)
                 
@@ -391,7 +393,7 @@ class DriveTrain:
                 + ', '
                 + str(self.train_hist.history['loss'][i])
                 + ', '
-                + str(self.train_hist.history['val_loss'][i]))
+                + str(self.train_hist.history['val_loss'][i])+ '\n')
             
         new_txt_fh = open(self.model_name + '_loss.csv', 'w')
         for i in range(len(new_txt)):

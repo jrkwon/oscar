@@ -97,7 +97,7 @@ class DriveLog:
         plt.xlim(-1.0, 1.0)
         plt.plot(np.min(self.differences), np.max(self.differences))
         plt.tight_layout()
-        self._savefigs(plt, self.data_path + '_err_hist')
+        self._savefigs(plt, self.data_path + '_N' + str(Config.neural_net['network_type']) + '_err_hist')
 
         plt.figure()
         # Plot a Scatter Plot of the Error
@@ -111,7 +111,7 @@ class DriveLog:
         plt.ylim([-1.0, 1.0])
         plt.plot([-1.0, 1.0], [-1.0, 1.0], color='k', linestyle='-', linewidth=.1)
         plt.tight_layout()
-        self._savefigs(plt, self.data_path + '_scatter')
+        self._savefigs(plt, self.data_path + '_N' + str(Config.neural_net['network_type']) + '_scatter')
 
         plt.figure()
         # Plot a Side-By-Side Comparison
@@ -122,12 +122,12 @@ class DriveLog:
         std = variance ** 0.5
         plt.title('MAE: {0:.3f}, STDEV: {1:.3f}'.format(mean, std))
         #plt.title('Ground Truth vs. Prediction')
-        plt.ylim([-1.0, 1.0])
+        # plt.ylim([-1.0, 1.0])
         plt.xlabel('Time Step')
         plt.ylabel('Steering Angle')
         plt.legend(['ground truth', 'prediction'], loc='upper right')
         plt.tight_layout()
-        self._savefigs(plt, self.data_path + '_comparison')
+        self._savefigs(plt, self.data_path + '_N' + str(Config.neural_net['network_type']) + '_comparison')
 
         # show all figures
         #plt.show()
@@ -139,7 +139,7 @@ class DriveLog:
         
         self._prepare_data()
         #fname = self.data_path + const.LOG_EXT
-        fname = self.data_path + const.LOG_EXT # use model name to save log
+        fname = self.data_path + '_N' + str(Config.neural_net['network_type']) + const.LOG_EXT # use model name to save log
         
         file = open(fname, 'w')
 

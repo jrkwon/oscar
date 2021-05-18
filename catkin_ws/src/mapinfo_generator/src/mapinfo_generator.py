@@ -135,7 +135,7 @@ class MapInfoGenerator:
                                 , [end_pnt[0]+box_margin     , end_pnt[1]] 
                                 , [start_pnt[0]-box_margin   , start_pnt[1]] ]
                         new_csv.append(str(start_pnt[0])+', '+ str(start_pnt[1]-road_dist*(j+1)/sample))
-                        print(str([start_pnt[0], start_pnt[1]-road_dist*(j+1)/sample]))
+                        # print(str([start_pnt[0], start_pnt[1]-road_dist*(j+1)/sample]))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',new_csv[-1])
 
                 last_position = end_pnt

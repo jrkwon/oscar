@@ -54,7 +54,7 @@ def images_saliency(model_path, image_folder_path):
         image = cv2.resize(image, 
                             (Config.neural_net['input_image_width'],
                             Config.neural_net['input_image_height']))
-        image = image_process.process(image, bgr=False)
+        image = image_process.process(image, bgr=True)
         measurement = drive_run.run((image, ))
         
         fig = plt.figure()
@@ -65,7 +65,7 @@ def images_saliency(model_path, image_folder_path):
         # fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_str')
         fc_last = utils.find_layer_idx(drive_run.net_model.model, 'dense_5')
         heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
-                    filter_indices=fc_last, seed_input=image, backprop_modifier='guided', penultimate_layer_idx=None)
+                    filter_indices=None, seed_input=image, backprop_modifier='guided', penultimate_layer_idx=None)
 
         ax1 = fig.add_subplot(2,1,1)
         ax1.set_title('Prediction :' + str(format(measurement[0][0], ".9f")) 

@@ -1,2 +1,2 @@
-['Straight', 'Right', 'Left', 'Straight', 'Left', 'Right', 'Straight', 'Right', 'Right', 'Left', 'Right', 'Straight', 'Left', 'Right', 'Right', 'Straight', 'Left', 'Right', 'Right', 'Straight']
-['50', '100', '50', '100', '100', '50', '50', '50', '100', '50', '100', '100', '100', '50', '50', '100', '100', '100', '100', '100']
+['Straight', 'Straight', 'Left', 'Straight', 'Left', 'Right', 'Right', 'Straight', 'Left', 'Left', 'Straight', 'Left', 'Straight', 'Right', 'Right', 'Straight', 'Left', 'Straight', 'Left', 'Left', 'Straight', 'Right', 'Right', 'Left', 'Straight', 'Left']
+['200', '100', '100', '50', '50', '50', '50', '100', '100', '100', '200', '50', '100', '50', '50', '100', '50', '200', '100', '100', '100', '50', '50', '50', '50', '100']
