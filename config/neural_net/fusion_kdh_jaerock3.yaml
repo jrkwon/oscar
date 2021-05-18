@@ -10,8 +10,8 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 0       # refer to neural_net/const.py
-gpus: 0
+network_type: 3       # refer to neural_net/const.py
+gpus: 3
 
 weight_load: False
 
@@ -22,10 +22,10 @@ lstm_lr: 0.000001        #
 
 cnn_lr:  0.0001          # default of Adam is 0.001
 
-decay: 0.000000001        #0.00000001
+decay: 0.0000001        #0.00000001
 # normalize data
-data_split: True
-normalize_data: False
+data_split: False
+normalize_data: True
 samples_per_bin: 4000
 # training 
 # data_shuffle: True
@@ -34,7 +34,7 @@ num_epochs: 2000
 batch_size: 16
 num_inputs: 1     # input: image, velocity
 num_outputs: 1    # output: steering_angle, throttle
-early_stopping_patience: 1
+early_stopping_patience: 50
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/
 

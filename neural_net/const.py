@@ -11,7 +11,7 @@ History:
 # constant definition
 
 # network model type
-# NET_TYPE_JAEROCK      = 0
+NET_TYPE_JAEROCK      = 3
 NET_TYPE_JAEROCK_ELU  = 0
 NET_TYPE_JAEROCK_ELU_360  = 10
 NET_TYPE_CE491        = 1

@@ -587,9 +587,9 @@ class NetModel:
     ###########################################################################
     #
     def _model(self):
-        # if config['network_type'] == const.NET_TYPE_JAEROCK:
-        #     self.model = model_jaerock()
-        if config['network_type'] == const.NET_TYPE_JAEROCK_ELU:
+        if config['network_type'] == const.NET_TYPE_JAEROCK:
+            self.model = model_jaerock()
+        elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU:
             self.model = model_jaerock_elu()
         elif config['network_type'] == const.NET_TYPE_CE491:
             self.model = model_ce491()
