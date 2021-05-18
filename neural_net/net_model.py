@@ -243,11 +243,11 @@ def model_donghyun6(): # resnet 처럼
     ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1  = Conv2D(64, (8, 8), strides=(2,2), name='conv_1')(lamb)
+    conv_1  = Conv2D(64, (5, 5), strides=(2,2), name='conv_1')(lamb)
     conv_1_bn = BatchNormalization()(conv_1)
     conv_1_elu = ELU()(conv_1_bn)
     
-    conv_2  = Conv2D(64, (6, 6), strides=(2,2), name='conv_2')(conv_1_elu)
+    conv_2  = Conv2D(64, (5, 5), strides=(2,2), name='conv_2')(conv_1_elu)
     conv_2_bn = BatchNormalization()(conv_2)
     conv_2_elu = ELU()(conv_2_bn)
     
@@ -260,8 +260,8 @@ def model_donghyun6(): # resnet 처럼
     conv_3_2_bn = BatchNormalization()(conv_3_2)
     conv_3_2_elu = ELU()(conv_3_2_bn)
     
-    conv_4_1= Conv2D(128, (3, 3))(conv_3_elu)
-    conv_4_2= Conv2D(64, (3, 3))(conv_3_2_elu)
+    conv_4_1= Conv2D(128, (3, 3), name='conv_4_1')(conv_3_elu)
+    conv_4_2= Conv2D(64, (3, 3), name='conv_4_2')(conv_3_2_elu)
     conc_2  = Concatenate(axis=3)([conv_4_1, conv_4_2])
     conv_4_bn = BatchNormalization()(conc_2)
     conv_4_elu = ELU()(conv_4_bn)
