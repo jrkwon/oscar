@@ -326,6 +326,49 @@ def model_donghyun7(): # resnet 처럼
 
     return model
 
+def model_donghyun8(): # resnet 처럼
+    from keras.layers import Concatenate, ELU
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(24, (5, 5), name='conv_1')(lamb)
+    conv_1_bn = BatchNormalization()(conv_1)
+    conv_1_elu = ELU()(conv_1_bn)
+    
+    conv_1_pl = MaxPooling2D(pool_size=(2,2))(conv_1_elu)
+    conv_1_pl2 = MaxPooling2D(pool_size=(2,2))(conv_1_pl)
+    
+    conv_2 = Conv2D(36, (5, 5), strides=(2,2), padding='same', name='conv_2')(conv_1_elu)
+    conv_2_bn = BatchNormalization()(conv_2)
+    conv_2_elu = ELU()(conv_2_bn)
+    
+    conv_2_pl = MaxPooling2D(pool_size=(2,2))(conv_2_elu)
+    
+    conc_1 = Concatenate(axis=3)([conv_1_pl, conv_2_elu])
+    
+    conv_3 = Conv2D(48, (5, 5), strides=(2,2), padding='same', name='conv_3')(conc_1)
+    conv_3_bn = BatchNormalization()(conv_3)
+    conv_3_elu = ELU()(conv_3_bn)
+    
+    conc_2 = Concatenate(axis=3)([conv_1_pl2, conv_3_elu, conv_2_pl])
+    
+    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv_4')(conc_2)
+    conv_5 = Conv2D(64, (3, 3), activation='elu', name='conv2d_last')(conv_4)
+    
+    flat_1  = Flatten()(conv_5)
+    fc_1 = Dense(100, activation='elu', name='fc_1')(flat_1)
+    fc_2 = Dense(50,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(10,   activation='elu', name='fc_3')(fc_2)
+    fc_last = Dense(1, name='fc_str')(fc_3)
+    
+    model = Model(inputs=img_input, output=fc_last)
+
+    return model
+
 def model_sap():
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
@@ -643,6 +686,8 @@ class NetModel:
             self.model = model_donghyun6()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN7:
             self.model = model_donghyun7()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN8:
+            self.model = model_donghyun8()
             
         elif config['network_type'] == const.NET_TYPE_LRCN:
             self.model = model_lrcn()
