@@ -13,7 +13,7 @@ version: 0.92
 network_type: 18       # refer to neural_net/const.py
 gpus: 0
 
-weight_load: False
+weight_load: True
 
 lstm: False
 lstm_timestep: 5
@@ -30,7 +30,7 @@ samples_per_bin: 4000
 # training 
 # data_shuffle: True
 validation_rate: 0.3
-num_epochs: 2000
+num_epochs: 0
 batch_size: 16
 num_inputs: 1     # input: image, velocity
 num_outputs: 1    # output: steering_angle, throttle
