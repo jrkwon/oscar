@@ -87,8 +87,8 @@
               <!-- <name>DSSim/GrassBackground</name> -->
               <!-- <name>DSSim/SandBackground</name> -->
               <!-- <name>DSSim/GravelBackground</name> -->
-              <!-- <name>DSSim/OceanBackground</name> -->
-              <name>DSSim/BlackBackground</name>
+              <name>DSSim/OceanBackground</name>
+              <!-- <name>DSSim/BlackBackground</name> -->
             </script>
           </material>
         </visual>
