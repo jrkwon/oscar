@@ -95,6 +95,29 @@ class MapInfoGenerator:
             new_txt_fh.write(new_txt[i])
         new_txt_fh.close()
         
+    def _build_csv(self, data_path, data):
+        if data_path[-1] != '/':
+            data_path = data_path + '/'
+
+        # find the second '/' from the end to get the folder name
+        loc_dir_delim = data_path[:-1].rfind('/')
+        if (loc_dir_delim != -1):
+            folder_name = data_path[loc_dir_delim+1:-1]
+            txt_file = folder_name + ".csv"
+        else:
+            folder_name = data_path[:-1]
+            txt_file = folder_name + ".csv"
+        new_txt = []
+        bar = ProgressBar()
+        for i in bar(range(len(data))):
+            new_txt.append(str(data[i])
+                        + '\n')
+            
+        new_txt_fh = open(data_path + txt_file, 'w')
+        for i in range(len(new_txt)):
+            new_txt_fh.write(new_txt[i])
+        new_txt_fh.close()
+        
     def _cal_groundtruth(self, data_path):
         new_csv = []
         
@@ -321,6 +344,7 @@ class MapInfoGenerator:
         error_txt.append('emddc : ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
         error_txt.append('var  : ' +str(format(self._cal_var(self.total_error), ".9f")))
         
+        self._build_csv(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
         self._build_txt(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
         # print('total error : ',self.total_error)
         
