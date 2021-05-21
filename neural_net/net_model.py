@@ -159,7 +159,7 @@ def model_donghyun2(): #donghyun과 동일하지만 큰 필터개수를 더 많�
 
     return model
 
-def model_donghyun3(): #필터사이즈를 donghyun2에 비해 전체적으로 더 크게
+def model_donghyun3():
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
@@ -607,6 +607,31 @@ def model_lrcn3():
     
     return model
 
+def model_lrcn4():
+    from keras.layers.recurrent import LSTM
+    from keras.layers.wrappers import TimeDistributed
+
+    # redefine input_shape to add one more dims
+    img_shape = (None, config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'])
+    
+    input_img = Input(shape=img_shape, name='input_image')
+    lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb_img')(input_img)
+    conv_1    = TimeDistributed(Convolution2D(24, (11, 11), activation='elu', strides=(2,2)), name='conv_1')(lamb)
+    conv_2    = TimeDistributed(Convolution2D(36, (8, 8), activation='elu', strides=(2,2)), name='conv_2')(conv_1)
+    conv_3    = TimeDistributed(Convolution2D(48, (5, 5), activation='elu', strides=(2,2)), name='conv_3')(conv_2)
+    conv_4    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv_4')(conv_3)
+    conv_5    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv2d_last')(conv_4)
+    flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
+    lstm      = LSTM(  10, return_sequences=False, dropout=0.2, name='lstm')(flat)
+    fc_1      = Dense(100, activation='elu', name='fc_1')(lstm)
+    drop_1    = Dropout(0.2, name='drop_1')(fc_1)
+    fc_2      = Dense( 50, activation='elu', name='fc_2')(drop_1)
+    drop_2    = Dropout(0.2, name='drop_2')(fc_2)
+    fc_3      = Dense( 10, activation='elu', name='fc_3')(drop_2)
+    fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_3)
+
 def model_cooplrcn():
     from keras.layers.recurrent import LSTM
     from keras.layers.wrappers import TimeDistributed
@@ -704,6 +729,8 @@ class NetModel:
             self.model = model_lrcn2()
         elif config['network_type'] == const.NET_TYPE_LRCN3:
             self.model = model_lrcn3()
+        elif config['network_type'] == const.NET_TYPE_LRCN4:
+            self.model = model_lrcn4()
         elif config['network_type'] == const.NET_TYPE_SPTEMLSTM:
             self.model = model_spatiotemporallstm()
         elif config['network_type'] == const.NET_TYPE_COOPLRCN:

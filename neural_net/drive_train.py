@@ -137,6 +137,8 @@ class DriveTrain:
         else:
             # put velocities regardless we use them or not for simplicity.
             train_data = list(zip(image_names, velocities, measurements))
+            train_data = sklearn.utils.shuffle(train_data)
+            # print(train_data)
             valid_data = None
             
         return train_data, valid_data
