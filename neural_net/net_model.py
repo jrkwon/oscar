@@ -191,24 +191,24 @@ def model_donghyun4():
         
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(48, (11, 11), strides=(4,4), padding="valid", name='conv_1')(lamb)
-    conv_1_bn = BatchNormalization()(conv_1)
-    conv_1_elu = ELU()(conv_1_bn)
-    # conv_1_pl = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='maxpool_1')(conv_1_elu)
+    conv_1 = Conv2D(96, (13, 13), strides=(4,4), activation='elu', padding="same", name='conv_1')(lamb)
+    # conv_1_bn = BatchNormalization()(conv_1)
+    # conv_1_elu = ELU()(conv_1_bn)
+    conv_1_pl = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='maxpool_1')(conv_1)
     
-    conv_2 = Conv2D(96, (8, 8), strides=(2,2), padding="valid", name='conv_2')(conv_1_elu)
-    conv_2_bn = BatchNormalization()(conv_2)
-    conv_2_elu = ELU()(conv_2_bn)
-    # conv_2_pl = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='maxpool_2')(conv_2_elu)
+    conv_2 = Conv2D(256, (7, 7), activation='elu', padding="same", name='conv_2')(conv_1_pl)
+    # conv_2_bn = BatchNormalization()(conv_2)
+    # conv_2_elu = ELU()(conv_2_bn)
+    conv_2_pl = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='maxpool_2')(conv_2)
     
-    conv_3 = Conv2D(128, (5, 5), padding="valid", activation='elu', name='conv_3')(conv_2_elu)
-    conv_4 = Conv2D(128, (3, 3), padding="valid", activation='elu', name='conv_4')(conv_3)
-    conv_5 = Conv2D(96, (3, 3), padding="valid", activation='elu', name='conv_5')(conv_4)
-    # conv_5_pl = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='maxpool_3')(conv_5_elu)
+    conv_3 = Conv2D(256, (5, 5), padding="same", activation='elu', name='conv_3')(conv_2_pl)
+    conv_4 = Conv2D(256, (3, 3), padding="same", activation='elu', name='conv_4')(conv_3)
+    conv_5 = Conv2D(128, (3, 3), padding="same", activation='elu', name='conv2d_last')(conv_4)
+    conv_5_pl = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_5)
     
-    flat = Flatten()(conv_5)
-    fc_1 = Dense(1024, activation='elu', name='fc_1')(flat)
-    fc_2 = Dense(1024, activation='elu', name='fc_2')(fc_1)
+    flat = Flatten()(conv_5_pl)
+    fc_1 = Dense(2048, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(2048, activation='elu', name='fc_2')(fc_1)
     # fc_3 = Dense(10, activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
@@ -631,6 +631,10 @@ def model_lrcn4():
     drop_2    = Dropout(0.2, name='drop_2')(fc_2)
     fc_3      = Dense( 10, activation='elu', name='fc_3')(drop_2)
     fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_3)
+
+    model = Model(inputs=input_img, outputs=fc_last)
+    
+    return model
 
 def model_cooplrcn():
     from keras.layers.recurrent import LSTM

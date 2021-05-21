@@ -60,10 +60,10 @@ def images_saliency(model_path, image_folder_path):
         fig = plt.figure()
         # plt.title('Prediction:\t' + str(measurement[0][0]) + '\nGroundTruth:\t' + str(steering_angles[i][0])
         #           + '\nError:\t' + str(abs(steering_angles[i][0] - measurement[0][0])))
-        layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_last')
-        penultimate_layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_4')
-        # fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_str')
-        fc_last = utils.find_layer_idx(drive_run.net_model.model, 'dense_5')
+        layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'maxpool_3')
+        # penultimate_layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_4')
+        fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_str')
+        # fc_last = utils.find_layer_idx(drive_run.net_model.model, 'dense_5')
         heatmap = visualize_cam(drive_run.net_model.model, layer_idx, 
                     filter_indices=None, seed_input=image, backprop_modifier='guided', penultimate_layer_idx=None)
 
@@ -241,7 +241,7 @@ if __name__ == '__main__':
         # main(sys.argv[1], sys.argv[2])
         
         images_saliency(sys.argv[1], sys.argv[2])
-        show_layer_saliency(sys.argv[1], sys.argv[2])
+        # show_layer_saliency(sys.argv[1], sys.argv[2])
 
     except KeyboardInterrupt:
         print ('\nShutdown requested. Exiting...')
