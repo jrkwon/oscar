@@ -234,6 +234,7 @@ class DriveTrain:
                 data_path = self.v_data_path
             for i in range(0, config['batch_size']):
                 images_timestep = []
+                image_names_timestep = []
                 velocities_timestep = []
                 measurements_timestep = []
                 for j in range(0, config['lstm_timestep']):
@@ -250,7 +251,7 @@ class DriveTrain:
                                     config['input_image_height']))
                     image = self.image_process.process(image)
                     images_timestep.append(image)
-
+                    image_names_timestep.append(image_name)
                     velocity = batch_samples[i][1][j]
                     velocities_timestep.append(velocity)
                     
@@ -267,6 +268,8 @@ class DriveTrain:
                         else:
                             measurements_timestep.append(steering_angle*config['steering_angle_scale'])
                 
+                # if data == 'valid':
+                #     print(image_names_timestep)
                 images.append(images_timestep)
                 velocities.append(velocities_timestep)
                 measurements.append(measurements_timestep)
