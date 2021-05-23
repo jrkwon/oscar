@@ -167,28 +167,21 @@ def model_donghyun3():
         
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(96, (17, 17), strides=(4,4), activation='elu', padding="same", name='conv_1')(lamb)
-    # conv_1_bn = BatchNormalization()(conv_1)
-    # conv_1_elu = ELU()(conv_1_bn)
-    conv_1_pl = MaxPooling2D(pool_size=(4, 4), strides=(2, 2), name='maxpool_1')(conv_1)
+    conv_1 = Conv2D(96, (3, 3), activation='elu', name='conv_1')(lamb)
+    conv_1_pl = MaxPooling2D(pool_size=(3, 3), name='maxpool_1')(conv_1)
     
-    conv_2 = Conv2D(256, (13, 13), activation='elu', padding="same", name='conv_2')(conv_1_pl)
-    # conv_2_bn = BatchNormalization()(conv_2)
-    # conv_2_elu = ELU()(conv_2_bn)
-    conv_2_pl = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='maxpool_2')(conv_2)
+    conv_2 = Conv2D(256, (3, 3), activation='elu', name='conv_2')(conv_1_pl)
+    conv_2_pl = MaxPooling2D(pool_size=(3, 3), name='maxpool_2')(conv_2)
     
-    conv_3 = Conv2D(256, (11, 11), padding="same", activation='elu', name='conv_3')(conv_2_pl)
-    conv_4 = Conv2D(256, (7, 7), padding="same", activation='elu', name='conv_4')(conv_3)
-    conv_5 = Conv2D(128, (5, 5), padding="same", activation='elu', name='conv2d_last')(conv_4)
+    conv_3 = Conv2D(256, (3, 3), activation='elu', name='conv_3')(conv_2_pl)
+    conv_4 = Conv2D(256, (3, 3), activation='elu', name='conv_4')(conv_3)
+    conv_5 = Conv2D(128, (3, 3), activation='elu', name='conv2d_last')(conv_4)
     conv_5_pl = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_5)
     
     flat = Flatten()(conv_5_pl)
     fc_1 = Dense(2048, activation='elu', name='fc_1')(flat)
-    drop_1 = Dropout(0.2)(fc_1)
-    fc_2 = Dense(2048, activation='elu', name='fc_2')(drop_1)
-    drop_2 = Dropout(0.2)(fc_2)
-    # fc_3 = Dense(10, activation='elu', name='fc_3')(fc_2)
-    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(drop_2)
+    fc_2 = Dense(2048, activation='elu', name='fc_2')(fc_1)
+    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
     model = Model(inputs=img_input, output=fc_last)
     
@@ -202,34 +195,55 @@ def model_donghyun4():
         
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(96, (13, 13), strides=(4,4), activation='elu', padding="same", name='conv_1')(lamb)
-    # conv_1_bn = BatchNormalization()(conv_1)
-    # conv_1_elu = ELU()(conv_1_bn)
-    conv_1_pl = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='maxpool_1')(conv_1)
+    conv_1 = Conv2D(96, (3, 3), activation='elu', name='conv_1')(lamb)
+    conv_1_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2),  name='maxpool_1')(conv_1)
     
-    conv_2 = Conv2D(256, (7, 7), activation='elu', padding="same", name='conv_2')(conv_1_pl)
-    # conv_2_bn = BatchNormalization()(conv_2)
-    # conv_2_elu = ELU()(conv_2_bn)
-    conv_2_pl = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='maxpool_2')(conv_2)
+    conv_2 = Conv2D(256, (3, 3), activation='elu', name='conv_2')(conv_1_pl)
+    conv_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2), name='maxpool_2')(conv_2)
     
-    conv_3 = Conv2D(256, (5, 5), padding="same", activation='elu', name='conv_3')(conv_2_pl)
-    conv_4 = Conv2D(256, (3, 3), padding="same", activation='elu', name='conv_4')(conv_3)
-    conv_5 = Conv2D(128, (3, 3), padding="same", activation='elu', name='conv2d_last')(conv_4)
+    conv_3 = Conv2D(256, (3, 3), activation='elu', name='conv_3')(conv_2_pl)
+    conv_4 = Conv2D(256, (3, 3), activation='elu', name='conv_4')(conv_3)
+    conv_5 = Conv2D(128, (3, 3), activation='elu', name='conv2d_last')(conv_4)
     conv_5_pl = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_5)
     
     flat = Flatten()(conv_5_pl)
     fc_1 = Dense(2048, activation='elu', name='fc_1')(flat)
-    drop_1 = Dropout(0.2)(fc_1)
-    fc_2 = Dense(2048, activation='elu', name='fc_2')(drop_1)
-    drop_2 = Dropout(0.2)(fc_2)
-    # fc_3 = Dense(10, activation='elu', name='fc_3')(fc_2)
-    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(drop_2)
+    fc_2 = Dense(2048, activation='elu', name='fc_2')(fc_1)
+    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
     model = Model(inputs=img_input, output=fc_last)
     
     return model
 
-def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
+def model_donghyun5(): 
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+        
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(16, (3, 3), activation='elu', name='conv_1')(lamb)
+    conv_1_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2),  name='maxpool_1')(conv_1)
+    
+    conv_2 = Conv2D(32, (3, 3), activation='elu', name='conv_2')(conv_1_pl)
+    conv_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2), name='maxpool_2')(conv_2)
+    
+    conv_3 = Conv2D(64, (3, 3), activation='elu', name='conv_3')(conv_2_pl)
+    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv_4')(conv_3)
+    conv_5 = Conv2D(64, (3, 3), activation='elu', name='conv2d_last')(conv_4)
+    conv_5_pl = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_5)
+    
+    flat = Flatten()(conv_5_pl)
+    fc_1 = Dense(512, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(512, activation='elu', name='fc_2')(fc_1)
+    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
+    
+    model = Model(inputs=img_input, output=fc_last)
+    
+    return model
+
+def model_donghyun8(): 
+    from keras.layers import Concatenate
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
@@ -237,18 +251,25 @@ def model_donghyun5(): # 모든 레이어들이 fc로 들어가도록
     ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(24, (5, 5), strides=(2,2), activation='elu')(lamb)
-    conv_2 = Conv2D(24, (5, 5), strides=(2,2), activation='elu', name='conv2d_2')(conv_1)
-    conv_3 = Conv2D(24, (3, 3), activation='elu', name='conv2d_3')(conv_2)
-    conv_4 = Conv2D(24, (3, 3), activation='elu', name='conv2d_4')(conv_3)
-    conv_5 = Conv2D(24, (3, 3), activation='elu', name='conv2d_last')(conv_4)
-    flat_1 = Flatten()(conv_2)
-    flat_2 = Flatten()(conv_3)
-    flat_3 = Flatten()(conv_5)
-    concat = concatenate([flat_1, flat_2, flat_3])
-    fc_1 = Dense(100, activation='elu', name='fc_1')(concat)
-    fc_2 = Dense(50,  activation='elu', name='fc_2')(fc_1)
-    fc_3 = Dense(10,   activation='elu', name='fc_3')(fc_2)
+    conv_1_1 = Conv2D(16, (5, 5), strides=(2,2), activation='elu', name='conv_1_1')(lamb)
+    conv_1_2 = Conv2D(16, (3, 3), activation='elu', name='conv_1_2')(lamb)
+    conv_1_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2),  name='maxpool_1')(conv_1_2)
+    conc_1   = Concatenate(axis=3)([conv_1_1, conv_1_2_pl])
+    
+    conv_2_1 = Conv2D(32, (5, 5), strides=(2,2), activation='elu', name='conv_2_1')(conc_1)
+    conv_2_2 = Conv2D(32, (3, 3), activation='elu', name='conv_2_2')(conc_1)
+    conv_2_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2), name='maxpool_2')(conv_2_2)
+    conc_2   = Concatenate(axis=3)([conv_2_1, conv_2_2_pl])
+    
+    conv_3 = Conv2D(64, (3, 3), activation='elu', name='conv_3')(conc_2)
+    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv_4')(conv_3)
+    conv_5 = Conv2D(64, (3, 3), activation='elu', name='conv2d_last')(conv_4)
+    conv_5_pl = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_5)
+    
+    flat = Flatten()(conv_5_pl)
+    fc_1 = Dense(512, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(64,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(16,  activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(1, name='fc_str')(fc_3)
     
     model = Model(inputs=img_input, output=fc_last)
@@ -347,8 +368,7 @@ def model_donghyun7(): # resnet 처럼
 
     return model
 
-def model_donghyun8(): # resnet 처럼
-    from keras.layers import Concatenate, ELU
+def model_donghyun9():
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
@@ -356,34 +376,26 @@ def model_donghyun8(): # resnet 처럼
     ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(24, (5, 5), name='conv_1')(lamb)
-    conv_1_bn = BatchNormalization()(conv_1)
-    conv_1_elu = ELU()(conv_1_bn)
+    # conv_1 = Conv2D(8, (1, 1), activation='elu')(lamb)
+    conv_2 = Conv2D(128, (5, 5), activation='elu', strides=(2,2), name='conv2d_2')(lamb)
+    conv_3 = Conv2D(128, (5, 5), activation='elu', name='conv2d_3')(conv_2)
+    pool_1 = MaxPooling2D(pool_size=(2, 2), name='maxpool_1')(conv_3)
     
-    conv_1_pl = MaxPooling2D(pool_size=(2,2))(conv_1_elu)
-    conv_1_pl2 = MaxPooling2D(pool_size=(2,2))(conv_1_pl)
+    conv_4 = Conv2D(16, (1, 1), activation='elu', name='conv2d_4')(pool_1)
+    conv_5 = Conv2D(128, (3, 3), activation='elu', name='conv2d_5')(conv_4)
+    conv_6 = Conv2D(128, (3, 3), activation='elu', name='conv2d_6')(conv_5)
+    pool_2 = MaxPooling2D(pool_size=(2, 2), name='maxpool_2')(conv_6)
     
-    conv_2 = Conv2D(36, (5, 5), strides=(2,2), padding='same', name='conv_2')(conv_1_elu)
-    conv_2_bn = BatchNormalization()(conv_2)
-    conv_2_elu = ELU()(conv_2_bn)
+    conv_7 = Conv2D(32, (1, 1), activation='elu', name='conv2d_7')(pool_2)
+    conv_8 = Conv2D(128, (3, 3), activation='elu', name='conv2d_8')(conv_7)
+    conv_9 = Conv2D(128, (3, 3), activation='elu', name='conv2d_9')(conv_8)
+    pool_3 = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_9)
     
-    conv_2_pl = MaxPooling2D(pool_size=(2,2))(conv_2_elu)
-    
-    conc_1 = Concatenate(axis=3)([conv_1_pl, conv_2_elu])
-    
-    conv_3 = Conv2D(48, (5, 5), strides=(2,2), padding='same', name='conv_3')(conc_1)
-    conv_3_bn = BatchNormalization()(conv_3)
-    conv_3_elu = ELU()(conv_3_bn)
-    
-    conc_2 = Concatenate(axis=3)([conv_1_pl2, conv_3_elu, conv_2_pl])
-    
-    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv_4')(conc_2)
-    conv_5 = Conv2D(64, (3, 3), activation='elu', name='conv2d_last')(conv_4)
-    
-    flat_1  = Flatten()(conv_5)
-    fc_1 = Dense(100, activation='elu', name='fc_1')(flat_1)
-    fc_2 = Dense(50,  activation='elu', name='fc_2')(fc_1)
-    fc_3 = Dense(10,   activation='elu', name='fc_3')(fc_2)
+    # conv_10 = Conv2D(128, (1, 1), activation='elu', name='conv2d_last')(pool_3)
+    flat_1 = Flatten()(pool_3)
+    fc_1 = Dense(512, activation='elu', name='fc_1')(flat_1)
+    fc_2 = Dense(64,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(16,  activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(1, name='fc_str')(fc_3)
     
     model = Model(inputs=img_input, output=fc_last)
@@ -801,6 +813,8 @@ class NetModel:
             self.model = model_donghyun7()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN8:
             self.model = model_donghyun8()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN9:
+            self.model = model_donghyun9()
             
         elif config['network_type'] == const.NET_TYPE_LRCN:
             self.model = model_lrcn()
