@@ -622,11 +622,11 @@ def model_lrcn3():
     conv_4    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv_4')(conv_3)
     conv_5    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv2d_last')(conv_4)
     flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
-    lstm1      = LSTM(10, return_sequences=True, name='lstm_1')(flat)
-    lstm2      = LSTM(10, return_sequences=True, name='lstm_2')(lstm1)
-    lstm3      = LSTM(10, return_sequences=False, name='lstm_3')(lstm2)
-    fc_4      = Dense(  10, activation='elu', name='fc_4')(lstm3)
-    fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_4)
+    lstm      = LSTM(1000, return_sequences=False, name='lstm')(flat)
+    fc_1      = Dense(100, activation='elu', name='fc_1')(lstm)
+    fc_2      = Dense( 50, activation='elu', name='fc_2')(fc_1)
+    fc_3      = Dense( 10, activation='elu', name='fc_3')(fc_2)
+    fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_3)
 
     model = Model(inputs=input_img, outputs=fc_last)
     

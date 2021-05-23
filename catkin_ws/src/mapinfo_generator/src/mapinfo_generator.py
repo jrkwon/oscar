@@ -331,18 +331,20 @@ class MapInfoGenerator:
             self._cal_roadformula([self.car_pose[i][0], self.car_pose[i][1]])
         print('mdc  : '  +str(format(self._cal_mdc(self.total_error), ".9f")))
         print('emdc : '  +str(format(self._cal_emdc(self.total_error), ".9f")))
-        print('mce  : '  +str(format(self._cal_mce(self.car_steering), ".9f")))
+        print('mce  : '  +str(format(self._cal_mce(self.car_steering, self.car_times), ".9f")))
         print('mddc : ' +str(format(self._cal_mddc(self.total_error, self.car_times), ".9f")))
         print('emddc : ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
         print('var : ' +str(format(self._cal_var(self.total_error), ".9f")))
+        print('time : ' +str(format(self._cal_time(self.car_times), ".9f")))
         self._cal_ggdiagram(self.car_velocities, self.car_times)
         error_txt=[]
-        error_txt.append('mdc  : ' +str(format(self._cal_mdc(self.total_error), ".9f")))
-        error_txt.append('emdc : ' +str(format(self._cal_emdc(self.total_error), ".9f")))
-        error_txt.append('mce  : ' +str(format(self._cal_mce(self.car_steering), ".9f")))
-        error_txt.append('mddc : ' +str(format(self._cal_mddc(self.total_error, self.car_times), ".9f")))
-        error_txt.append('emddc : ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
-        error_txt.append('var  : ' +str(format(self._cal_var(self.total_error), ".9f")))
+        error_txt.append('mdc  , ' +str(format(self._cal_mdc(self.total_error), ".9f")))
+        error_txt.append('emdc , ' +str(format(self._cal_emdc(self.total_error), ".9f")))
+        error_txt.append('mce  , ' +str(format(self._cal_mce(self.car_steering, self.car_times), ".9f")))
+        error_txt.append('mddc , ' +str(format(self._cal_mddc(self.total_error, self.car_times), ".9f")))
+        error_txt.append('emddc , ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
+        error_txt.append('var  , ' +str(format(self._cal_var(self.total_error), ".9f")))
+        error_txt.append('time  , ' +str(format(self._cal_time(self.car_times), ".9f")))
         
         self._build_csv(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
         self._build_txt(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
@@ -524,12 +526,17 @@ class MapInfoGenerator:
         num_data = len(error) - 1
         # print(len(error))
         # print(len(t))
+        count = 0
         for i in range(num_data):
             de = abs(error[i+1] - error[i])
             dt = t[i+1] - t[i]
-            error_mddc += de/dt
             
-        error_mddc /= num_data
+            if dt > 1.0 or dt < 0:
+                count += 1
+            else :
+                error_mddc += de/dt
+            
+        error_mddc /= (num_data - count)
         return error_mddc
     
     def _cal_mdc(self, error):
@@ -541,14 +548,37 @@ class MapInfoGenerator:
         return error_mdc
     
     
-    def _cal_mce(self, steering):
+    def _cal_mce(self, steering, time):
         error_mce = 0
         num_data = len(steering) - 1
+        count = 0
         for i in range(num_data):
-            error_mce += (steering[i+1][0] - steering[i][0])**2
+            time_diff = float(time[i+1]) - float(time[i])
+            if time_diff > 1.0 or time_diff < 0:
+                count += 1
+            else :
+                error_mce += (steering[i+1][0] - steering[i][0])**2
             
-        error_mce /= num_data
+        error_mce /= (num_data - count)
         return error_mce
+    
+    def _cal_time(self, time):
+        total_time = 0
+        num_data = len(time) - 1
+        count = 0
+        for i in range(num_data):
+            # print(time[i+1], time[i])
+            time_diff = float(time[i+1]) - float(time[i])
+            if time_diff > 6.0:
+                time_diff = 6.0
+                count += 1
+            if time_diff < 0:
+                time_diff = 0
+            total_time += time_diff
+        #     print(total_time)
+        # print(count)
+        total_time /= 4
+        return total_time
     
     def _cal_ggdiagram(self, v, t):
         import matplotlib.pyplot as plt
@@ -561,18 +591,22 @@ class MapInfoGenerator:
         av_ay_g = []
         num_data = len(v) - 1
         av_num = 20 #Simple Moving Average
+        count = 0
         for i in range(num_data):
             dvx = v[i+1][0] - v[i][0]
             dvy = v[i+1][1] - v[i][1]
             dt = t[i+1] - t[i]
-            ax.append(dvx/dt)
-            ay.append(dvy/dt)
-            if len(ax) is av_num:
-                av_ax = sum(ax) / av_num
-                av_ay = sum(ay) / av_num
-                av_ax_g.append(av_ax/9.8)
-                av_ay_g.append(av_ay/9.8)
-                del ax[0], ay[0]
+            if dt > 1.0 or dt < 0:
+                count += 1
+            else :
+                ax.append(dvx/dt)
+                ay.append(dvy/dt)
+                if len(ax) is av_num:
+                    av_ax = sum(ax) / av_num
+                    av_ay = sum(ay) / av_num
+                    av_ax_g.append(av_ax/9.8)
+                    av_ay_g.append(av_ay/9.8)
+                    del ax[0], ay[0]
            
         ##########local frame vel###########
         plt.rcParams["figure.figsize"] = (10,4)
