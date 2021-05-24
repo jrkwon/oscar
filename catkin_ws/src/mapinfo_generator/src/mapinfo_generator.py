@@ -335,7 +335,6 @@ class MapInfoGenerator:
         print('mddc : ' +str(format(self._cal_mddc(self.total_error, self.car_times), ".9f")))
         print('emddc : ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
         print('var : ' +str(format(self._cal_var(self.total_error), ".9f")))
-        print('time : ' +str(format(self._cal_time(self.car_times), ".9f")))
         self._cal_ggdiagram(self.car_velocities, self.car_times)
         error_txt=[]
         error_txt.append('mdc  , ' +str(format(self._cal_mdc(self.total_error), ".9f")))
@@ -344,7 +343,6 @@ class MapInfoGenerator:
         error_txt.append('mddc , ' +str(format(self._cal_mddc(self.total_error, self.car_times), ".9f")))
         error_txt.append('emddc , ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
         error_txt.append('var  , ' +str(format(self._cal_var(self.total_error), ".9f")))
-        error_txt.append('time  , ' +str(format(self._cal_time(self.car_times), ".9f")))
         
         self._build_csv(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
         self._build_txt(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
@@ -561,24 +559,6 @@ class MapInfoGenerator:
             
         error_mce /= (num_data - count)
         return error_mce
-    
-    def _cal_time(self, time):
-        total_time = 0
-        num_data = len(time) - 1
-        count = 0
-        for i in range(num_data):
-            # print(time[i+1], time[i])
-            time_diff = float(time[i+1]) - float(time[i])
-            if time_diff > 6.0:
-                time_diff = 6.0
-                count += 1
-            if time_diff < 0:
-                time_diff = 0
-            total_time += time_diff
-        #     print(total_time)
-        # print(count)
-        total_time /= 4
-        return total_time
     
     def _cal_ggdiagram(self, v, t):
         import matplotlib.pyplot as plt
