@@ -10,15 +10,15 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 25       # refer to neural_net/const.py
-gpus: 3
+network_type: 100       # refer to neural_net/const.py
+gpus: 1
 
 weight_load: False
 
-lstm: True
+lstm: False
 lstm_timestep: 5
 lstm_dataterm: 1
-lstm_lr: 0.0000001        # 
+lstm_lr: 0.0001        # 
 
 cnn_lr:  0.0001          # default of Adam is 0.001
 
@@ -34,7 +34,7 @@ num_epochs: 2000
 batch_size: 16
 num_inputs: 1     # input: image, velocity
 num_outputs: 1    # output: steering_angle, throttle
-early_stopping_patience: 200
+early_stopping_patience: 50
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/
 
