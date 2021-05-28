@@ -242,40 +242,6 @@ def model_donghyun5():
     
     return model
 
-def model_donghyun8(): 
-    from keras.layers import Concatenate
-    img_shape = (config['input_image_height'],
-                    config['input_image_width'],
-                    config['input_image_depth'],)
-    
-    ######img model#######
-    img_input = Input(shape=img_shape)
-    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1_1 = Conv2D(16, (5, 5), strides=(2,2), activation='elu', name='conv_1_1')(lamb)
-    conv_1_2 = Conv2D(16, (3, 3), activation='elu', name='conv_1_2')(lamb)
-    conv_1_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2),  name='maxpool_1')(conv_1_2)
-    conc_1   = Concatenate(axis=3)([conv_1_1, conv_1_2_pl])
-    
-    conv_2_1 = Conv2D(32, (5, 5), strides=(2,2), activation='elu', name='conv_2_1')(conc_1)
-    conv_2_2 = Conv2D(32, (3, 3), activation='elu', name='conv_2_2')(conc_1)
-    conv_2_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2), name='maxpool_2')(conv_2_2)
-    conc_2   = Concatenate(axis=3)([conv_2_1, conv_2_2_pl])
-    
-    conv_3 = Conv2D(64, (3, 3), activation='elu', name='conv_3')(conc_2)
-    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv_4')(conv_3)
-    conv_5 = Conv2D(64, (3, 3), activation='elu', name='conv2d_last')(conv_4)
-    conv_5_pl = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_5)
-    
-    flat = Flatten()(conv_5_pl)
-    fc_1 = Dense(512, activation='elu', name='fc_1')(flat)
-    fc_2 = Dense(64,  activation='elu', name='fc_2')(fc_1)
-    fc_3 = Dense(16,  activation='elu', name='fc_3')(fc_2)
-    fc_last = Dense(1, name='fc_str')(fc_3)
-    
-    model = Model(inputs=img_input, output=fc_last)
-
-    return model
-
 def model_donghyun6(): # resnet 처럼
     from keras.layers import add, Concatenate, ELU, UpSampling2D
     img_shape = (config['input_image_height'],
@@ -285,49 +251,25 @@ def model_donghyun6(): # resnet 처럼
     ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1  = Conv2D(64, (5, 5), strides=(2,2), name='conv_1')(lamb)
-    conv_1_bn = BatchNormalization()(conv_1)
-    conv_1_elu = ELU()(conv_1_bn)
-    
-    conv_2  = Conv2D(64, (5, 5), strides=(2,2), name='conv_2')(conv_1_elu)
-    conv_2_bn = BatchNormalization()(conv_2)
-    conv_2_elu = ELU()(conv_2_bn)
-    
-    conv_3_1= Conv2D(64, (5, 5), strides=(2,2), padding='same', name='conv_3_1')(conv_2_elu)
-    conv_3_2= Conv2D(64, (3, 3), strides=(2,2), padding='same', name='conv_3_2')(conv_2_elu)
+    conv_1  = Conv2D(64, (8, 8), strides=(2,2), activation='elu', name='conv_1')(lamb)
+    conv_2  = Conv2D(64, (6, 6), strides=(2,2), activation='elu', name='conv_2')(conv_1)
+    conv_3_1= Conv2D(64, (5, 5), strides=(2,2), padding='same', activation='elu', name='conv_3_1')(conv_2)
+    conv_3_2= Conv2D(64, (3, 3), strides=(2,2), padding='same', activation='elu', name='conv_3_2')(conv_2)
     conc_1  = Concatenate(axis=3)([conv_3_1, conv_3_2])
-    conv_3_bn = BatchNormalization()(conc_1)
-    conv_3_elu = ELU()(conv_3_bn)
     
-    conv_3_2_bn = BatchNormalization()(conv_3_2)
-    conv_3_2_elu = ELU()(conv_3_2_bn)
-    
-    conv_4_1= Conv2D(128, (3, 3), name='conv_4_1')(conv_3_elu)
-    conv_4_2= Conv2D(64, (3, 3), name='conv_4_2')(conv_3_2_elu)
+    conv_4_1= Conv2D(128, (3, 3), activation='elu')(conc_1)
+    conv_4_2= Conv2D(64, (3, 3), activation='elu')(conv_3_2)
     conc_2  = Concatenate(axis=3)([conv_4_1, conv_4_2])
-    conv_4_bn = BatchNormalization()(conc_2)
-    conv_4_elu = ELU()(conv_4_bn)
     
-    conv_4_2_bn = BatchNormalization()(conv_4_2)
-    conv_4_2_elu = ELU()(conv_4_2_bn)
-    
-    conv_5_1= Conv2D(128, (3, 3), name='conv_5_1')(conv_4_elu)
-    conv_5_2= Conv2D(64, (3, 3), name='conv_5_2')(conv_4_2_elu)
+    conv_5_1= Conv2D(128, (3, 3), activation='elu', name='conv_5_1')(conc_2)
+    conv_5_2= Conv2D(64, (3, 3), activation='elu', name='conv_5_2')(conv_4_2)
     conc_3  = Concatenate(axis=3)([conv_5_1, conv_5_2])
-    
-    conv_5_bn = BatchNormalization()(conc_3)
-    conv_5_elu = ELU()(conv_5_bn)
-    
-    conv_6  = Conv2D(64, (3, 3), name='conv2d_last')(conv_5_elu)
+    conv_6  = Conv2D(64, (3, 3), activation='elu', name='conv2d_last')(conc_3)
     
     flat_1  = Flatten()(conv_6)
-    
-    fc_1 = Dense(100, activation='elu', name='fc_1')(flat_1)
-    drop_1 = Dropout(0.2)(fc_1)
-    fc_2 = Dense(50,  activation='elu', name='fc_2')(drop_1)
-    drop_2 = Dropout(0.2)(fc_2)
-    fc_3 = Dense(10,   activation='elu', name='fc_3')(drop_2)
-    
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat_1)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(1, name='fc_str')(fc_3)
     
     model = Model(inputs=img_input, output=fc_last)
@@ -368,7 +310,8 @@ def model_donghyun7(): # resnet 처럼
 
     return model
 
-def model_donghyun9():
+def model_donghyun8(): 
+    from keras.layers import Concatenate
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
@@ -376,30 +319,67 @@ def model_donghyun9():
     ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    # conv_1 = Conv2D(8, (1, 1), activation='elu')(lamb)
-    conv_2 = Conv2D(128, (5, 5), activation='elu', strides=(2,2), name='conv2d_2')(lamb)
-    conv_3 = Conv2D(128, (5, 5), activation='elu', name='conv2d_3')(conv_2)
-    pool_1 = MaxPooling2D(pool_size=(2, 2), name='maxpool_1')(conv_3)
+    conv_1_1 = Conv2D(16, (5, 5), strides=(2,2), activation='elu', name='conv_1_1')(lamb)
+    conv_1_2 = Conv2D(16, (3, 3), activation='elu', name='conv_1_2')(lamb)
+    conv_1_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2),  name='maxpool_1')(conv_1_2)
+    conc_1   = Concatenate(axis=3)([conv_1_1, conv_1_2_pl])
     
-    conv_4 = Conv2D(16, (1, 1), activation='elu', name='conv2d_4')(pool_1)
-    conv_5 = Conv2D(128, (3, 3), activation='elu', name='conv2d_5')(conv_4)
-    conv_6 = Conv2D(128, (3, 3), activation='elu', name='conv2d_6')(conv_5)
-    pool_2 = MaxPooling2D(pool_size=(2, 2), name='maxpool_2')(conv_6)
+    conv_2_1 = Conv2D(32, (5, 5), strides=(2,2), activation='elu', name='conv_2_1')(conc_1)
+    conv_2_2 = Conv2D(32, (3, 3), activation='elu', name='conv_2_2')(conc_1)
+    conv_2_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2), name='maxpool_2')(conv_2_2)
+    conc_2   = Concatenate(axis=3)([conv_2_1, conv_2_2_pl])
     
-    conv_7 = Conv2D(32, (1, 1), activation='elu', name='conv2d_7')(pool_2)
-    conv_8 = Conv2D(128, (3, 3), activation='elu', name='conv2d_8')(conv_7)
-    conv_9 = Conv2D(128, (3, 3), activation='elu', name='conv2d_9')(conv_8)
-    pool_3 = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_9)
+    conv_3 = Conv2D(64, (3, 3), activation='elu', name='conv_3')(conc_2)
+    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv_4')(conv_3)
+    conv_5 = Conv2D(64, (3, 3), activation='elu', name='conv2d_last')(conv_4)
+    conv_5_pl = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_5)
     
-    # conv_10 = Conv2D(128, (1, 1), activation='elu', name='conv2d_last')(pool_3)
-    flat_1 = Flatten()(pool_3)
-    fc_1 = Dense(512, activation='elu', name='fc_1')(flat_1)
+    flat = Flatten()(conv_5_pl)
+    fc_1 = Dense(512, activation='elu', name='fc_1')(flat)
     fc_2 = Dense(64,  activation='elu', name='fc_2')(fc_1)
     fc_3 = Dense(16,  activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(1, name='fc_str')(fc_3)
     
     model = Model(inputs=img_input, output=fc_last)
 
+    return model
+
+def model_donghyun9():
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+        
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1 = Conv2D(16, (3, 3), activation='elu', name='conv_1')(lamb)
+    conv_1_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2),  name='maxpool_1')(conv_1)
+    
+    conv_2 = Conv2D(32, (3, 3), activation='elu', name='conv_2')(conv_1_pl)
+    conv_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2), name='maxpool_2')(conv_2)
+    
+    conv_3 = Conv2D(64, (3, 3), activation='elu', name='conv_3')(conv_2_pl)
+    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv_4')(conv_3)
+    conv_5 = Conv2D(64, (3, 3), activation='elu', name='conv_5')(conv_4)
+    conv_5_pl = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_5)
+    
+    conv_6 = Conv2D(48, (1, 1), activation='elu', name='conv_6')(conv_5_pl)
+    conv_7 = Conv2D(32, (1, 1), activation='elu', name='conv_7')(conv_6)
+    conv_8 = Conv2D(16, (1, 1), activation='elu', name='conv_8')(conv_7)
+    conv_9 = Conv2D(1, (1, 1), activation='elu', name='conv2d_last')(conv_8)
+    
+    
+    flat = Flatten()(conv_9)
+    fc_1 = Dense(50, activation='elu', name='fc_1')(flat)
+    # fc_2 = Dense(512, activation='elu', name='fc_2')(fc_1)
+    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_1)
+    
+    model = Model(inputs=img_input, output=fc_last)
+    
     return model
 
 def model_sap():
@@ -648,7 +628,7 @@ def model_lrcn4():
     conv_4    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv_4')(conv_3)
     conv_5    = TimeDistributed(Convolution2D(64, (3, 3), activation='elu'), name='conv2d_last')(conv_4)
     flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
-    lstm      = LSTM(  1000, return_sequences=False, dropout=0.2, name='lstm')(flat)
+    lstm      = LSTM(  10, return_sequences=False, dropout=0.2, name='lstm')(flat)
     fc_1      = Dense(100, activation='elu', name='fc_1')(lstm)
     drop_1    = Dropout(0.2, name='drop_1')(fc_1)
     fc_2      = Dense( 50, activation='elu', name='fc_2')(drop_1)
@@ -681,7 +661,7 @@ def model_lrcn5():
     
     flat = TimeDistributed(Flatten())(conv_5_pl)
     lstm = LSTM(512, return_sequences=False, dropout=0.2, name='lstm')(flat)
-    fc_1 = Dense(512, activation='elu', name='fc_1')(flat)
+    fc_1 = Dense(512, activation='elu', name='fc_1')(lstm)
     fc_2 = Dense(512, activation='elu', name='fc_2')(fc_1)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
