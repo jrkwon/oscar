@@ -25,7 +25,74 @@ from image_process import ImageProcess
 
 
 ###############################################################################
-#       
+#
+def images_cam(model_path, image_folder_path):
+    image_process = ImageProcess()
+    image_folder_name = None
+    if image_folder_path[-1] == '/':
+        image_folder_path = image_folder_path[:-1]
+    loc_slash = image_folder_path.rfind('/')
+    if loc_slash != -1: # there is '/' in the data path
+        image_folder_name = image_folder_path[loc_slash+1:] 
+    csv_path = image_folder_path+'/'+image_folder_name+'.csv'
+    
+    data = DriveData(csv_path)
+    data.read(normalize=False)
+    
+    images_name = data.image_names
+    steering_angles = data.measurements
+    
+    drive_run = DriveRun(model_path)
+    if os.path.isdir(image_folder_path + '/saliency'+ '_' + model_path[-2:]) is not True:
+        os.mkdir(image_folder_path + '/saliency'+ '_' + model_path[-2:])
+    
+    # image_process = ImageProcess()
+    for i in range(len(images_name)):
+        image_file_path = image_folder_path+'/'+images_name[i]
+        image = cv2.imread(image_file_path)
+        if Config.data_collection['crop'] is not True:
+            image = image[Config.data_collection['image_crop_y1']:Config.data_collection['image_crop_y2'],
+                        Config.data_collection['image_crop_x1']:Config.data_collection['image_crop_x2']]
+        image = cv2.resize(image, 
+                            (Config.neural_net['input_image_width'],
+                            Config.neural_net['input_image_height']))
+        image = image_process.process(image, bgr=False)
+        measurement = drive_run.run((image, ))
+        
+        fig = plt.figure()
+        # plt.title('Prediction:\t' + str(measurement[0][0]) + '\nGroundTruth:\t' + str(steering_angles[i][0])
+        #           + '\nError:\t' + str(abs(steering_angles[i][0] - measurement[0][0])))
+        layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv_4')
+        # penultimate_layer_idx = utils.find_layer_idx(drive_run.net_model.model, 'conv2d_4')
+        fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_str')
+        # fc_last = utils.find_layer_idx(drive_run.net_model.model, 'fc_1')
+        heatmap = visualize_cam(drive_run.net_model.model, layer_idx, filter_indices=fc_last, seed_input=image, backprop_modifier='guided')
+
+        ax1 = fig.add_subplot(2,1,1)
+        ax1.set_title('Prediction :' + str(format(measurement[0][0], ".9f")) 
+                  + '\nGroundTruth:' + str(format(steering_angles[i][0], ".9f"))
+                  + '\nError      :' + str(format(abs(steering_angles[i][0]-measurement[0][0]), ".9f"))
+                  )
+        plt.imshow(image)
+        plt.imshow(heatmap, cmap='jet', alpha=0.5)   
+        ax2 = fig.add_subplot(2,1,2) 
+        plt.subplot(2,1,2)
+        plt.imshow(image)
+                
+        saliency_file_path = image_folder_path + '/saliency' + '_' + model_path[-2:] + '/' + images_name[i][:-4] + '_saliency.png'
+        plt.tight_layout()
+        # save fig    
+        plt.savefig(saliency_file_path, dpi=150)
+        
+        cur_output = '{0}/{1}\r'.format(i, len(images_name))
+
+        sys.stdout.write(cur_output)
+        sys.stdout.flush()
+        # print('Saved ' + saliency_file_path)
+        # print(image_path)
+    # measurement = drive_run.run((image, ))
+    
+    # print("csv",csv_path)
 def images_saliency(model_path, image_folder_path, islstm):
     image_process = ImageProcess()
     image_folder_name = None
@@ -74,7 +141,7 @@ def images_saliency(model_path, image_folder_path, islstm):
             layer = model.layers[layer_num].output
             # for i in range(len(model.layers)):
                 # print(model.layers[i].output)
-            print(model.layers[layer_num].output)
+            # print(model.layers[layer_num].output)
             model = Model(inputs=model.inputs, outputs=layer)
             feature_maps = model.predict(np_img)
 
@@ -186,6 +253,7 @@ def images_saliency(model_path, image_folder_path, islstm):
                 iter = filter_num // (square**2)
             else :
                 iter = 1
+            iter = 1
             ix = 1
             for n in range(iter):
                 plt_i = 1
@@ -211,7 +279,7 @@ def images_saliency(model_path, image_folder_path, islstm):
             # show the figure
             # plt.show()
             
-                saliency_file_path = image_folder_path + '/saliency' + '_' + model_path[-2:] + '/' + 'layer'+ str(layer_num) + '_' + str(n) + '_' + images_name[i][:-4] + '.png'
+                saliency_file_path = image_folder_path + '/saliency' + '_' + model_path[-2:] + '/' + 'layer'+ str(layer_num) + '_' + images_name[i][:-4] + '_' + str(n) + '.png'
                 # print(saliency_file_path)
                 plt.savefig(saliency_file_path, dpi=150)
                 plt.clf()
@@ -394,7 +462,8 @@ if __name__ == '__main__':
 
         # main(sys.argv[1], sys.argv[2])
         
-        images_saliency(sys.argv[1], sys.argv[2], Config.neural_net['lstm'])
+        images_cam(sys.argv[1], sys.argv[2])
+        # images_saliency(sys.argv[1], sys.argv[2], Config.neural_net['lstm'])
         # show_layer_saliency(sys.argv[1], sys.argv[2])
 
     except KeyboardInterrupt:

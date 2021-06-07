@@ -33,6 +33,7 @@ class MapInfoGenerator:
         ########################
         #cal roadformular
         self.total_error = []
+        self.total_error_nabs = []
         self.car_pose = None
         self.car_steering = None
         self.car_velocities = None
@@ -128,7 +129,7 @@ class MapInfoGenerator:
             road_box = [0, 0, 0]
             box_margin = 5.0
             # box_margin = 50.0
-            sample = 10
+            sample = 319
             if self.track[0][i] == "Straight":
                 for j in range(sample):
                     start_pnt = last_position
@@ -301,7 +302,7 @@ class MapInfoGenerator:
                 last_position = end_pnt
         
         # write a new csv
-        new_csv_fh = open(data_path + "/ground_truth.csv", 'a')
+        new_csv_fh = open(data_path + "/ground_truth.csv", 'w')
         for i in range(len(new_csv)):
             new_csv_fh.write(new_csv[i]+ '\n')
         new_csv_fh.close()
@@ -330,20 +331,21 @@ class MapInfoGenerator:
             # print(self.car_pose)
             self._cal_roadformula([self.car_pose[i][0], self.car_pose[i][1]])
         print('mdc  : '  +str(format(self._cal_mdc(self.total_error), ".9f")))
-        print('emdc : '  +str(format(self._cal_emdc(self.total_error), ".9f")))
+        print('mmdc : '  +str(format(self._cal_mmdc(self.total_error), ".9f")))
         print('mce  : '  +str(format(self._cal_mce(self.car_steering, self.car_times), ".9f")))
-        print('mddc : ' +str(format(self._cal_mddc(self.total_error, self.car_times), ".9f")))
-        print('emddc : ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
+        print('mddc : ' +str(format(self._cal_mddc(self.total_error_nabs, self.car_times), ".9f")))
+        print('emdc : ' +str(format(self._cal_emdc(self.total_error, self.car_times), ".9f")))
         print('var : ' +str(format(self._cal_var(self.total_error), ".9f")))
         self._cal_ggdiagram(self.car_velocities, self.car_times)
         error_txt=[]
         error_txt.append('mdc  , ' +str(format(self._cal_mdc(self.total_error), ".9f")))
-        error_txt.append('emdc , ' +str(format(self._cal_emdc(self.total_error), ".9f")))
+        error_txt.append('mmdc , ' +str(format(self._cal_mmdc(self.total_error), ".9f")))
         error_txt.append('mce  , ' +str(format(self._cal_mce(self.car_steering, self.car_times), ".9f")))
-        error_txt.append('mddc , ' +str(format(self._cal_mddc(self.total_error, self.car_times), ".9f")))
-        error_txt.append('emddc , ' +str(format(self._cal_emddc(self.total_error, self.car_times), ".9f")))
+        error_txt.append('mddc , ' +str(format(self._cal_mddc(self.total_error_nabs, self.car_times), ".9f")))
+        error_txt.append('emdc , ' +str(format(self._cal_emdc(self.total_error, self.car_times), ".9f")))
         error_txt.append('var  , ' +str(format(self._cal_var(self.total_error), ".9f")))
         
+        # self._build_csv(self.csv_path[:-len(self.csv_path.split('/')[-1])], self.total_error_nabs)
         self._build_csv(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
         self._build_txt(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
         # print('total error : ',self.total_error)
@@ -367,6 +369,7 @@ class MapInfoGenerator:
                                , [start_pnt[0]  , start_pnt[1]+box_margin] ]
                     if road_box[0][0] < car_pose[0] < road_box[1][0] and road_box[0][1] < car_pose[1] < road_box[2][1]:
                         self.total_error.append(abs(start_pnt[1] - car_pose[1]))
+                        self.total_error_nabs.append((start_pnt[1] - car_pose[1]))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                 elif self.quadrant == 2:
                     end_pnt = [start_pnt[0], start_pnt[1]+road_dist]
@@ -375,6 +378,7 @@ class MapInfoGenerator:
                                , [end_pnt[0]-box_margin    , end_pnt[1]] ]
                     if road_box[0][0] < car_pose[0] < road_box[1][0] and road_box[0][1] < car_pose[1] < road_box[2][1]:
                         self.total_error.append(abs(start_pnt[0] - car_pose[0]))
+                        self.total_error_nabs.append((start_pnt[0] - car_pose[0]))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                 elif self.quadrant == 3:
                     end_pnt = [start_pnt[0]-road_dist, start_pnt[1]]
@@ -383,6 +387,7 @@ class MapInfoGenerator:
                                , [end_pnt[0]    , end_pnt[1]+box_margin] ]
                     if road_box[0][0] < car_pose[0] < road_box[1][0] and road_box[0][1] < car_pose[1] < road_box[2][1]:
                         self.total_error.append(abs(start_pnt[1] - car_pose[1]))
+                        self.total_error_nabs.append((start_pnt[1] - car_pose[1]))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                 elif self.quadrant == 4:
                     end_pnt = [start_pnt[0], start_pnt[1]-road_dist]
@@ -391,6 +396,7 @@ class MapInfoGenerator:
                                , [start_pnt[0]-box_margin   , start_pnt[1]] ]
                     if road_box[0][0] < car_pose[0] < road_box[1][0] and road_box[0][1] < car_pose[1] < road_box[2][1]:
                         self.total_error.append(abs(start_pnt[0] - car_pose[0]))
+                        self.total_error_nabs.append((start_pnt[0] - car_pose[0]))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
 
                 last_position = end_pnt
@@ -412,6 +418,7 @@ class MapInfoGenerator:
                         dx = car_pose[0]-center[0]
                         dy = car_pose[1]-center[1]
                         self.total_error.append(abs(math.sqrt( (dx**2) + (dy**2) ) - road_dist))
+                        self.total_error_nabs.append((math.sqrt( (dx**2) + (dy**2) ) - road_dist))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                     
                 elif self.quadrant == 2:
@@ -421,6 +428,7 @@ class MapInfoGenerator:
                         dx = car_pose[0]-center[0]
                         dy = car_pose[1]-center[1]
                         self.total_error.append(abs(math.sqrt( (dx**2) + (dy**2) ) - road_dist))
+                        self.total_error_nabs.append((math.sqrt( (dx**2) + (dy**2) ) - road_dist))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                         
                 elif self.quadrant == 3:
@@ -430,6 +438,7 @@ class MapInfoGenerator:
                         dx = car_pose[0]-center[0]
                         dy = car_pose[1]-center[1]
                         self.total_error.append(abs(math.sqrt( (dx**2) + (dy**2) ) - road_dist))
+                        self.total_error_nabs.append((math.sqrt( (dx**2) + (dy**2) ) - road_dist))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                         
                 elif self.quadrant == 4:
@@ -439,6 +448,7 @@ class MapInfoGenerator:
                         dx = car_pose[0]-center[0]
                         dy = car_pose[1]-center[1]
                         self.total_error.append(abs(math.sqrt( (dx**2) + (dy**2) ) - road_dist))
+                        self.total_error_nabs.append((math.sqrt( (dx**2) + (dy**2) ) - road_dist))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                 last_position = end_pnt
                 self.quadrant += 1
@@ -460,6 +470,7 @@ class MapInfoGenerator:
                         dx = car_pose[0]-center[0]
                         dy = car_pose[1]-center[1]
                         self.total_error.append(abs(math.sqrt( (dx**2) + (dy**2) ) - road_dist))
+                        self.total_error_nabs.append((math.sqrt( (dx**2) + (dy**2) ) - road_dist))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                 elif self.quadrant == 2:
                     end_pnt = [start_pnt[0]+road_dist, start_pnt[1]+road_dist]
@@ -468,6 +479,7 @@ class MapInfoGenerator:
                         dx = car_pose[0]-center[0]
                         dy = car_pose[1]-center[1]
                         self.total_error.append(abs(math.sqrt( (dx**2) + (dy**2) ) - road_dist))
+                        self.total_error_nabs.append((math.sqrt( (dx**2) + (dy**2) ) - road_dist))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                 elif self.quadrant == 3:
                     end_pnt = [start_pnt[0]-road_dist, start_pnt[1]+road_dist]
@@ -476,6 +488,7 @@ class MapInfoGenerator:
                         dx = car_pose[0]-center[0]
                         dy = car_pose[1]-center[1]
                         self.total_error.append(abs(math.sqrt( (dx**2) + (dy**2) ) - road_dist))
+                        self.total_error_nabs.append((math.sqrt( (dx**2) + (dy**2) ) - road_dist))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                 elif self.quadrant == 4:
                     end_pnt = [start_pnt[0]-road_dist, start_pnt[1]-road_dist]
@@ -484,6 +497,7 @@ class MapInfoGenerator:
                         dx = car_pose[0]-center[0]
                         dy = car_pose[1]-center[1]
                         self.total_error.append(abs(math.sqrt( (dx**2) + (dy**2) ) - road_dist))
+                        self.total_error_nabs.append((math.sqrt( (dx**2) + (dy**2) ) - road_dist))
                         # print('carpose:', car_pose, 'track : ',i,'  ',self.track[0][i],'  error : ',self.total_error[-1])
                 last_position = end_pnt
                 self.quadrant -= 1
@@ -500,24 +514,37 @@ class MapInfoGenerator:
         variance = np.var(variance)
         return variance
     
-    def _cal_emddc(self, error, t):
-        emdc = self._cal_emdc(error)
+    def _cal_emdc(self, error, t):
+        mmdc = self._cal_mmdc(error)
         mddc = self._cal_mddc(error, t)
         a = 0.5
-        return (1-a)*emdc + a*mddc
+        return (1-a)*mmdc + a*mddc
     
-    def _cal_emdc(self, error):
-        error_emdc = 0
+    def _cal_mmdc(self, error):
+        error_mmdc = 0
         num_data = len(error)
+        
+        # alpha = 1
+        # D_s = 0.85
+        # D_d = 1
+        # for i in range(num_data):
+        #     if D_d <=abs(error[i]) :
+        #         error_mmdc += error[i]
+        #     elif D_s * alpha <= abs(error[i]) < D_d:
+        #         error_mmdc += 0
+        #     else:
+        #         error_mmdc += 5.256 * ( 0.2*(error[i]**4) - 0.1*(error[i]**2) )
+        # error_mmdc /= num_data
+        
         for i in range(num_data):
             if abs(error[i]) > 1.15:
-                error_emdc += error[i]
+                error_mmdc += abs(error[i])
             elif abs(error[i]) < 0.7071:
-                error_emdc += 0
+                error_mmdc += 0
             else:
-                error_emdc += 5.256 * ( 0.2*(error[i]**4) - 0.1*(error[i]**2) )
-        error_emdc /= num_data
-        return error_emdc
+                error_mmdc += 5.256 * ( 0.2*(error[i]**4) - 0.1*(error[i]**2) )
+        error_mmdc /= num_data
+        return error_mmdc
     
     def _cal_mddc(self, error, t):
         error_mddc = 0
