@@ -699,28 +699,27 @@ def model_lrcn5():
 def model_lrcn6():
     from keras.layers.recurrent import LSTM
     from keras.layers.wrappers import TimeDistributed
-
+    
     img_shape = (None, config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'])
+        
     img_input = Input(shape=img_shape)
-    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = TimeDistributed(Conv2D( 3, (1, 1), activation='elu'), name='conv2d_1')(lamb)
-    conv_2 = TimeDistributed(Conv2D(32, (3, 3), activation='elu'), name='conv2d_2')(conv_1)
-    conv_3 = TimeDistributed(Conv2D(32, (3, 3), activation='elu'), name='conv2d_3')(conv_2)
-    pool_1 = TimeDistributed(MaxPooling2D(pool_size=(2, 2)), name='maxpool_1')(conv_3)
-    conv_4 = TimeDistributed(Conv2D(64, (3, 3), activation='elu'), name='conv2d_5')(pool_1)
-    conv_5 = TimeDistributed(Conv2D(64, (3, 3), activation='elu'), name='conv2d_6')(conv_4)
-    pool_2 = TimeDistributed(MaxPooling2D(pool_size=(2, 2)), name='maxpool_2')(conv_5)
-    conv_6 = TimeDistributed(Conv2D(128, (3, 3), activation='elu'), name='conv2d_8')(pool_2)
-    conv_7 = TimeDistributed(Conv2D(128, (3, 3), activation='elu'), name='conv2d_last')(conv_6)
-    pool_3 = TimeDistributed(MaxPooling2D(pool_size=(2, 2)), name='maxpool_3')(conv_7)
-    flat = TimeDistributed(Flatten())(pool_3)
-    lstm = LSTM(1000, return_sequences=False, name='lstm')(flat)
-    fc_1 = Dense(512, activation='elu', name='fc_1')(lstm)
-    fc_2 = Dense(64,  activation='elu', name='fc_2')(fc_1)
-    fc_3 = Dense(16,  activation='elu', name='fc_3')(fc_2)
-    fc_last = Dense(1, name='fc_str')(fc_3)
+    lamb      = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1    = TimeDistributed(Conv2D(16, (3, 3), activation='elu'), name='conv_1')(lamb)
+    conv_1_pl = TimeDistributed(MaxPooling2D(pool_size=(4, 4), strides=(2,2)),  name='maxpool_1')(conv_1)
+    conv_2    = TimeDistributed(Conv2D(32, (3, 3), activation='elu'), name='conv_2')(conv_1_pl)
+    conv_2_pl = TimeDistributed(MaxPooling2D(pool_size=(4, 4), strides=(2,2)), name='maxpool_2')(conv_2)
+    conv_3    = TimeDistributed(Conv2D(64, (3, 3), activation='elu'), name='conv_3')(conv_2_pl)
+    conv_4    = TimeDistributed(Conv2D(64, (3, 3), activation='elu'), name='conv_4')(conv_3)
+    conv_5    = TimeDistributed(Conv2D(64, (3, 3), activation='elu'), name='conv2d_last')(conv_4)
+    conv_5_pl = TimeDistributed(MaxPooling2D(pool_size=(2, 2)), name='maxpool_3')(conv_5)
+    
+    flat = TimeDistributed(Flatten())(conv_5_pl)
+    fc_1 = TimeDistributed(Dense(512, activation='elu'), name='fc_1')(flat)
+    fc_2 = TimeDistributed(Dense(512, activation='elu'), name='fc_2')(fc_1)
+    lstm = LSTM(64, return_sequences=False, name='lstm')(fc_2)
+    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(lstm)
     
     model = Model(inputs=img_input, output=fc_last)
     
