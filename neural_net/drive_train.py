@@ -167,6 +167,7 @@ class DriveTrain:
 
         def _prepare_batch_samples(batch_samples, data=None):
             images = []
+            image_names = []
             velocities = []
             measurements = []
             if data is None:
@@ -193,7 +194,12 @@ class DriveTrain:
                     cv2.imwrite('/mnt/Data/oscar/train_data/'+image_name, image)
                 
                 images.append(image)
-                
+                image_name = image_name.split('.')[0]
+                image_name_split = image_name.split('-')
+                name = ""
+                for i in range(len(image_name_split)):
+                    name += image_name_split[i]
+                image_names.append(float(name))
                 velocities.append(velocity)
 
                 # if no brake data in collected data, brake values are dummy
@@ -220,7 +226,7 @@ class DriveTrain:
                     else:
                         measurements.append(steering_angle*config['steering_angle_scale'])
 
-            return images, velocities, measurements
+            return images, velocities, measurements, image_names
 
         def _prepare_lstm_batch_samples(batch_samples, data=None):
             images = []
@@ -290,7 +296,6 @@ class DriveTrain:
                         elif config['num_inputs'] == 2:
                             X_train_vel = np.array(velocities).reshape(-1,config['lstm_timestep'],1)
                             X_train = [X_train, X_train_vel]
-                        
                         y_train = np.array(measurements)
                         yield X_train, y_train
                         
@@ -310,16 +315,21 @@ class DriveTrain:
                     for offset in range(0, num_samples, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
                         
-                        images, velocities, measurements = _prepare_batch_samples(batch_samples, data)
+                        images, velocities, measurements, image_names = _prepare_batch_samples(batch_samples, data)
                         X_train = np.array(images)
                         y_train = np.array(measurements)
+                        y_names = np.array(image_names)
                         # y_train = y_train.reshape(-1, 1)
                         
                         if config['num_inputs'] == 2:
                             X_train_vel = np.array(velocities).reshape(-1, 1)
                             X_train = [X_train, X_train_vel]
+                        
+                        if config['loss_mdc'] is True:
+                            X_train = X_train
+                            # print(y_train.shape)
                         # print(y_train)
-                        yield sklearn.utils.shuffle(X_train, y_train)
+                        yield sklearn.utils.shuffle(X_train, y_names)
         if config['data_split'] is True:
             self.train_generator = _generator(self.train_data)
             self.valid_generator = _generator(self.valid_data)       
@@ -360,7 +370,6 @@ class DriveTrain:
         logdir = config['tensorboard_log_dir'] + datetime.now().strftime("%Y%m%d-%H%M%S")
         tensorboard = TensorBoard(log_dir=logdir)
         callbacks.append(tensorboard)
-
         self.train_hist = self.net_model.model.fit_generator(
                 self.train_generator, 
                 steps_per_epoch=self.num_train_samples//config['batch_size'], 

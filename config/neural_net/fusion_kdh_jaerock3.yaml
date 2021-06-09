@@ -10,7 +10,7 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 14       # refer to neural_net/const.py
+network_type: 1       # refer to neural_net/const.py
 gpus: 1
 
 weight_load: False
@@ -24,14 +24,14 @@ cnn_lr:  0.0001          # default of Adam is 0.001
 
 decay: 0.000000001        #lstm = 1e-9, cnn = 1e-7 0.00000001
 # normalize data
-data_split: False
+data_split: True
 normalize_data: False
 samples_per_bin: 4000
 # training 
 # data_shuffle: True
 validation_rate: 0.3
 num_epochs: 2000
-batch_size: 16
+batch_size: 1
 num_inputs: 1     # input: image, velocity
 num_outputs: 1    # output: steering_angle, throttle
 early_stopping_patience: 50
@@ -52,3 +52,7 @@ input_image_depth : 3
 steering_angle_scale: 5.0
 # - steering wheel jitter tolerance
 steering_angle_jitter_tolerance: 0.01
+
+
+# mdc loss
+loss_mdc : True

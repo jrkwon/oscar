@@ -10,6 +10,7 @@ History:
 # -*- coding: utf-8 -*-
 """
 
+from __future__ import print_function
 from keras.models import Sequential, Model
 from keras.layers import Lambda, Dropout, Flatten, Dense, Activation, concatenate
 from keras.layers import Conv2D, Convolution2D, MaxPooling2D, BatchNormalization, Input
@@ -17,7 +18,7 @@ from keras import losses, optimizers
 import keras.backend as K
 import tensorflow as tf
 
-import os
+import os, sys
 import const
 from config import Config
 
@@ -851,26 +852,29 @@ class NetModel:
     #     if (diff < config['steering_angle_tolerance']) is True:
     #         diff = 0
     #     return K.mean(K.square(diff))
+    def _mean_squared_error(self, y_true, y_pred):
+        # y_true = tf.Print(y_true, [y_true], "Inside loss function")
+        y_pred = tf.Print(y_pred, [y_pred], "Inside loss function")
+        diff = K.abs(y_pred - y_pred)
+        print(y_pred[0])
+        return K.mean(K.square(diff))
+    
 
     ###########################################################################
     #
+    
     def _compile(self):
         if config['lstm'] is True:
             learning_rate = config['lstm_lr']
         else:
             learning_rate = config['cnn_lr']
         decay = config['decay']
-        self.model.compile(loss=losses.mean_squared_error,
+        # self.model.compile(loss=losses.mean_squared_error,
+        #             optimizer=optimizers.Adam(lr=learning_rate, decay=decay), 
+        #             metrics=['accuracy'])
+        self.model.compile(loss=self._mean_squared_error,
                     optimizer=optimizers.Adam(lr=learning_rate, decay=decay), 
                     metrics=['accuracy'])
-        # if config['steering_angle_tolerance'] == 0.0:
-        #     self.model.compile(loss=losses.mean_squared_error,
-        #               optimizer=optimizers.Adam(),
-        #               metrics=['accuracy'])
-        # else:
-        #     self.model.compile(loss=losses.mean_squared_error,
-        #               optimizer=optimizers.Adam(),
-        #               metrics=['accuracy', self._mean_squared_error])
 
 
     ###########################################################################
