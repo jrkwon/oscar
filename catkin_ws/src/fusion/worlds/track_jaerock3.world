@@ -84,10 +84,10 @@
           <material>
             <script>
               <uri>file://media/materials/scripts/ds_sim.material</uri>
-              <name>DSSim/GrassBackground</name>
+              <!-- <name>DSSim/GrassBackground</name> -->
               <!-- <name>DSSim/SandBackground</name> -->
               <!-- <name>DSSim/GravelBackground</name> -->
-              <!-- <name>DSSim/BlackBackground</name> -->
+              <name>DSSim/BlackBackground</name>
 
               <!-- <name>DSSim/OceanBackground</name> -->
             </script>

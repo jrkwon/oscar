@@ -79,7 +79,7 @@ class DriveTrain:
         if config['data_split'] is True:
             self.data.read()
             # put velocities regardless we use them or not for simplicity.
-            samples = list(zip(self.data.image_names, self.data.velocities, self.data.measurements))
+            samples = list(zip(self.data.image_names, self.data.velocities, self.data.measurements , self.data.lanecenter_xyd, self.data.positions_xyz))
             if config['lstm'] is True:
                 self.train_data, self.valid_data = self._prepare_lstm_data(samples)
             else:    
@@ -89,8 +89,8 @@ class DriveTrain:
             self.t_data.read()
             self.v_data.read()
             # put velocities regardless we use them or not for simplicity.
-            train_samples = list(zip(self.t_data.image_names, self.t_data.velocities, self.t_data.measurements))
-            valid_samples = list(zip(self.v_data.image_names, self.v_data.velocities, self.v_data.measurements))
+            train_samples = list(zip(self.t_data.image_names, self.t_data.velocities, self.t_data.measurements, self.t_data.lanecenter_xyd, self.t_data.positions_xyz))
+            valid_samples = list(zip(self.v_data.image_names, self.v_data.velocities, self.v_data.measurements, self.v_data.lanecenter_xyd, self.v_data.positions_xyz))
             if config['lstm'] is True:
                 self.train_data,_ = self._prepare_lstm_data(train_samples)
                 self.valid_data,_ = self._prepare_lstm_data(valid_samples)
@@ -170,13 +170,14 @@ class DriveTrain:
             image_names = []
             velocities = []
             measurements = []
+            loss_center = []
             if data is None:
                 data_path = self.data_path
             elif data == 'train':
                 data_path = self.t_data_path
             elif data == 'valid':
                 data_path = self.v_data_path
-            for image_name, velocity, measurement in batch_samples:
+            for image_name, velocity, measurement, lanecenter, car_pose in batch_samples:
                 image_path = data_path + '/' + image_name
                 # print(image_path)
                 image = cv2.imread(image_path)
@@ -194,24 +195,26 @@ class DriveTrain:
                     cv2.imwrite('/mnt/Data/oscar/train_data/'+image_name, image)
                 
                 images.append(image)
-                image_name = image_name.split('.')[0]
-                image_name_split = image_name.split('-')
-                name = ""
-                for i in range(len(image_name_split)):
-                    name += image_name_split[i]
-                image_names.append(float(name))
+                # image_name = image_name.split('.')[0]
+                # image_name_split = image_name.split('-')
+                # name = ""
+                # for i in range(len(image_name_split)):
+                #     name += image_name_split[i]
+                # image_names.append(float(name))
                 velocities.append(velocity)
 
                 # if no brake data in collected data, brake values are dummy
                 steering_angle, throttle, brake = measurement
                 
-                if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
-                    steering_angle = 0
+                if config['loss_mdc'] is False:
+                    if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
+                        steering_angle = 0
 
                 if config['num_outputs'] == 2:                
                     measurements.append((steering_angle*config['steering_angle_scale'], throttle))
                 else:
                     measurements.append(steering_angle*config['steering_angle_scale'])
+                    loss_center.append((steering_angle*config['steering_angle_scale'], lanecenter[0], lanecenter[1], velocity, car_pose[0], car_pose[1], lanecenter[2]))
                     # print("1 : ", steering_angle)
                 
                 # cv2.imwrite('/home/kdh/oscar/oscar/e2e_fusion_data/test/aug/'+image_name, image)
@@ -226,7 +229,7 @@ class DriveTrain:
                     else:
                         measurements.append(steering_angle*config['steering_angle_scale'])
 
-            return images, velocities, measurements, image_names
+            return images, velocities, measurements, loss_center
 
         def _prepare_lstm_batch_samples(batch_samples, data=None):
             images = []
@@ -268,7 +271,7 @@ class DriveTrain:
                         
                         if abs(steering_angle) < config['steering_angle_jitter_tolerance']:
                             steering_angle = 0
-                            
+                        
                         if config['num_outputs'] == 2:                
                             measurements_timestep.append((steering_angle*config['steering_angle_scale'], throttle))
                         else:
@@ -315,21 +318,26 @@ class DriveTrain:
                     for offset in range(0, num_samples, batch_size):
                         batch_samples = samples[offset:offset+batch_size]
                         
-                        images, velocities, measurements, image_names = _prepare_batch_samples(batch_samples, data)
+                        images, velocities, measurements, loss_center = _prepare_batch_samples(batch_samples, data)
                         X_train = np.array(images)
                         y_train = np.array(measurements)
-                        y_names = np.array(image_names)
+                        loss_center = np.array(loss_center)
                         # y_train = y_train.reshape(-1, 1)
-                        
+                        # np.set_printoptions(precision=8)
+                        # print(loss_center)
+                        # print(loss_center.shape)
                         if config['num_inputs'] == 2:
                             X_train_vel = np.array(velocities).reshape(-1, 1)
                             X_train = [X_train, X_train_vel]
                         
                         if config['loss_mdc'] is True:
-                            X_train = X_train
-                            # print(y_train.shape)
+                            # X_train = X_train
+                            loss_center = loss_center.reshape(config['batch_size'], config['num_outputs'])
+                            # print("y : ", loss_center)
+                            # print(loss_center.shape)
                         # print(y_train)
-                        yield sklearn.utils.shuffle(X_train, y_names)
+                        yield sklearn.utils.shuffle(X_train, loss_center)
+                        
         if config['data_split'] is True:
             self.train_generator = _generator(self.train_data)
             self.valid_generator = _generator(self.valid_data)       
@@ -378,7 +386,7 @@ class DriveTrain:
                 validation_steps=self.num_valid_samples//config['batch_size'],
                 verbose=1, callbacks=callbacks, 
                 use_multiprocessing=True,
-                workers=1)
+                workers=14)
         
     ###########################################################################
     #

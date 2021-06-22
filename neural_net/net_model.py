@@ -11,12 +11,15 @@ History:
 """
 
 from __future__ import print_function
+
+from numpy.core.numeric import NaN
 from keras.models import Sequential, Model
 from keras.layers import Lambda, Dropout, Flatten, Dense, Activation, concatenate
 from keras.layers import Conv2D, Convolution2D, MaxPooling2D, BatchNormalization, Input
 from keras import losses, optimizers
 import keras.backend as K
 import tensorflow as tf
+import numpy as np
 
 import os, sys
 import const
@@ -852,12 +855,38 @@ class NetModel:
     #     if (diff < config['steering_angle_tolerance']) is True:
     #         diff = 0
     #     return K.mean(K.square(diff))
+    
     def _mean_squared_error(self, y_true, y_pred):
-        # y_true = tf.Print(y_true, [y_true], "Inside loss function")
-        y_pred = tf.Print(y_pred, [y_pred], "Inside loss function")
-        diff = K.abs(y_pred - y_pred)
-        print(y_pred[0])
-        return K.mean(K.square(diff))
+        # samples = list(self.data.image_names)
+        # y_true = tf.Print(y_true, [y_true[0]], "Inside y_true ")
+        # y_pred = tf.Print(y_pred, [y_pred[0]], "Inside y_pred ")
+        
+        gt_str = 450 * y_true[0][0] / config['steering_angle_scale']
+        pred_str = 450 * y_pred[0][0] / config['steering_angle_scale']
+        str_error = pred_str - gt_str
+        # lanecenter_x = y_true[0][1]
+        # lanecenter_y = y_true[0][2]
+        
+        # vel = y_true[0][3]
+        # t = 1/30
+        d = 0.5
+        # gt_x = y_true[0][4]
+        # gt_y = y_true[0][5]
+        
+        gt_error = y_true[0][6] # error > 0 right
+        # i = gt_error/abs(gt_error)
+        # dev_error = 0
+        dev_error = (gt_error + d*K.sin(str_error * 0.0174533)) / 450.0
+            
+        diff = y_true[0][0] - y_pred[0][0]
+        # y_true = tf.Print(y_true, [gt_x], "gt_x")
+        # y_true = tf.Print(y_true, [i], "y_true")
+        # y_pred = tf.Print(y_pred, [y_pred[0][0]], "y_pred")
+        # diff = tf.Print(diff, [diff], "diff")
+        # diff = tf.Print(diff, [K.square(diff)], "diff+dev")
+        
+        # print(y_pred[0])
+        return K.mean(K.square(diff)) + K.mean(K.square(dev_error))
     
 
     ###########################################################################
@@ -869,12 +898,14 @@ class NetModel:
         else:
             learning_rate = config['cnn_lr']
         decay = config['decay']
-        # self.model.compile(loss=losses.mean_squared_error,
-        #             optimizer=optimizers.Adam(lr=learning_rate, decay=decay), 
-        #             metrics=['accuracy'])
-        self.model.compile(loss=self._mean_squared_error,
-                    optimizer=optimizers.Adam(lr=learning_rate, decay=decay), 
-                    metrics=['accuracy'])
+        if config['loss_mdc']:
+            self.model.compile(loss=self._mean_squared_error,
+                        optimizer=optimizers.Adam(lr=learning_rate, decay=decay), 
+                        metrics=[self._mean_squared_error])
+        else:
+            self.model.compile(loss=losses.mean_squared_error,
+                        optimizer=optimizers.Adam(lr=learning_rate, decay=decay), 
+                        metrics=['accuracy'])
 
 
     ###########################################################################
@@ -915,4 +946,3 @@ class NetModel:
     # show summary
     def summary(self):
         self.model.summary()
-
