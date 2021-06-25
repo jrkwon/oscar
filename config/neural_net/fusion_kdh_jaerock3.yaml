@@ -10,12 +10,12 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 14       # refer to neural_net/const.py
-gpus: 1
+network_type: 25       # refer to neural_net/const.py
+gpus: 3
 
 weight_load: False
 
-lstm: False
+lstm: True
 lstm_timestep: 5
 lstm_dataterm: 1
 lstm_lr: 0.0001        # 
