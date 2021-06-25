@@ -88,7 +88,7 @@ def model_jaerock_vel():
     fc_4 = Dense(10, name='fc_4')(fc_3)
     fc_last = Dense(2, name='fc_str')(fc_4)
     
-    model = Model(inputs=[img_input, vel_input], output=fc_last)
+    model = Model(inputs=[img_input, vel_input], outputs=fc_last)
 
     return model
 
@@ -131,7 +131,7 @@ def model_donghyun(): #jaerock과 동일하지만 필터사이즈를 초반에�
     fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
     fc_last = Dense(config['num_outputs'], name='fc_str')(fc_4)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
 
     return model
     
@@ -155,7 +155,7 @@ def model_donghyun2(): #donghyun과 동일하지만 큰 필터개수를 더 많�
     fc_4 = Dense(10,   activation='elu', name='fc_4')(fc_3)
     fc_last = Dense(1, name='fc_str')(fc_4)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
 
     return model
 
@@ -183,7 +183,7 @@ def model_donghyun3():
     fc_2 = Dense(2048, activation='elu', name='fc_2')(fc_1)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
     
     return model
 
@@ -211,7 +211,7 @@ def model_donghyun4():
     fc_2 = Dense(2048, activation='elu', name='fc_2')(fc_1)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
     
     return model
 
@@ -238,7 +238,7 @@ def model_donghyun5():
     fc_2 = Dense(512, activation='elu', name='fc_2')(fc_1)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
     
     return model
 
@@ -272,7 +272,7 @@ def model_donghyun6(): # resnet 처럼
     fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(1, name='fc_str')(fc_3)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
 
     return model
 
@@ -306,7 +306,7 @@ def model_donghyun7(): # resnet 처럼
     fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(1, name='fc_str')(fc_3)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
 
     return model
 
@@ -340,7 +340,7 @@ def model_donghyun8():
     fc_3 = Dense(16,  activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(1, name='fc_str')(fc_3)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
 
     return model
 
@@ -373,7 +373,7 @@ def model_donghyun9():
     fc_2 = Dense(4096, activation='elu', name='fc_2')(fc_1)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
     
     return model
 
@@ -405,7 +405,7 @@ def model_donghyun10():
     # fc_2 = Dense(512, activation='elu', name='fc_2')(fc_1)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(flat)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
     
     return model
 
@@ -433,7 +433,7 @@ def model_sap():
     fc_3 = Dense(16,  activation='elu', name='fc_3')(fc_2)
     fc_last = Dense(1, name='fc_str')(fc_3)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
 
     return model
 
@@ -457,7 +457,7 @@ def model_dave2sky():
     fc_1 = Dense(32, name='fc_1')(flat)
     fc_last = Dense(config['num_outputs'], name='fc_str')(fc_1)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
 
     return model
 
@@ -491,7 +491,7 @@ def model_vgg16():
     fc_2 = Dense(4096, activation='relu', name='fc_2')(fc_1)
     fc_last = Dense(1, activation='linear', name='fc_str')(fc_2)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
     
     return model
 
@@ -520,7 +520,7 @@ def model_alexnet():
     fc_2 = Dense(4096, activation='relu', name='fc_2')(fc_1)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
     
     return model
     
@@ -692,7 +692,7 @@ def model_lrcn5():
     fc_2 = Dense(512, activation='elu', name='fc_2')(fc_1)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
     
     return model
 
@@ -721,7 +721,7 @@ def model_lrcn6():
     lstm = LSTM(64, return_sequences=False, name='lstm')(fc_2)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(lstm)
     
-    model = Model(inputs=img_input, output=fc_last)
+    model = Model(inputs=img_input, outputs=fc_last)
     
     return model
 
