@@ -10,12 +10,12 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 25       # refer to neural_net/const.py
+network_type: 19       # refer to neural_net/const.py
 gpus: 3
 
 weight_load: False
 
-lstm: True
+lstm: False
 lstm_timestep: 5
 lstm_dataterm: 1
 lstm_lr: 0.0001        # 
@@ -25,7 +25,7 @@ cnn_lr:  0.0001          # default of Adam is 0.001
 decay: 0.000000001        #lstm = 1e-9, cnn = 1e-7 0.00000001
 # normalize data
 data_split: False
-normalize_data: False
+normalize_data: True
 samples_per_bin: 4000
 # training 
 # data_shuffle: True

@@ -369,7 +369,7 @@ class DriveTrain:
                 validation_steps=self.num_valid_samples//config['batch_size'],
                 verbose=1, callbacks=callbacks, 
                 use_multiprocessing=True,
-                workers=16)
+                workers=48)
         
     ###########################################################################
     #
