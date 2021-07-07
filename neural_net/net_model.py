@@ -345,32 +345,28 @@ def model_donghyun8():
     return model
 
 def model_donghyun9():    
-    ######img model#######
+    from keras.layers import ELU
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
         
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    conv_1 = Conv2D(16, (3, 3), activation='elu', name='conv_1')(lamb)
+    conv_1 = Conv2D(24, (3, 3), activation='elu', name='conv_1')(lamb)
     conv_1_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2),  name='maxpool_1')(conv_1)
     
-    conv_2 = Conv2D(32, (3, 3), activation='elu', name='conv_2')(conv_1_pl)
+    conv_2 = Conv2D(36, (3, 3), activation='elu', name='conv_2')(conv_1_pl)
     conv_2_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2), name='maxpool_2')(conv_2)
     
-    conv_3 = Conv2D(64, (3, 3), activation='elu', name='conv_3')(conv_2_pl)
-    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv_4')(conv_3)
-    conv_5 = Conv2D(64, (3, 3), activation='elu', name='conv_5')(conv_4)
-    conv_5_pl = MaxPooling2D(pool_size=(2, 2), name='maxpool_3')(conv_5)
+    conv_3 = Conv2D(48, (3, 3), activation='elu', name='conv_3')(conv_2_pl)
+    conv_3_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2), name='maxpool_2')(conv_2)
+
+    conv_4 = Conv2D(64, (3, 3), activation='elu', name='conv2d_last')(conv_3)
+    conv_4_pl = MaxPooling2D(pool_size=(4, 4), strides=(2,2), name='maxpool_3')(conv_4)
     
-    conv_6 = Conv2D(48, (1, 1), activation='elu', name='conv_6')(conv_5_pl)
-    conv_7 = Conv2D(32, (1, 1), activation='elu', name='conv_7')(conv_6)
-    conv_8 = Conv2D(16, (1, 1), activation='elu', name='conv_8')(conv_7)
-    conv_9 = Conv2D(1, (1, 1), activation='elu', name='conv2d_last')(conv_8)
-    
-    flat = Flatten()(conv_9)
-    fc_1 = Dense(4096, activation='elu', name='fc_1')(flat)
-    fc_2 = Dense(4096, activation='elu', name='fc_2')(fc_1)
+    flat = Flatten()(conv_4_pl)
+    fc_1 = Dense(100, activation='elu', name='fc_1')(flat)
+    fc_2 = Dense(50, activation='elu', name='fc_2')(fc_1)
     fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(fc_2)
     
     model = Model(inputs=img_input, output=fc_last)
@@ -600,12 +596,10 @@ def model_lrcn2():
     conv_4    = TimeDistributed(Convolution2D(64, (3, 3), activation='relu'), name='conv_4')(conv_3)
     conv_5    = TimeDistributed(Convolution2D(64, (3, 3), activation='relu'), name='conv2d_last')(conv_4)
     flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
-    lstm      = LSTM(  10, return_sequences=False, dropout=0.2, name='lstm')(flat)
+    lstm      = LSTM( 100, return_sequences=False, name='lstm')(flat)
     fc_1      = Dense(100, activation='relu', name='fc_1')(lstm)
-    drop_1    = Dropout(0.2, name='drop_1')(fc_1)
-    fc_2      = Dense( 50, activation='relu', name='fc_2')(drop_1)
-    drop_2    = Dropout(0.2, name='drop_2')(fc_2)
-    fc_3      = Dense( 10, activation='relu', name='fc_3')(drop_2)
+    fc_2      = Dense( 50, activation='relu', name='fc_2')(fc_1)
+    fc_3      = Dense( 10, activation='relu', name='fc_3')(fc_2)
     fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_3)
 
     model = Model(inputs=input_img, outputs=fc_last)
