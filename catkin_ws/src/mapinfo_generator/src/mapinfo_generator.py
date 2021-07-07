@@ -316,6 +316,7 @@ class MapInfoGenerator:
         self.car_pose = self.data.positions_xyz
         self.car_steering = self.data.measurements
         self.car_velocities = self.data.velocities_xyz
+        self.car_velocity = self.data.velocities
         self.car_times = self.data.time_stamps
         self.num_car_pose = len(self.car_pose)
         
@@ -330,21 +331,26 @@ class MapInfoGenerator:
             # print('',i,'st')
             # print(self.car_pose)
             self._cal_roadformula([self.car_pose[i][0], self.car_pose[i][1]])
-        print('mdc  : '  +str(format(self._cal_mdc(self.total_error), ".9f")))
         print('mmdc : '  +str(format(self._cal_mmdc(self.total_error), ".9f")))
-        print('mce  : '  +str(format(self._cal_mce(self.car_steering, self.car_times), ".9f")))
         print('mddc : ' +str(format(self._cal_mddc(self.total_error_nabs, self.car_times), ".9f")))
         print('emdc : ' +str(format(self._cal_emdc(self.total_error, self.car_times), ".9f")))
+        print('mdc  : '  +str(format(self._cal_mdc(self.total_error), ".9f")))
+        print('mce  : '  +str(format(self._cal_mce(self.car_steering, self.car_times), ".9f")))
         print('var : ' +str(format(self._cal_var(self.total_error), ".9f")))
+        print('dist : ' +str(format(self._cal_dist(self.car_pose), ".9f")))
+        print('maxvel : ' +str(format(self._cal_maxvel(self.car_velocity), ".9f")))
+        print('avrvel : ' +str(format(self._cal_avrvel(self.car_velocity), ".9f")))
         self._cal_ggdiagram(self.car_velocities, self.car_times)
         error_txt=[]
-        error_txt.append('mdc  , ' +str(format(self._cal_mdc(self.total_error), ".9f")))
         error_txt.append('mmdc , ' +str(format(self._cal_mmdc(self.total_error), ".9f")))
-        error_txt.append('mce  , ' +str(format(self._cal_mce(self.car_steering, self.car_times), ".9f")))
         error_txt.append('mddc , ' +str(format(self._cal_mddc(self.total_error_nabs, self.car_times), ".9f")))
         error_txt.append('emdc , ' +str(format(self._cal_emdc(self.total_error, self.car_times), ".9f")))
+        error_txt.append('mdc  , ' +str(format(self._cal_mdc(self.total_error), ".9f")))
+        error_txt.append('mce  , ' +str(format(self._cal_mce(self.car_steering, self.car_times), ".9f")))
         error_txt.append('var  , ' +str(format(self._cal_var(self.total_error), ".9f")))
-        
+        error_txt.append('dist : ' +str(format(self._cal_dist(self.car_pose), ".9f")))
+        error_txt.append('maxvel : ' +str(format(self._cal_maxvel(self.car_velocity), ".9f")))
+        error_txt.append('avrvel : ' +str(format(self._cal_avrvel(self.car_velocity), ".9f")))
         # self._build_csv(self.csv_path[:-len(self.csv_path.split('/')[-1])], self.total_error_nabs)
         self._build_csv(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
         self._build_txt(self.csv_path[:-len(self.csv_path.split('/')[-1])], error_txt)
@@ -513,6 +519,33 @@ class MapInfoGenerator:
         variance = np.array(error)
         variance = np.var(variance)
         return variance
+    
+    def _cal_dist(self, dist):
+        total_dist = 0
+        num_data = len(dist) - 1
+        for i in range(num_data):
+            distance_x = float(dist[i+1][0]) - float(dist[i][0])
+            distance_y = float(dist[i+1][1]) - float(dist[i][1])
+            distance_z = float(dist[i+1][2]) - float(dist[i][2])
+            
+            total_dist += math.sqrt(distance_x**2 + distance_y**2 + distance_z**2)
+            
+        return total_dist/4
+    
+    def _cal_avrvel(self, vel):
+        avr_vel = 0
+        num_data = len(vel)
+        for i in range(num_data):
+            avr_vel += vel[i]
+        avr_vel /= num_data
+        return avr_vel
+    
+    def _cal_maxvel(self, vel):
+        max_vel = 0
+        num_data = len(vel)
+        for i in range(num_data):
+            max_vel = max_vel if max_vel > vel[i] else vel[i]
+        return max_vel
     
     def _cal_emdc(self, error, t):
         mmdc = self._cal_mmdc(error)
