@@ -10,8 +10,8 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 19       # refer to neural_net/const.py
-gpus: 3
+network_type: 33       # refer to neural_net/const.py
+gpus: 1
 
 weight_load: False
 
@@ -43,8 +43,8 @@ data_aug_flip: False
 data_aug_bright: False
 data_aug_shift: False
 # input image size to the neural network
-input_image_width : 160 #160 #270 # 160 # 512
-input_image_height: 160 #160 #90  # 160 # 96
+input_image_width : 224 #160 #270 # 160 # 512
+input_image_height: 224 #160 #90  # 160 # 96
 input_image_depth : 3
 
 # steering data preprocessing

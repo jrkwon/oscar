@@ -40,6 +40,8 @@ def model_list():
         model = net_model.model_vgg16()
     elif config['network_type'] == const.NET_TYPE_ALEXNET:
         model = net_model.model_alexnet()
+    elif config['network_type'] == const.NET_TYPE_RESNET:
+        model = net_model.model_resnet18()
     elif config['network_type'] == const.NET_TYPE_DONGHYUN:
         model = net_model.model_donghyun()
     elif config['network_type'] == const.NET_TYPE_DONGHYUN2:

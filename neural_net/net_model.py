@@ -519,6 +519,64 @@ def model_alexnet():
     model = Model(inputs=img_input, outputs=fc_last)
     
     return model
+
+
+def model_resnet18(): 
+    from keras.layers import GlobalAveragePooling2D, AveragePooling2D, Add
+    img_shape = (config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+        
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    #Block A
+    conv_1 = Conv2D(64, (7, 7), strides=(2,2), padding="same", activation='relu', name='conv_1')(lamb)
+    conv_1_pl = MaxPooling2D(pool_size=(3, 3), padding="same", strides=(2, 2), name='maxpool_1')(conv_1)
+    #Block B
+    conv_2_1_1 = Conv2D(64, (3, 3), padding="same", activation='relu', name='conv_2_1_1')(conv_1_pl)
+    conv_2_1_2 = Conv2D(64, (3, 3), padding="same", activation='relu', name='conv_2_1_2')(conv_2_1_1)
+    conc_1 = Add()([conv_1_pl, conv_2_1_2])
+    conv_2_2_1 = Conv2D(64, (3, 3), padding="same", activation='relu', name='conv_2_2_1')(conc_1)
+    conv_2_2_2 = Conv2D(64, (3, 3), padding="same", activation='relu', name='conv_2_2_2')(conv_2_2_1)
+    conc_2 = Add()([conc_1, conv_2_2_2])
+    #Block C
+    conv_3_1_0 = Conv2D(128, (1, 1), strides=(2,2), padding="same", activation='relu', name='conv_3_1_3')(conc_2)
+    conv_3_1_1 = Conv2D(128, (3, 3), padding="same", activation='relu', name='conv_3_1_1')(conv_3_1_0)
+    conv_3_1_2 = Conv2D(128, (3, 3), padding="same", activation='relu', name='conv_3_1_2')(conv_3_1_1)
+    conc_3 = Add()([conv_3_1_0, conv_3_1_2])
+    conv_3_2_1 = Conv2D(128, (3, 3), padding="same", activation='relu', name='conv_3_2_1')(conc_3)
+    conv_3_2_2 = Conv2D(128, (3, 3), padding="same", activation='relu', name='conv_3_2_2')(conv_3_2_1)
+    conc_4 = Add()([conc_3, conv_3_2_2])
+    #Block D
+    conv_4_1_0 = Conv2D(256, (1, 1), strides=(2,2), padding="same", activation='relu', name='conv_4_1_0')(conc_4)
+    conv_4_1_1 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_4_1_1')(conv_4_1_0)
+    conv_4_1_2 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_4_1_2')(conv_4_1_1)
+    conc_5 = Add()([conv_4_1_0, conv_4_1_2])
+    conv_4_2_1 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_4_2_1')(conc_5)
+    conv_4_2_2 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_4_2_2')(conv_4_2_1)
+    conc_6 = Add()([conc_5, conv_4_2_2])
+    #Block E
+    conv_5_1_0 = Conv2D(512, (1, 1), strides=(2,2), padding="same", activation='relu', name='conv_5_1_0')(conc_6)
+    conv_5_1_1 = Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_5_1_1')(conv_5_1_0)
+    conv_5_1_2 = Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_5_1_2')(conv_5_1_1)
+    
+    conc_7 = Add()([conv_5_1_0, conv_5_1_2])
+    
+    conv_5_2_1 = Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_5_2_1')(conc_7)
+    conv_5_2_2 = Conv2D(512, (3, 3), padding="same", activation='relu', name='conv_5_2_2')(conv_5_2_1)
+    
+    conc_8 = Add()([conc_7, conv_5_2_2])
+    
+    # print(conc_8.shape)
+    conv_5_pl = GlobalAveragePooling2D()(conc_8)
+    # print(conv_5_pl.shape)
+
+    # flat = Flatten()(conv_5_pl)
+    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(conv_5_pl)
+    
+    model = Model(inputs=img_input, outputs=fc_last)
+    
+    return model
     
 
 def model_spatiotemporallstm():
@@ -795,6 +853,8 @@ class NetModel:
             self.model = model_vgg16()
         elif config['network_type'] == const.NET_TYPE_ALEXNET:
             self.model = model_alexnet()
+        elif config['network_type'] == const.NET_TYPE_RESNET:
+            self.model = model_resnet18()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN:
             self.model = model_donghyun()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN2:
