@@ -467,48 +467,37 @@ def model_donghyun11():
 
 
 def model_donghyun12():
-    from keras.layers import GlobalAveragePooling2D, AveragePooling2D, Concatenate
+    from keras.layers import add, Concatenate, ELU, UpSampling2D
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
-        
+    
+    ######img model#######
     img_input = Input(shape=img_shape)
     lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
-    #Block A
-    conv_1 = Conv2D(64, (8, 8), strides=(2,2), padding="same", activation='relu', name='conv_1')(lamb)
-    conv_1_pl = MaxPooling2D(pool_size=(3, 3), padding="same", strides=(2, 2), name='maxpool_1')(conv_1)
-    #Block B
-    conv_2_1_1 = Conv2D(64, (6, 6), padding="same", activation='relu', name='conv_2_1_1')(conv_1_pl)
-    conv_2_1_2 = Conv2D(64, (6, 6), padding="same", activation='relu', name='conv_2_1_2')(conv_2_1_1)
-    conc_1 = Concatenate(axis=3)([conv_1_pl, conv_2_1_2])
-    conv_2_2_1 = Conv2D(64, (6, 6), padding="same", activation='relu', name='conv_2_2_1')(conc_1)
-    conv_2_2_2 = Conv2D(64, (6, 6), padding="same", activation='relu', name='conv_2_2_2')(conv_2_2_1)
-    conc_2 = Concatenate(axis=3)([conc_1, conv_2_2_2])
-    #Block C
-    conv_3_1_0 = Conv2D(128, (1, 1), strides=(2,2), padding="same", activation='relu', name='conv_3_1_3')(conc_2)
-    conv_3_1_1 = Conv2D(128, (5, 5), padding="same", activation='relu', name='conv_3_1_1')(conv_3_1_0)
-    conv_3_1_2 = Conv2D(128, (5, 5), padding="same", activation='relu', name='conv_3_1_2')(conv_3_1_1)
-    conc_3 = Concatenate(axis=3)([conv_3_1_0, conv_3_1_2])
-    conv_3_2_1 = Conv2D(128, (5, 5), padding="same", activation='relu', name='conv_3_2_1')(conc_3)
-    conv_3_2_2 = Conv2D(128, (5, 5), padding="same", activation='relu', name='conv_3_2_2')(conv_3_2_1)
-    conc_4 = Concatenate(axis=3)([conc_3, conv_3_2_2])
-    #Block D
-    conv_4_1_0 = Conv2D(256, (1, 1), strides=(2,2), padding="same", activation='relu', name='conv_4_1_0')(conc_4)
-    conv_4_1_1 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_4_1_1')(conv_4_1_0)
-    conv_4_1_2 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_4_1_2')(conv_4_1_1)
-    conc_5 = Concatenate(axis=3)([conv_4_1_0, conv_4_1_2])
-    conv_4_2_1 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_4_2_1')(conc_5)
-    conv_4_2_2 = Conv2D(256, (3, 3), padding="same", activation='relu', name='conv_4_2_2')(conv_4_2_1)
-    conc_6 = Concatenate(axis=3)([conc_5, conv_4_2_2])
-    # print(conc_8.shape)
-    conv_5_pl = GlobalAveragePooling2D()(conc_6)
-    # print(conv_5_pl.shape)
-
-    # flat = Flatten()(conv_5_pl)
-    fc_last = Dense(config['num_outputs'], activation='linear', name='fc_str')(conv_5_pl)
+    conv_1  = Conv2D(64, (8, 8), strides=(2,2), activation='elu', name='conv_1')(lamb)
+    conv_2  = Conv2D(64, (6, 6), strides=(2,2), activation='elu', name='conv_2')(conv_1)
+    conv_3_1= Conv2D(128, (5, 5), strides=(2,2), padding='same', activation='elu', name='conv_3_1')(conv_2)
+    conv_3_2= Conv2D(128, (3, 3), strides=(2,2), padding='same', activation='elu', name='conv_3_2')(conv_2)
+    conc_1  = Concatenate(axis=3)([conv_3_1, conv_3_2])
+    
+    conv_4_1= Conv2D(256, (5, 5), activation='elu')(conc_1)
+    conv_4_2= Conv2D(256, (3, 3), activation='elu')(conv_3_2)
+    conc_2  = Concatenate(axis=3)([conv_4_1, conv_4_2])
+    
+    conv_5_1= Conv2D(512, (3, 3), activation='elu', name='conv_5_1')(conc_2)
+    conv_5_2= Conv2D(512, (3, 3), activation='elu', name='conv_5_2')(conv_4_2)
+    conc_3  = Concatenate(axis=3)([conv_5_1, conv_5_2])
+    conv_6  = Conv2D(512, (3, 3), activation='elu', name='conv2d_last')(conc_3)
+    
+    flat_1  = Flatten()(conv_6)
+    fc_1 = Dense(1000, activation='elu', name='fc_1')(flat_1)
+    fc_2 = Dense(100,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(50,   activation='elu', name='fc_3')(fc_2)
+    fc_last = Dense(1, name='fc_str')(fc_3)
     
     model = Model(inputs=img_input, outputs=fc_last)
-    
+
     return model
 
 def model_sap():
