@@ -62,6 +62,12 @@ def model_list():
         model = net_model.model_donghyun9()
     elif config['network_type'] == const.NET_TYPE_DONGHYUN10:
         model = net_model.model_donghyun10()
+    elif config['network_type'] == const.NET_TYPE_DONGHYUN11:
+        model = net_model.model_donghyun11()
+    elif config['network_type'] == const.NET_TYPE_DONGHYUN12:
+        model = net_model.model_donghyun12()
+    elif config['network_type'] == const.NET_TYPE_DONGHYUN13:
+        model = net_model.model_donghyun13()
         
     elif config['network_type'] == const.NET_TYPE_LRCN:
         model = net_model.model_lrcn()

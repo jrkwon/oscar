@@ -10,7 +10,7 @@ version: 0.92
 ## neural network 
 
 # network definition
-network_type: 102       # refer to neural_net/const.py
+network_type: 103       # refer to neural_net/const.py
 gpus: 1
 
 weight_load: False
