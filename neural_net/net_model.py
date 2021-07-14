@@ -912,6 +912,42 @@ def model_lrcn6():
     
     return model
 
+def model_lrcn7(): #
+    from keras.layers.recurrent import LSTM
+    from keras.layers.wrappers import TimeDistributed
+    from keras.layers import add, Concatenate, ELU, UpSampling2D
+    img_shape = (None, config['input_image_height'],
+                    config['input_image_width'],
+                    config['input_image_depth'],)
+    
+    ######img model#######
+    img_input = Input(shape=img_shape)
+    lamb = Lambda(lambda x: x/127.5 - 1.0)(img_input)
+    conv_1  = TimeDistributed(Conv2D(64, (8, 8), strides=(2,2), activation='elu'), name='conv_1')(lamb)
+    conv_2  = TimeDistributed(Conv2D(64, (6, 6), strides=(2,2), activation='elu'), name='conv_2')(conv_1)
+    conv_3_1= TimeDistributed(Conv2D(128, (5, 5), strides=(2,2), padding='same', activation='elu'), name='conv_3_1')(conv_2)
+    conv_3_2= TimeDistributed(Conv2D(128, (3, 3), strides=(2,2), padding='same', activation='elu'), name='conv_3_2')(conv_2)
+    conc_1  = Concatenate(axis=4)([conv_3_1, conv_3_2])
+    conv_4_1= TimeDistributed(Conv2D(256, (3, 3), activation='elu'))(conc_1)
+    conv_4_2= TimeDistributed(Conv2D(256, (3, 3), activation='elu'))(conv_3_2)
+    conc_2  = Concatenate(axis=4)([conv_4_1, conv_4_2])
+    conv_5_1= TimeDistributed(Conv2D(512, (3, 3), activation='elu'), name='conv_5_1')(conc_2)
+    conv_5_2= TimeDistributed(Conv2D(512, (3, 3), activation='elu'), name='conv_5_2')(conv_4_2)
+    conc_3  = Concatenate(axis=4)([conv_5_1, conv_5_2])
+    conv_6  = TimeDistributed(Conv2D(512, (3, 3), activation='elu'), name='conv2d_last')(conc_3)
+    
+    flat_1  = TimeDistributed(Flatten())(conv_6)
+    lstm    = LSTM(100, return_sequences=False, name='lstm')(flat_1)
+    fc_1 = Dense(100, activation='elu', name='fc_1')(lstm)
+    fc_2 = Dense(50,  activation='elu', name='fc_2')(fc_1)
+    fc_3 = Dense(10,   activation='elu', name='fc_3')(fc_2)
+    fc_last = Dense(1, name='fc_str')(fc_3)
+    
+    model = Model(inputs=img_input, outputs=fc_last)
+
+    return model
+
+
 def model_cooplrcn():
     from keras.layers.recurrent import LSTM
     from keras.layers.wrappers import TimeDistributed
@@ -1014,6 +1050,8 @@ class NetModel:
             self.model = model_donghyun12()
         elif config['network_type'] == const.NET_TYPE_DONGHYUN13:
             self.model = model_donghyun13()
+        elif config['network_type'] == const.NET_TYPE_DONGHYUN14:
+            self.model = model_donghyun13()
             
         elif config['network_type'] == const.NET_TYPE_LRCN:
             self.model = model_lrcn()
@@ -1028,7 +1066,7 @@ class NetModel:
         elif config['network_type'] == const.NET_TYPE_LRCN6:
             self.model = model_lrcn6()
         elif config['network_type'] == const.NET_TYPE_LRCN7:
-            self.model = model_lrcn6()
+            self.model = model_lrcn7()
         elif config['network_type'] == const.NET_TYPE_SPTEMLSTM:
             self.model = model_spatiotemporallstm()
         elif config['network_type'] == const.NET_TYPE_COOPLRCN:
@@ -1058,7 +1096,7 @@ class NetModel:
             learning_rate = config['cnn_lr']
         decay = config['decay']
         self.model.compile(loss=losses.mean_squared_error,
-                    optimizer=optimizers.Adam(lr=learning_rate, decay=decay), 
+                    optimizer=optimizers.Adam(lr=learning_rate, decay=decay, clipvalue=1), 
                     metrics=['accuracy'])
         # if config['steering_angle_tolerance'] == 0.0:
         #     self.model.compile(loss=losses.mean_squared_error,
