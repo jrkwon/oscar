@@ -12,6 +12,9 @@ if [ -z "$1" ]; then
 elif [ "$1" == "track_test" ]; then
     echo "Starting with $1..."  # modified DataSpeed track
     roslaunch fusion sitl.launch world:=$1 x:=0 y:=0 z:=0.2 R:=0 P:=0 Y:=0
+elif [ "$1" == "track_test_road" ]; then
+    echo "Starting with $1..."  # modified DataSpeed track
+    roslaunch fusion sitl.launch world:=$1 x:=0 y:=0 z:=0.2 R:=0 P:=0 Y:=0
 elif [ "$1" == "track_jaerock3" ]; then
     echo "Starting with $1..."  # modified DataSpeed track
     roslaunch fusion sitl.launch world:=$1 x:=0 y:=0 z:=0.2 R:=0 P:=0 Y:=0
@@ -19,6 +22,7 @@ elif [ "$1" == "track_jaerock3" ]; then
 elif [ "$1" == "track_jaerock3_road" ]; then
     echo "Starting with $1..."  # modified DataSpeed track
     roslaunch fusion sitl.launch world:=$1 x:=0 y:=0 z:=0.2 R:=0 P:=0 Y:=0
+    # python neural_net/map_info/mapinfo_generate.py
     # python neural_net/map_info/mapinfo_generate.py
 elif [ "$1" == "track_jaerock2" ]; then
     echo "Starting with $1..."  # modified DataSpeed track
