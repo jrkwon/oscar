@@ -24,7 +24,7 @@ from config import Config
 config = Config.neural_net
 config_rn = Config.run_neural
 
-def model_ce491():
+def model_pilotnet():
     input_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'])
@@ -92,7 +92,7 @@ def model_jaerock_vel():
 
     return model
 
-def model_jaerock_elu():
+def model_pilotnet_m():
     input_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'])
@@ -187,7 +187,7 @@ def model_donghyun3():
     
     return model
 
-def model_donghyun4(): 
+def model_alexnet_m(): 
     from keras.layers import ELU
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
@@ -215,7 +215,7 @@ def model_donghyun4():
     
     return model
 
-def model_donghyun5(): 
+def model_alexnet_t(): 
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
@@ -242,7 +242,7 @@ def model_donghyun5():
     
     return model
 
-def model_donghyun6(): #
+def model_conjoin_t(): #
     from keras.layers import add, Concatenate, ELU, UpSampling2D
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
@@ -276,7 +276,7 @@ def model_donghyun6(): #
 
     return model
 
-def model_donghyun7(): #
+def model_conjoin(): #
     from keras.layers import add, Concatenate, ELU, UpSampling2D
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
@@ -538,7 +538,7 @@ def model_donghyun13():
 
     return model
 
-def model_sap():
+def model_vs():
     img_shape = (config['input_image_height'],
                     config['input_image_width'],
                     config['input_image_depth'],)
@@ -711,36 +711,6 @@ def model_resnet18():
     
     return model
     
-
-def model_spatiotemporallstm():
-    from keras.layers import ConvLSTM2D, Conv3D, LeakyReLU
-    from keras.layers.wrappers import TimeDistributed
-    
-    img_shape = (3, config['input_image_height'],
-                    config['input_image_width'],
-                    config['input_image_depth'])
-    
-    input_img  = Input(shape=img_shape, name='input_image')
-    lamb       = Lambda(lambda x: x/127.5 - 1.0, name='lamb_img')(input_img)
-    convlstm_1 = ConvLSTM2D(64, 3, activation='relu', border_mode='same', return_sequences=True, name='convlstm_1')(lamb)
-    batch_1    = BatchNormalization()(convlstm_1)
-    convlstm_2 = ConvLSTM2D(32, 3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_2')(batch_1)
-    batch_2    = BatchNormalization()(convlstm_2)
-    convlstm_3 = ConvLSTM2D(16, 3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_3')(batch_2)
-    batch_3    = BatchNormalization()(convlstm_3)
-    convlstm_4 = ConvLSTM2D(8, 3, activation='relu', border_mode='same',return_sequences=True, name='convlstm_4')(batch_3)
-    batch_4    = BatchNormalization()(convlstm_4)
-    conv3d_1   = Conv3D(3, 3, activation='relu', border_mode='same', name='conv3d_last')(batch_4)
-    # batch_5    = BatchNormalization()(conv3d_1)
-    flat       = Flatten(name='flat')(conv3d_1)
-    fc_1       = Dense(512,name='fc_1')(flat)
-    leaky      = LeakyReLU(alpha=0.2)(fc_1)
-    fc_last    = Dense(config['num_outputs'], activation='linear', name='fc_last')(leaky)
-
-    model = Model(inputs=input_img, outputs=fc_last)
-        
-    return model
-
 def model_lrcn():
     from keras.layers.recurrent import LSTM
     from keras.layers.wrappers import TimeDistributed
@@ -770,7 +740,7 @@ def model_lrcn():
     
     return model
 
-def model_lrcn2():
+def model_pilotnet_lstm():
     from keras.layers.recurrent import LSTM
     from keras.layers.wrappers import TimeDistributed
 
@@ -853,7 +823,7 @@ def model_lrcn4():
     
     return model
 
-def model_lrcn5():
+def model_alexnet_t_lstm():
     from keras.layers.recurrent import LSTM
     from keras.layers.wrappers import TimeDistributed
     
@@ -948,40 +918,6 @@ def model_lrcn7(): #
     return model
 
 
-def model_cooplrcn():
-    from keras.layers.recurrent import LSTM
-    from keras.layers.wrappers import TimeDistributed
-
-    # redefine input_shape to add one more dims
-    img_shape = (None, config['input_image_height'],
-                    config['input_image_width'],
-                    config['input_image_depth'])
-    
-    input_img = Input(shape=img_shape, name='input_image')
-    lamb      = TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), name='lamb_img')(input_img)
-    conv_1    = TimeDistributed(Convolution2D(24, (5, 5), activation='relu', strides=(5,4)), name='conv_1')(lamb)
-    print(conv_1.shape)
-    conv_2    = TimeDistributed(Convolution2D(32, (5, 5), activation='relu', strides=(3,2)), name='conv_2')(conv_1)
-    print(conv_2.shape)
-    conv_3    = TimeDistributed(Convolution2D(48, (5, 5), activation='relu', strides=(5,4)), name='conv_3')(conv_2)
-    print(conv_3.shape)
-    conv_4    = TimeDistributed(Convolution2D(64, (5, 5), activation='relu', strides=(1,1)), name='conv_4')(conv_3)
-    print(conv_4.shape)
-    conv_5    = TimeDistributed(Convolution2D(128, (5, 5), activation='relu', strides=(1,2)), name='conv2d_last')(conv_4)
-    print(conv_5.shape)
-    flat      = TimeDistributed(Flatten(), name='flat')(conv_5)
-    lstm_1    = LSTM(64, return_sequences=True, name='lstm_1')(flat)
-    lstm_2    = LSTM(64, return_sequences=True, name='lstm_2')(lstm_1)
-    lstm_3    = LSTM(64, return_sequences=False, name='lstm_3')(lstm_2)
-    fc_1      = Dense(100, activation='relu', name='fc_1')(lstm_3)
-    fc_2      = Dense(50, activation='relu' , name='fc_2')(fc_1)
-    fc_3      = Dense(10, activation='relu', name='fc_3')(fc_2)
-    fc_last   = Dense(config['num_outputs'], activation='linear', name='fc_last')(fc_3)
-
-    model = Model(inputs=input_img, outputs=fc_last)
-    
-    return model
-
 class NetModel:
     def __init__(self, model_path):
         self.model = None
@@ -1004,73 +940,33 @@ class NetModel:
     ###########################################################################
     #
     def _model(self):
-        if config['network_type'] == const.NET_TYPE_JAEROCK:
-            self.model = model_jaerock()
-        elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU:
-            self.model = model_jaerock_elu()
-        elif config['network_type'] == const.NET_TYPE_CE491:
-            self.model = model_ce491()
-        elif config['network_type'] == const.NET_TYPE_JAEROCK_VEL:
-            self.model = model_jaerock_vel()
-        elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU_360:
-            self.model = model_jaerock_elu()
-        elif config['network_type'] == const.NET_TYPE_SAP:
-            self.model = model_sap()
+        if config['network_type'] == const.NET_TYPE_PILOT_M:
+            self.model = model_pilotnet_m()
+        elif config['network_type'] == const.NET_TYPE_PILOT:
+            self.model = model_pilotnet()
+        elif config['network_type'] == const.NET_TYPE_VS:
+            self.model = model_vs()
         elif config['network_type'] == const.NET_TYPE_DAVE2SKY:
             self.model = model_dave2sky()
         elif config['network_type'] == const.NET_TYPE_VGG16:
             self.model = model_vgg16()
-        elif config['network_type'] == const.NET_TYPE_ALEXNET:
+        elif config['network_type'] == const.NET_TYPE_ALEX:
             self.model = model_alexnet()
-        elif config['network_type'] == const.NET_TYPE_RESNET:
+        elif config['network_type'] == const.NET_TYPE_RES:
             self.model = model_resnet18()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN:
-            self.model = model_donghyun()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN2:
-            self.model = model_donghyun2()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN3:
-            self.model = model_donghyun3()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN4:
-            self.model = model_donghyun4()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN5:
-            self.model = model_donghyun5()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN6:
-            self.model = model_donghyun6()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN7:
-            self.model = model_donghyun7()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN8:
-            self.model = model_donghyun8()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN9:
-            self.model = model_donghyun9()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN10:
-            self.model = model_donghyun10()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN11:
-            self.model = model_donghyun11()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN12:
-            self.model = model_donghyun12()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN13:
-            self.model = model_donghyun13()
-        elif config['network_type'] == const.NET_TYPE_DONGHYUN14:
-            self.model = model_donghyun13()
+        elif config['network_type'] == const.NET_TYPE_ALEX_M:
+            self.model = model_alexnet_m()
+        elif config['network_type'] == const.NET_TYPE_ALEX_T:
+            self.model = model_alexnet_t()
+        elif config['network_type'] == const.NET_TYPE_CONJOIN_T:
+            self.model = model_conjoin_t()
+        elif config['network_type'] == const.NET_TYPE_CONJOIN:
+            self.model = model_conjoin()
             
-        elif config['network_type'] == const.NET_TYPE_LRCN:
-            self.model = model_lrcn()
-        elif config['network_type'] == const.NET_TYPE_LRCN2:
-            self.model = model_lrcn2()
-        elif config['network_type'] == const.NET_TYPE_LRCN3:
-            self.model = model_lrcn3()
-        elif config['network_type'] == const.NET_TYPE_LRCN4:
-            self.model = model_lrcn4()
-        elif config['network_type'] == const.NET_TYPE_LRCN5:
-            self.model = model_lrcn5()
-        elif config['network_type'] == const.NET_TYPE_LRCN6:
-            self.model = model_lrcn6()
-        elif config['network_type'] == const.NET_TYPE_LRCN7:
-            self.model = model_lrcn7()
-        elif config['network_type'] == const.NET_TYPE_SPTEMLSTM:
-            self.model = model_spatiotemporallstm()
-        elif config['network_type'] == const.NET_TYPE_COOPLRCN:
-            self.model = model_cooplrcn()
+        elif config['network_type'] == const.NET_TYPE_PILOTwL:
+            self.model = model_pilotnet_lstm()
+        elif config['network_type'] == const.NET_TYPE_ALEXwL_T:
+            self.model = model_alexnet_t_lstm()
         else:
             exit('ERROR: Invalid neural network type.')
 

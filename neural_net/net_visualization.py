@@ -24,23 +24,23 @@ from keras.utils import plot_model as plot_model
 def model_list():
     if config['network_type'] == const.NET_TYPE_JAEROCK:
         model = net_model.model_jaerock()
-    elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU:
-        model = net_model.model_jaerock_elu()
-    elif config['network_type'] == const.NET_TYPE_CE491:
-        model = net_model.model_ce491()
+    elif config['network_type'] == const.NET_TYPE_PILOT_M:
+        model = net_model.model_pilotnet_m()
+    elif config['network_type'] == const.NET_TYPE_PILOT:
+        model = net_model.model_pilotnet()
     elif config['network_type'] == const.NET_TYPE_JAEROCK_VEL:
         model = net_model.model_jaerock_vel()
-    elif config['network_type'] == const.NET_TYPE_JAEROCK_ELU_360:
-        model = net_model.model_jaerock_elu()
-    elif config['network_type'] == const.NET_TYPE_SAP:
-        model = net_model.model_sap()
+    elif config['network_type'] == const.NET_TYPE_PILOT_M_360:
+        model = net_model.model_pilotnet_m()
+    elif config['network_type'] == const.NET_TYPE_VS:
+        model = net_model.model_vs()
     elif config['network_type'] == const.NET_TYPE_DAVE2SKY:
         model = net_model.model_dave2sky()
     elif config['network_type'] == const.NET_TYPE_VGG16:
         model = net_model.model_vgg16()
-    elif config['network_type'] == const.NET_TYPE_ALEXNET:
+    elif config['network_type'] == const.NET_TYPE_ALEX:
         model = net_model.model_alexnet()
-    elif config['network_type'] == const.NET_TYPE_RESNET:
+    elif config['network_type'] == const.NET_TYPE_RES:
         model = net_model.model_resnet18()
     elif config['network_type'] == const.NET_TYPE_DONGHYUN:
         model = net_model.model_donghyun()
@@ -48,14 +48,14 @@ def model_list():
         model = net_model.model_donghyun2()
     elif config['network_type'] == const.NET_TYPE_DONGHYUN3:
         model = net_model.model_donghyun3()
-    elif config['network_type'] == const.NET_TYPE_DONGHYUN4:
-        model = net_model.model_donghyun4()
-    elif config['network_type'] == const.NET_TYPE_DONGHYUN5:
-        model = net_model.model_donghyun5()
-    elif config['network_type'] == const.NET_TYPE_DONGHYUN6:
-        model = net_model.model_donghyun6()
-    elif config['network_type'] == const.NET_TYPE_DONGHYUN7:
-        model = net_model.model_donghyun7()
+    elif config['network_type'] == const.NET_TYPE_ALEX_M:
+        model = net_model.model_alexnet_m()
+    elif config['network_type'] == const.NET_TYPE_ALEX_T:
+        model = net_model.model_alexnet_t()
+    elif config['network_type'] == const.NET_TYPE_CONJOIN_T:
+        model = net_model.model_conjoin_t()
+    elif config['network_type'] == const.NET_TYPE_CONJOIN:
+        model = net_model.model_conjoin()
     elif config['network_type'] == const.NET_TYPE_DONGHYUN8:
         model = net_model.model_donghyun8()
     elif config['network_type'] == const.NET_TYPE_DONGHYUN9:
@@ -71,14 +71,14 @@ def model_list():
         
     elif config['network_type'] == const.NET_TYPE_LRCN:
         model = net_model.model_lrcn()
-    elif config['network_type'] == const.NET_TYPE_LRCN2:
-        model = net_model.model_lrcn2()
+    elif config['network_type'] == const.NET_TYPE_PILOTwL:
+        model = net_model.model_pilotnet_lstm()
     elif config['network_type'] == const.NET_TYPE_LRCN3:
         model = net_model.model_lrcn3()
     elif config['network_type'] == const.NET_TYPE_LRCN4:
         model = net_model.model_lrcn4()
-    elif config['network_type'] == const.NET_TYPE_LRCN5:
-        model = net_model.model_lrcn5()
+    elif config['network_type'] == const.NET_TYPE_ALEXwL_T:
+        model = net_model.model_alexnet_t_lstm()
     elif config['network_type'] == const.NET_TYPE_LRCN6:
         model = net_model.model_lrcn6()
     elif config['network_type'] == const.NET_TYPE_SPTEMLSTM:
