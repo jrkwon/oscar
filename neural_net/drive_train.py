@@ -237,6 +237,9 @@ class DriveTrain:
                 image_names_timestep = []
                 velocities_timestep = []
                 measurements_timestep = []
+                images_aug_timestep = []
+                velocities_aug_timestep = []
+                measurements_aug_timestep = []
                 for j in range(0, config['lstm_timestep']):
                     image_name = batch_samples[i][0][j]
                     image_path = data_path + '/' + image_name
@@ -268,11 +271,23 @@ class DriveTrain:
                         else:
                             measurements_timestep.append(steering_angle*config['steering_angle_scale'])
                 
-                # if data == 'valid':
-                #     print(image_names_timestep)
+                    append, image, steering_angle = _data_augmentation(image, steering_angle)
+                    if append is True:
+                        images_aug_timestep.append(image)
+                        velocities_aug_timestep.append(velocity)
+                        if config['num_outputs'] == 2:                
+                            measurements_aug_timestep.append((steering_angle*config['steering_angle_scale'], throttle))
+                        else:
+                            measurements_aug_timestep.append(steering_angle*config['steering_angle_scale'])
+
                 images.append(images_timestep)
                 velocities.append(velocities_timestep)
                 measurements.append(measurements_timestep)
+                
+                if append is True:
+                    images.append(images_aug_timestep)
+                    velocities.append(velocities_aug_timestep)
+                    measurements.append(measurements_aug_timestep)
                 
             return images, velocities, measurements
         
@@ -294,16 +309,6 @@ class DriveTrain:
                         y_train = np.array(measurements)
                         yield X_train, y_train
                         
-                        # if config['data_aug_bright'] is True: # lstm data augmentation 
-                        #     image_aug = self.data_aug.lstm_brightness(images)
-                        #     X_train = np.array(image_aug).reshape(-1, config['lstm_timestep']
-                        #                                           , config['input_image_height']
-                        #                                           , config['input_image_width']
-                        #                                           , config['input_image_depth'])
-                        #     y_train = np.array(measurements)
-                        #     yield X_train, y_train
-                        
-                        
                 else: 
                     samples = sklearn.utils.shuffle(samples)
 
@@ -313,12 +318,11 @@ class DriveTrain:
                         images, velocities, measurements = _prepare_batch_samples(batch_samples, data)
                         X_train = np.array(images)
                         y_train = np.array(measurements)
-                        # y_train = y_train.reshape(-1, 1)
                         
                         if config['num_inputs'] == 2:
                             X_train_vel = np.array(velocities).reshape(-1, 1)
                             X_train = [X_train, X_train_vel]
-                        # print(y_train)
+                            
                         yield sklearn.utils.shuffle(X_train, y_train)
         if config['data_split'] is True:
             self.train_generator = _generator(self.train_data)
