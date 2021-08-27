@@ -994,14 +994,6 @@ class NetModel:
         self.model.compile(loss=losses.mean_squared_error,
                     optimizer=optimizers.Adam(lr=learning_rate, decay=decay, clipvalue=1), 
                     metrics=['accuracy'])
-        # if config['steering_angle_tolerance'] == 0.0:
-        #     self.model.compile(loss=losses.mean_squared_error,
-        #               optimizer=optimizers.Adam(),
-        #               metrics=['accuracy'])
-        # else:
-        #     self.model.compile(loss=losses.mean_squared_error,
-        #               optimizer=optimizers.Adam(),
-        #               metrics=['accuracy', self._mean_squared_error])
 
 
     ###########################################################################
