@@ -94,6 +94,7 @@ Create a conda environment using an environment file that is prepared at `config
 $ conda env create --file config/conda/environment.yaml
 ```
 ### rover only
+TBA
 This section applies to `rover` which is based on `PX4 `. When RC signal is lost, the vehicle's default behavior is `homing` with `disarming` to protect the vehicle. 
 We disabled this feature to prevent the vehicle from disarming whenever control signals are not being sent.
 
@@ -132,7 +133,7 @@ OSCAR는 자율주행 시뮬레이션을 위해 다양한 GAZEBO `world`를 제�
 ```
 
 ### rover 
-
+TBA
 `rover` is based on the Software-In-The-Loop of PX4.
 
 1. Start the rover
@@ -162,11 +163,14 @@ The default data folder location is `$(pwd)e2e_{fusion/rover}_data`.
 
 ### Data Format
 
-From `data_collection` config version 0.92, the CSV file has one more column for `brake`. Use `convert_csv.py` to convert a data CSV file collected before 0.92 to a new CSV file.
+`data_collection` 0.92 이후 버전의 CSV 파일에는 `brake` 컬럼이 하나 더 있습니다.
+`convert_csv.py`를 사용하여 0.92 이전 버전에서 수집된 데이터를 이후 버전에서도 사용할 수 있습니다.
+<!-- From `data_collection` config version 0.92, the CSV file has one more column for `brake`. Use `convert_csv.py` to convert a data CSV file collected before 0.92 to a new CSV file. -->
 
 #### From Version 0.92
 
-Data Collection will save a csv file with images. The CSV file has following columns
+데이터 수집은 이미지와 함께 csv 파일을 저장합니다. csv 파일에는 다음과 같은 컬럼이 있습니다.
+<!-- Data Collection will save a csv file with images. The CSV file has following columns -->
 
 ```
 image_file_name / steering_angle / throttle / brake / linux_time / velocity / velocity_x / velocity_y / velocity_z / position_x / position_y / position_z
@@ -180,7 +184,8 @@ image_file_name / steering_angle / throttle / brake / linux_time / velocity / ve
 
 #### Before Version 0.92
 
-Data Collection will save a csv file with images. The CSV file has following columns
+데이터 수집은 이미지와 함께 csv 파일을 저장합니다. csv 파일에는 다음과 같은 컬럼이 있습니다.
+<!-- Data Collection will save a csv file with images. The CSV file has following columns -->
 
 ```
 image_file_name / steering_angle / throttle / linux_time / velocity / velocity_x / velocity_y / velocity_z / position_x / position_y / position_z
@@ -194,7 +199,8 @@ image_file_name / steering_angle / throttle / linux_time / velocity / velocity_x
 
 ## Data Cleaning
 
-When some of test images must be deleted, just delete them and rebuild the csv using `rebuild_csv.py`.
+시뮬레이션 환경에서 주행을 하면서 데이터를 수집하다보면 도로를 이탈하는 경우가 발생할 수 있습니다. 이 경우 해당 이미지를 삭제하고 `rebuild_csv.py` 를 실행하여 csv를 재구성 할 수 있습니다.
+<!-- When some of test images must be deleted, just delete them and rebuild the csv using `rebuild_csv.py`. -->
 
 ```
 (oscar) $ python rebuild_csv.py path/to/data/folder
@@ -204,7 +210,10 @@ When some of test images must be deleted, just delete them and rebuild the csv u
 
 ### steering_angle_scale
 
-`steering_angle_scale` in `neural_net` config is for making the neural network have higher precision in prediction. The range of steering angle is -1 to 1. But in most cases, there will not be values between -1 and -0.5 as well as between 0.5 to 1 which means very sharp steering angles. These sharp steering angles will not be collected from driving a track in practice.
+`nerual_net` config 안에 `steering_angle_scale` 파라미터는 뉴럴 네트워크의 예측 성능을 높이기 위해 사용됩니다.
+steering angle의 범위는 -1 ~ 1 사이 입니다. 그러나 일반적으로 매우 급격한 커브를 하지않는 경우 0.5~1 사이의 값이나 -0.5~-1 사이의 값은 잘 수집되지않습니다.
+<!-- `steering_angle_scale` in `neural_net` config is for making the neural network have higher precision in prediction. The range of steering angle is -1 to 1. But in most cases, there will not be values between -1 and -0.5 as well as between 0.5 to 1 which means very sharp steering angles. These sharp steering angles will not be collected from driving a track in practice. -->
+
 
 To find a proper scale value, you may use `test_data.py` by which you can see data statistics. The following is an example.
 
@@ -230,6 +239,18 @@ Start a training
 (oscar) $ . setup.bash
 (oscar) $ python neural_net/train.py path/to/data/folder
 ```
+
+### Visualize Neural Network Architecture
+
+Keras에서 제공하는 plot_model library를 사용하여 뉴럴네트워크의 구조를 시각화 할 수 있습니다.
+
+```
+(oscar) $ python neural_net/net_visualization.py path/to/save/image
+```
+
+<img width="200" src="./README_IMG/network_visualization.png">
+<br><br>
+
 
 ### TensorBoard
 
@@ -306,7 +327,7 @@ $ sudo apt install ros-$ROS_DISTRO-hector-gazebo-plugins
 
 ### Implementation
 
-- Donghyun Kim: Ph.D. student at Hanyang University-ERICA, Korea
+- Donghyun Kim: Ph.D. student at Hanyang University, Ansan, Korea
 - Rohan Pradeepkumar: MS student in Automotive Systems Engineering at the University of Michigan-Dearborn
 - Sanjyot Thete: MS student in Data Science at the University of Michigan-Dearborn
 
