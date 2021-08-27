@@ -245,7 +245,7 @@ Start a training
 Keras에서 제공하는 plot_model library를 사용하여 뉴럴네트워크의 구조를 시각화 할 수 있습니다.
 
 ```
-(oscar) $ python neural_net/net_visualization.py path/to/save/image
+(oscar) $ python neural_net/net_visualization.py path/to/image/to/save
 ```
 
 <img width="200" src="./README_IMG/network_visualization.png">
@@ -302,6 +302,18 @@ It is also possible to visualize collected data with other information without s
 ```
 (oscar) $ python neural_net/drive_view.py path/to/data/folder path/to/folder/to/save 
 ```
+
+## Calculate Lane Coordinates and Neural Network Performance
+자율주행 네트워크 성능을 측정하기위해 다양한 지표를 사용할 수 있습니다.  
+몇몇 지표는 도로의 중앙으로부터 차량간 거리를 통해 성능을 측정하기 때문에 이 기능이 구현되었습니다.
+
+<img width="200" src="./README_IMG/lane_coordinate.png">
+<br>
+
+```
+(oscar) $ rosrun mapinfo_generator mapinfo_generator.py path/to/csv {right|left|center} 
+```
+위 명령어를 실행하게되면 여러 지표를 통해 자율주행 네트워크의 성능을 측정한 결과가 .csv, .txt 형태로 csv 파일이 위치한 경로에 저장됩니다.
 
 ## Sample Datasets
 

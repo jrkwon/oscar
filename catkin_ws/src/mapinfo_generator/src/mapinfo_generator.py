@@ -556,19 +556,6 @@ class MapInfoGenerator:
     def _cal_mmdc(self, error):
         error_mmdc = 0
         num_data = len(error)
-        
-        # alpha = 1
-        # D_s = 0.85
-        # D_d = 1
-        # for i in range(num_data):
-        #     if D_d <=abs(error[i]) :
-        #         error_mmdc += error[i]
-        #     elif D_s * alpha <= abs(error[i]) < D_d:
-        #         error_mmdc += 0
-        #     else:
-        #         error_mmdc += 5.256 * ( 0.2*(error[i]**4) - 0.1*(error[i]**2) )
-        # error_mmdc /= num_data
-        
         for i in range(num_data):
             if abs(error[i]) > 1.15:
                 error_mmdc += abs(error[i])
