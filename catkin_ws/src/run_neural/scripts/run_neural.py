@@ -26,7 +26,6 @@ from image_converter import ImageConverter
 from drive_run import DriveRun
 from config import Config
 from image_process import ImageProcess
-from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 if Config.data_collection['vehicle_name'] == 'fusion':
     from fusion.msg import Control
@@ -118,8 +117,8 @@ def main(weight_file_name):
         if neural_control.image_processed is False:
             continue
         
-        start = time.time()
-        end = time.time()
+        start_time = time.time()
+        end_time = time.time()
         # predicted steering angle from an input image
         if config['lstm'] is True:
             if len(neural_control.lstm_image) >= config['lstm_timestep'] :
@@ -129,10 +128,10 @@ def main(weight_file_name):
                         joy_data.steer = prediction[0][0][0]
                         joy_data.throttle = prediction[0][0][1]
                 else : #if config['train_velocity'] is False
-                    start = time.time()
+                    start_time = time.time()
                     prediction = neural_control.drive.run((neural_control.lstm_image, ))
                     joy_data.steer = prediction[0][0]
-                    end = time.time() - start
+                    end_time = time.time() - start_time
         
         else :
             if config['num_inputs'] == 2:
@@ -151,8 +150,8 @@ def main(weight_file_name):
                     joy_data.throttle = prediction[0][1]
                 else: # num_outputs is 1
                     joy_data.steer = prediction[0][0]
-                    end = time.time() - start
-                    end = float(1/end)
+                    end_time = time.time() - start_time
+                    end_time = float(1/end_time)
             
         #############################
         ## very very simple controller
@@ -195,7 +194,7 @@ def main(weight_file_name):
         ## print out
         # print(joy_data.steer, joy_data.throttle, joy_data.brake, velocity)
         cur_output = '{0:.3f} \t{1:.3f} \t{2:.3f} \t{3:.3f} \t{4}\r'.format(joy_data.steer, 
-                        joy_data.throttle, joy_data.brake, velocity, end)
+                        joy_data.throttle, joy_data.brake, velocity, end_time)
 
         sys.stdout.write(cur_output)
         sys.stdout.flush()
