@@ -13,7 +13,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+History:
+11/28/2020: modified for OSCAR 
+08/30/2021: modified for OPEM4AV
 
+@author: jaerock, Donghyun
+"""
 
 import rospy, math, sys, os
 from fusion.msg import Control
