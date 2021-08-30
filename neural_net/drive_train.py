@@ -156,13 +156,16 @@ class DriveTrain:
                 # Changing the brightness of image
                 if steering_angle > config['steering_angle_jitter_tolerance'] or \
                     steering_angle < -config['steering_angle_jitter_tolerance']:
-                    image = self.data_aug.brightness(image)
+                    if config['lstm'] is True:
+                        image = self.data_aug.lstm_brightness(image)
+                    else:
+                        image = self.data_aug.brightness(image)
                 return True, image, steering_angle
 
             if config['data_aug_shift'] is True:    
                 # Shifting the image
                 return True, self.data_aug.shift(image, steering_angle)
-
+            
             return False, image, steering_angle
 
         def _prepare_batch_samples(batch_samples, data=None):
@@ -271,24 +274,16 @@ class DriveTrain:
                         else:
                             measurements_timestep.append(steering_angle*config['steering_angle_scale'])
                 
-                    append, image, steering_angle = _data_augmentation(image, steering_angle)
-                    if append is True:
-                        images_aug_timestep.append(image)
-                        velocities_aug_timestep.append(velocity)
-                        if config['num_outputs'] == 2:                
-                            measurements_aug_timestep.append((steering_angle*config['steering_angle_scale'], throttle))
-                        else:
-                            measurements_aug_timestep.append(steering_angle*config['steering_angle_scale'])
-
                 images.append(images_timestep)
                 velocities.append(velocities_timestep)
                 measurements.append(measurements_timestep)
                 
+                append, images_aug_timestep, measurements_aug_timestep = _data_augmentation(images_timestep, measurements_timestep)
                 if append is True:
                     images.append(images_aug_timestep)
                     velocities.append(velocities_aug_timestep)
                     measurements.append(measurements_aug_timestep)
-                
+                    
             return images, velocities, measurements
         
         def _generator(samples, batch_size=config['batch_size'], data=None):
