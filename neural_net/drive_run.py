@@ -11,7 +11,6 @@ History:
 import numpy as np
 from net_model import NetModel
 from config import Config
-import time
 ###############################################################################
 #
 class DriveRun:
