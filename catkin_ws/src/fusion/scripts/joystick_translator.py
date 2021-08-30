@@ -41,8 +41,12 @@ BRAKE_POINT = -0.9  # consider brake is applied if value is greater than this.
 
 # Gear shift
 # to be neutral, bothe SHIFT_FORWARD & SHIFT_REVERSE must be 0
-SHIFT_FORWARD = 4     # forward 1
-SHIFT_REVERSE = 5     # reverse 1
+# if you have logitech driving force shifter 
+SHIFT_FORWARD = 14     # forward 1
+SHIFT_REVERSE = 15     # reverse 1
+# else
+#SHIFT_FORWARD = 4     # forward 1
+#SHIFT_REVERSE = 5     # reverse 1
 
 # Max speed and steering factor
 MAX_THROTTLE_FACTOR = 10
@@ -63,11 +67,9 @@ class Translator:
         self.last_published_time = rospy.get_rostime()
         self.last_published = None
         self.timer = rospy.Timer(rospy.Duration(1./20.), self.timer_callback)
-        self.gear = 0
         self.kill_data_collection = False
         self.command = Control()
         print('steer \tthrt: \tbrake \tvelocity')
-        
         
     def timer_callback(self, event):
         if self.last_published and self.last_published_time < rospy.get_rostime() + rospy.Duration(1.0/20.):
@@ -77,8 +79,6 @@ class Translator:
         vel_x = msg.twist.twist.linear.x 
         vel_y = msg.twist.twist.linear.y
         vel_z = msg.twist.twist.linear.z
-        
-        
         
         cur_output = '{0:.3f} \t{1:.3f} \t{2:.3f} \t{3:.3f}\r'.format(self.command.steer, 
                           self.command.throttle, self.command.brake, math.sqrt(vel_x**2 + vel_y**2 + vel_z**2))
@@ -106,26 +106,15 @@ class Translator:
             command.throttle = 0.0
         
         if message.buttons[SHIFT_FORWARD] == 1:
-            self.gear = "forward"
+            command.shift_gears = Control.FORWARD
         elif message.buttons[SHIFT_REVERSE] == 1:
-            self.gear = "reverse"
+            command.shift_gears = Control.REVERSE
         elif message.buttons[BUTTON_C] == 1:
-            self.gear = "parking"
             # print(os.system("data_collection"))
             if self.kill_data_collection is False:
                 os.system("rosnode kill " + "data_collection")
                 self.kill_data_collection = True
-        
-        if self.gear == "forward":
-            # print("forward")
-            command.shift_gears = Control.FORWARD
-        # elif message.buttons[SHIFT_FORWARD] == 0 and message.buttons[SHIFT_REVERSE] == 0 :
-        #     self.command.shift_gears = Control.NEUTRAL
-        elif self.gear == "reverse":
-            # print("reverse")
-            command.shift_gears = Control.REVERSE
-        elif self.gear == "parking":
-            # print("parking")
+                
             command.shift_gears = Control.NEUTRAL
             command.throttle = 0.0
             command.brake = 1.0
