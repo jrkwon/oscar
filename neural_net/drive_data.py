@@ -4,8 +4,9 @@
 Created on Sat Sep 23 13:23:14 2017
 History:
 11/28/2020: modified for OSCAR 
+08/30/2021: modified for OPEM4AV
 
-@author: jaerock
+@author: jaerock, Donghyun
 """
 
 
@@ -38,6 +39,7 @@ class DriveData:
         self.time_stamps = []
         self.velocities = []
         self.velocities_xyz = []
+        self.accel_xy = []
         self.positions_xyz = []
 
     def read(self, read = True, show_statistics = True, normalize = True):
@@ -129,8 +131,8 @@ class DriveData:
                 self.velocities.append(float(self.df.loc[i]['vel']))
                 self.velocities_xyz.append((float(self.df.loc[i]['vel_x']), 
                                             float(self.df.loc[i]['vel_y']), 
-                                            float(self.df.loc[i]['vel_z']),
-                                            float(self.df.loc[i]['accel_x']), 
+                                            float(self.df.loc[i]['vel_z'])))
+                self.accel_xy.append((      float(self.df.loc[i]['accel_x']),
                                             float(self.df.loc[i]['accel_y'])))
                 self.positions_xyz.append((float(self.df.loc[i]['pos_x']), 
                                             float(self.df.loc[i]['pos_y']), 

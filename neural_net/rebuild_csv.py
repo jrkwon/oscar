@@ -4,8 +4,9 @@
 Created on Sat Sep 23 12:23:14 2019
 History:
 11/28/2020: modified for OSCAR 
+08/30/2021: modified for OPEM4AV
 
-@author: jaerock
+@author: jaerock, Donghyun
 """
 
 
@@ -56,6 +57,8 @@ def build_csv(data_path):
                             + str(data.velocities_xyz[i][0]) + ','
                             + str(data.velocities_xyz[i][1]) + ','
                             + str(data.velocities_xyz[i][2]) + ','
+                            + str(data.accel_xy[i][0]) + ','
+                            + str(data.accel_xy[i][1]) + ','
                             + str(data.positions_xyz[i][0]) + ','
                             + str(data.positions_xyz[i][1]) + ','
                             + str(data.positions_xyz[i][2]) + '\n')
