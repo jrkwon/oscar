@@ -501,7 +501,7 @@ class NetModel:
 
     ###########################################################################
     # model_path = '../data/2007-09-22-12-12-12.
-    def weight_load(self, load_model_name):
+    def load_weight(self, load_model_name):
 
         from keras.models import model_from_json
 

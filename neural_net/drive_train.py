@@ -414,8 +414,8 @@ class DriveTrain:
     def train(self, show_summary=True, load_model_name=None):
         
         self._prepare_data()
-        if config['weight_load'] is True:
-            self.net_model.weight_load(load_model_name)
+        if config['load_weight'] is True:
+            self.net_model.load_weight(load_model_name)
         self._build_model(show_summary)
         self._start_training()
         self.net_model.save(self.model_name)
