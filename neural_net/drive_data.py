@@ -4,8 +4,9 @@
 Created on Sat Sep 23 13:23:14 2017
 History:
 11/28/2020: modified for OSCAR 
+08/30/2021: modified for OPEM4AV
 
-@author: jaerock
+@author: jaerock, Donghyun
 """
 
 
@@ -23,7 +24,7 @@ class DriveData:
         csv_header = ['image_fname', 'steering_angle', 'throttle', 'brake', 
                     'linux_time', 
                     'vel', 'vel_x', 'vel_y', 'vel_z',
-                    'pos_x', 'pos_y', 'pos_z' ]
+                    'pos_x', 'pos_y', 'pos_z', 'accel_x', 'accel_y']
     else:
         csv_header = ['image_fname', 'steering_angle', 'throttle', 
                     'linux_time', 
@@ -38,6 +39,7 @@ class DriveData:
         self.time_stamps = []
         self.velocities = []
         self.velocities_xyz = []
+        self.accel_xy = []
         self.positions_xyz = []
 
     def read(self, read = True, show_statistics = True, normalize = True):
@@ -79,14 +81,14 @@ class DriveData:
             ax1.set(title = 'original')
 
             remove_list = []
-            samples_per_bin = 200
+            samples_per_bin = Config.neural_net['samples_per_bin']
 
             for j in range(num_bins):
                 list_ = []
                 for i in range(len(self.df['steering_angle'])):
                     if self.df.loc[i,'steering_angle'] >= bins[j] and self.df.loc[i,'steering_angle'] <= bins[j+1]:
                         list_.append(i)
-                random.shuffle(list_)
+                # random.shuffle(list_)
                 list_ = list_[samples_per_bin:]
                 remove_list.extend(list_)
             
@@ -130,6 +132,8 @@ class DriveData:
                 self.velocities_xyz.append((float(self.df.loc[i]['vel_x']), 
                                             float(self.df.loc[i]['vel_y']), 
                                             float(self.df.loc[i]['vel_z'])))
+                self.accel_xy.append((      float(self.df.loc[i]['accel_x']),
+                                            float(self.df.loc[i]['accel_y'])))
                 self.positions_xyz.append((float(self.df.loc[i]['pos_x']), 
                                             float(self.df.loc[i]['pos_y']), 
                                             float(self.df.loc[i]['pos_z'])))

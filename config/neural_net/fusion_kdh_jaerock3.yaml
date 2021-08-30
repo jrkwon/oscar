@@ -1,0 +1,52 @@
+###############################################################################
+# This is a Donghyun's configuration.
+###############################################################################
+
+version: 0.92
+
+######################################################
+## neural network 
+load_weight: False
+network_type: 27       # refer to neural_net/const.py
+lstm: True
+
+## lstm model
+lstm_timestep: 5
+lstm_dataterm: 1
+lstm_lr: 0.0001        # 
+## cnn model
+cnn_lr:  0.0001          # default of Adam is 0.001
+
+# normalize data
+data_split: False       # if training data and validation data are already separated, then input False.
+validation_rate: 0.3    # Used when the data_split value is True.
+normalize_data: False
+samples_per_bin: 4000
+
+# training 
+gpus: 1
+num_epochs: 2000
+batch_size: 16
+decay: 0.0000001  # lstm = 1e-9, cnn = 1e-7 0.00000001
+num_inputs: 1     # input: image, velocity
+num_outputs: 1    # output: steering_angle, throttle
+early_stopping_patience: 50
+
+# tensorboard log dir
+tensorboard_log_dir: logs/scalars/
+
+# data augmentation
+data_aug_flip: False
+data_aug_bright: False
+data_aug_shift: False
+
+# input image size to the neural network
+input_image_width : 160 #160 #270 # 160 # 512
+input_image_height: 160 #160 #90  # 160 # 96
+input_image_depth : 3
+
+# steering data preprocessing
+# - steering angle adjustment
+steering_angle_scale: 5.0
+# - steering wheel jitter tolerance
+steering_angle_jitter_tolerance: 0.01

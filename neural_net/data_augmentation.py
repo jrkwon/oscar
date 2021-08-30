@@ -4,8 +4,9 @@
 Created on Sat Sep 23 13:23:14 2017
 History:
 11/28/2020: modified for OSCAR 
+08/30/2021: modified for OPEM4AV
 
-@author: jaerock
+@author: jaerock, Donghyun
 """
 
 import cv2
@@ -38,6 +39,17 @@ class DataAugmentation():
         self.image_hsv[:,:,2] = self.image_hsv[:,:,2] * self.brightness_multiplier
         bright_image = cv2.cvtColor(self.image_hsv, cv2.COLOR_HSV2RGB)
         return bright_image
+    
+    def lstm_brightness(self,images):
+        self.brightness_multiplier = 1.0 + np.random.uniform(low=self.bright_limit[0], high=self.bright_limit[1])
+        images_hsv = []
+        for i in range(len(images)):
+            for j in range(len(images[i])):
+                self.image_hsv = cv2.cvtColor(images[i][j], cv2.COLOR_RGB2HSV)
+                self.image_hsv[:,:,2] = self.image_hsv[:,:,2] * self.brightness_multiplier
+                bright_image = cv2.cvtColor(self.image_hsv, cv2.COLOR_HSV2RGB)
+                images_hsv.append(bright_image)
+        return images_hsv
 
     def shift(self, img, steering):
         self.rows, self.cols, self.ch = img.shape

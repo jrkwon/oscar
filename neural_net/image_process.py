@@ -13,8 +13,8 @@ import numpy as np
 
 class ImageProcess:
 
-    def process(self, img):
-        return self._normalize(img)
+    def process(self, img, bgr = True):
+        return self._normalize(img, bgr=bgr)
         
     # img is expected as BGR         
     def _equalize_histogram(self, img, bgr = True):
@@ -28,7 +28,7 @@ class ImageProcess:
             img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
         return img
     
-    def _normalize(self, img, bgr = True):
+    def _normalize(self, img, bgr):
 
         img_norm = np.zeros_like(img)
         if (bgr != True): # if not bgr then assume it as RGB

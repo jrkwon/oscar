@@ -11,7 +11,6 @@ History:
 import numpy as np
 from net_model import NetModel
 from config import Config
-
 ###############################################################################
 #
 class DriveRun:
@@ -22,27 +21,23 @@ class DriveRun:
     def __init__(self, model_path):
         
         #self.config = Config()
-        self.net_model = NetModel(model_path)   
+        self.net_model = NetModel(model_path)
         self.net_model.load()
 
    ###########################################################################
     #
     def run(self, input): # input is (image, (vel))
+        
         image = input[0]
         if Config.neural_net['num_inputs'] == 2:
             velocity = input[1]
         np_img = np.expand_dims(image, axis=0)
-        #np_img = np.array(np_img).reshape(-1, 
-        #                                  Config.neural_net['input_image_height'],
-        #                                  Config.neural_net['input_image_width'],
-        #                                  Config.neural_net['input_image_depth'])
         
         if Config.neural_net['num_inputs'] == 2:
             velocity = np.array(velocity).reshape(-1, 1)
             predict = self.net_model.model.predict([np_img, velocity])
         else:
             predict = self.net_model.model.predict(np_img)
-
         # calc scaled steering angle
         steering_angle = predict[0][0]
         steering_angle /= Config.neural_net['steering_angle_scale']

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.4">
-  <model name="(DS) Curved Road - 100m">
+  <model name="(DS) Right Road - 100m">
     <static>true</static>
     <link name="link">
       <inertial>
@@ -17,7 +17,7 @@
       <collision name="collision">
         <geometry>
           <mesh>
-            <uri>model://ds_curved_road_100m/meshes/curved_road_100m.dae</uri>
+            <uri>model://ds_right_road_100m/meshes/curved_road_100m.dae</uri>
           </mesh>
         </geometry>
       </collision>
@@ -25,7 +25,7 @@
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>model://ds_curved_road_100m/meshes/curved_road_100m.dae</uri>
+            <uri>model://ds_right_road_100m/meshes/curved_road_100m.dae</uri>
           </mesh>
         </geometry>
       </visual>

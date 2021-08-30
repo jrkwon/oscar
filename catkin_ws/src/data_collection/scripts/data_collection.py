@@ -16,10 +16,11 @@ import datetime
 import time
 import sys
 from geometry_msgs.msg import Twist
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, Imu
 from std_msgs.msg import String
 #from geometry_msgs.msg import Vector3Stamped
 from nav_msgs.msg import Odometry
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import math
 
 import image_converter as ic
@@ -43,6 +44,8 @@ class DataCollection():
         self.brake = 0
 
         self.vel_x = self.vel_y = self.vel_z = 0
+        self.accel_x = self.accel_y = 0
+        
         self.vel = 0
         self.pos_x = self.pos_y = self.pos_z = 0
 
@@ -61,6 +64,26 @@ class DataCollection():
         else:
             print('new folder created: ' + path)
             os.makedirs(path)
+        
+        ###OPEM4AV   
+        # if sys.argv[1][-1] is '/':
+        #     argv = sys.argv[1]
+        # else:
+        #     argv = sys.argv[1] + '/'
+        # n = 1
+        # is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
+        # path = is_exist_path + '/' + name_datatime + '/'
+        
+        # if os.path.exists(is_exist_path) is False:
+        #     print('new folder created: ' + path)
+        #     os.makedirs(path)
+        # else:
+        #     while(os.path.exists(is_exist_path)):
+        #         print('path exists. continuing...')
+        #         n += 1
+        #         is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
+        #         path = is_exist_path + '/' + name_datatime + '/' 
+        #     os.makedirs(path)
 
         self.text = open(str(path) + name_datatime + const.DATA_EXT, "w+")
         self.path = path
@@ -86,7 +109,14 @@ class DataCollection():
         self.vel_z = value.twist.twist.linear.z
         self.vel = self.calc_velocity(self.vel_x, self.vel_y, self.vel_z)
 
-
+    def imu_cb(self, value):
+        self.accel_x = value.linear_acceleration.x
+        # self.accel_y = value.linear_acceleration.y
+        self.accel_y = value.angular_velocity.z
+        # if config['version'] >= 0.92:
+        #     line = "{},{}\r\n".format(self.accel_x, self.accel_y)
+        # self.text_accel.write(line)
+    
     def recorder_cb(self, data):
         img = self.img_cvt.imgmsg_to_opencv(data)
 
@@ -105,7 +135,7 @@ class DataCollection():
             cv2.imwrite(file_full_path, img)
         sys.stdout.write(file_full_path + '\r')
         if config['version'] >= 0.92:
-            line = "{}{},{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
+            line = "{}{},{},{},{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
                                                         self.steering, 
                                                         self.throttle,
                                                         self.brake,
@@ -114,6 +144,8 @@ class DataCollection():
                                                         self.vel_x,
                                                         self.vel_y,
                                                         self.vel_z,
+                                                        self.accel_x,
+                                                        self.accel_y,
                                                         self.pos_x,
                                                         self.pos_y,
                                                         self.pos_z)
@@ -139,6 +171,7 @@ def main():
     rospy.Subscriber(config['vehicle_control_topic'], Control, dc.steering_throttle_cb)
     rospy.Subscriber(config['base_pose_topic'], Odometry, dc.pos_vel_cb)
     rospy.Subscriber(config['camera_image_topic'], Image, dc.recorder_cb)
+    rospy.Subscriber(config['imu'], Imu, dc.imu_cb)
 
     try:
         rospy.spin()
@@ -151,6 +184,6 @@ def main():
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Usage: ')
-        exit('$ rosrun data_collection data_collection.py your_data_id')
+        exit('$ rosrun data_collection data_collection.py save_path')
 
     main()

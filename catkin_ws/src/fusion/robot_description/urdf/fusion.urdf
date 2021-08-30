@@ -11,7 +11,8 @@
   <joint name="base_link_connection" type="fixed">
     <parent link="base_link"/>
     <child link="chassis"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <!-- <origin xyz="0 0 0" rpy="0 0 0"/> -->
+    <origin xyz="0 0 -0.3" rpy="0 0 1.57079632"/>
     <axis xyz="1 0 0"/>
   </joint>
 
@@ -114,8 +115,10 @@
       <inertia ixx="0.58631238" ixy="0.0" ixz="0.0" iyy="0.33552910" iyz="0.0" izz="0.33552910"/>
     </inertial>
     <collision name="front_left_wheel_collision">
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
       <geometry>
         <sphere radius="0.47"/>
+        <!-- <cylinder radius="0.47" length="0.47"/> -->
       </geometry>
     </collision>
     <visual>
@@ -132,8 +135,10 @@
       <inertia ixx="0.58631238" ixy="0.0" ixz="0.0" iyy="0.33552910" iyz="0.0" izz="0.33552910"/>
     </inertial>
     <collision name="front_right_wheel_collision">
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
       <geometry>
         <sphere radius="0.47"/>
+        <!-- <cylinder radius="0.47" length="0.47"/> -->
       </geometry>
     </collision>
     <visual>
@@ -153,8 +158,10 @@
       <inertia ixx="0.58631238" ixy="0.0" ixz="0.0" iyy="0.33552910" iyz="0.0" izz="0.33552910"/>
     </inertial>
     <collision name="rear_left_wheel_collision">
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
       <geometry>
         <sphere radius="0.47"/>
+        <!-- <cylinder radius="0.47" length="0.47"/> -->
       </geometry>
     </collision>
     <visual>
@@ -171,8 +178,10 @@
       <inertia ixx="0.58631238" ixy="0.0" ixz="0.0" iyy="0.33552910" iyz="0.0" izz="0.33552910"/>
     </inertial>
     <collision name="rear_right_wheel_collision">
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
       <geometry>
         <sphere radius="0.47"/>
+        <!-- <cylinder radius="0.47" length="0.47"/> -->
       </geometry>
     </collision>
     <visual>
@@ -317,32 +326,34 @@
         </geometry>
     </collision>     
   </link>
+
   <joint name="imu_joint" type="fixed">
     <axis xyz="0 0 0"/>
     <origin xyz="0.05 0 0.15" rpy="0 0 0" />
-    <parent link="chassis"/>
+    <parent link="base_link"/>
     <child link="imu_link" />
   </joint>
 
   <link name="gps_link">
     <inertial>
       <mass value="1" />
-      <origin xyz="0 0 0" />
+      <origin xyz="0 0 0.5" />
       <inertia ixx="0.001" ixy="0.0" ixz="0.0"
                iyy="0.001" iyz="0.0" 
                izz="0.001" />
     </inertial>     
-    <visual>
+    <!-- <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
           <box size = "0.1 0.1 0.1"/> 
       </geometry>
-    </visual>
-    <collision>         
-        <geometry>
-            <box size = "0.1 0.1 0.1"/> 
-        </geometry>
-    </collision>     
+    </visual> -->
+    <!-- <collision>
+      <origin xyz="0.0 0 0.0" rpy="0 0 0" />
+      <geometry>
+          <box size = "0.1 0.1 0.1"/> 
+      </geometry>
+    </collision> -->
   </link>
   <joint name="gps_joint" type="fixed">
     <axis xyz="0 0 0"/>
@@ -351,7 +362,7 @@
     <child link="gps_link" />
   </joint>
 
-  <link name="velodyne_link">
+  <!-- <link name="velodyne_link">
     <inertial>
         <mass value="1" />
         <origin xyz="0 0 0" />
@@ -386,11 +397,11 @@
   </link>
   <joint name="velodyne_joint" type="fixed">
     <axis xyz="0 0 0"/>
-    <!-- origin xyz="0 -0.7 2.52" rpy="0 0 -1.57"/ -->
+    origin xyz="0 -0.7 2.52" rpy="0 0 -1.57"/
     <origin xyz="0 -0.5 1.86" rpy="0 0 -1.57"/>
     <parent link="chassis"/>
     <child link="velodyne_link" />
-  </joint> 
+  </joint>  -->
   <!-- link name="rad_link">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -470,7 +481,8 @@
       <back_torque>0</back_torque>
       <front_brake_torque>1031.28052716</front_brake_torque>
       <back_brake_torque>687.5203514400001</back_brake_torque>
-      <max_speed>37.998337013956565</max_speed>
+      <!-- <max_speed>37.998337013956565</max_speed> -->
+      <max_speed>15</max_speed>
       <min_gas_flow>8.981854013171626e-05</min_gas_flow>
       <gas_efficiency>0.371</gas_efficiency>
       <battery_charge_watt_hours>291</battery_charge_watt_hours>
@@ -494,7 +506,7 @@
     </plugin>
   </gazebo>
 
-  <gazebo reference="back_camera_link">
+  <!-- <gazebo reference="back_camera_link">
     <sensor type="camera" name="back_camera_sensor">
       <update_rate>30.0</update_rate>
       <camera name="back_camera">
@@ -529,7 +541,7 @@
         <distortionT2>0.0</distortionT2>
       </plugin>
     </sensor>
-  </gazebo>
+  </gazebo> -->
 
   <gazebo reference="front_camera_link">
     <turnGravityOff>false</turnGravityOff>
@@ -570,7 +582,7 @@
     </sensor>
   </gazebo>
 
-  <gazebo reference="left_camera_link">
+  <!-- <gazebo reference="left_camera_link">
     <sensor type="camera" name="left_camera_sensor">
       <update_rate>30.0</update_rate>
       <camera name="left_camera">
@@ -642,7 +654,7 @@
         <distortionT2>0.0</distortionT2>
       </plugin>
     </sensor>
-  </gazebo>
+  </gazebo> -->
 
   <!-- 3D Position Interface for Ground Truth -->
   <gazebo>
@@ -656,6 +668,18 @@
   </gazebo>
 
   <!-- imu -->
+  <!-- <gazebo>
+    <plugin filename="libgazebo_ros_imu.so" name="imu_plugin">
+      <alwaysOn>true</alwaysOn>
+      <topicName>/imu</topicName>
+      <bodyName>imu_link</bodyName>
+      <updateRateHZ>200.0</updateRateHZ>
+      <gaussianNoise>0.0</gaussianNoise>
+      <xyzOffset>0 0 0</xyzOffset>
+      <rpyOffset>0 0 0</rpyOffset>
+      <frameName>imu_link</frameName>
+    </plugin>
+  </gazebo>
   <gazebo>    
    <plugin name="imu" filename="libhector_gazebo_ros_imu.so">
       <updateRate>200.0</updateRate>
@@ -675,15 +699,15 @@
       <headingDriftFrequency>0.0 0.0 0.0</headingDriftFrequency>
       <headingGaussianNoise>0.0 0.0 0.0</headingGaussianNoise>
    </plugin>
-  </gazebo>
+  </gazebo> -->
 
   <!-- gps -->  
-  <gazebo>
+  <!-- <gazebo>
     <plugin name="novatel_gps_sim" filename="libhector_gazebo_ros_gps.so">
       <alwaysOn>1</alwaysOn>
       <updateRate>10.0</updateRate>
       <bodyName>gps_link</bodyName>
-      <!-- frameId>/base_link</frameId -->
+      frameId>/base_link</frameId
       <topicName>fix</topicName>
       <velocityTopicName>fix_velocity</velocityTopicName>
       <drift>5.0 5.0 5.0</drift>
@@ -691,10 +715,10 @@
       <velocityDrift>0 0 0</velocityDrift>
       <velocityGaussianNoise>0.1 0.1 0.1</velocityGaussianNoise>
     </plugin>
-  </gazebo>
+  </gazebo> -->
 
   <!-- velodyne sensor -->
-  <gazebo reference="velodyne_link">
+  <!-- <gazebo reference="velodyne_link">
     <turnGravityOff>false</turnGravityOff>
     <sensor name='velodyne_sensor' type='ray'>
       <visualize>0</visualize>
@@ -729,7 +753,7 @@
           <topicName>/velodyne_points</topicName>
           <frameName>/velodyne_link</frameName>
           <min_range>0.9</min_range>
-          <!--max_range>130.0</max_range-->
+          <max_range>130.0</max_range>
           <max_range>30.0</max_range>
           <gaussianNoise>0.008</gaussianNoise>
           <robotNamespace>/</robotNamespace>
@@ -741,7 +765,7 @@
       <update_rate>30</update_rate>
       <visualize>1</visualize>
     </sensor>
-  </gazebo>
+  </gazebo> -->
 
   <!-- #################################################################### -->
   <!-- these ros sensers are not being used for now -->

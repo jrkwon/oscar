@@ -11,23 +11,28 @@ History:
 
 import sys
 from drive_train import DriveTrain
-
+from config import Config
 
 ###############################################################################
 #
-def train(data_folder_name):
+def train(data_folder_name, load_model_name=None):
     drive_train = DriveTrain(data_folder_name)
-    drive_train.train(show_summary = False)
+    drive_train.train(show_summary=False, load_model_name=load_model_name)
 
 
 ###############################################################################
 #
 if __name__ == '__main__':
     try:
-        if (len(sys.argv) != 2):
-            exit('Usage:\n$ python {} data_path'.format(sys.argv[0]))
-
-        train(sys.argv[1])
+        if Config.neural_net['load_weight'] is True:
+            if (len(sys.argv) != 3):
+                exit('Usage:\n$ python {} data_path load_model_name'.format(sys.argv[0]))
+            train(sys.argv[1], sys.argv[2])
+        
+        else:
+            if (len(sys.argv) != 2):
+                exit('Usage:\n$ python {} data_path'.format(sys.argv[0]))
+            train(sys.argv[1])
 
     except KeyboardInterrupt:
         print ('\nShutdown requested. Exiting...')

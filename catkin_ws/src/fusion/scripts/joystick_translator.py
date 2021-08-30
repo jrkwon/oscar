@@ -13,11 +13,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+History:
+11/28/2020: modified for OSCAR 
+08/30/2021: modified for OPEM4AV
 
+@author: jaerock, Donghyun
+"""
 
-import rospy
+import rospy, math, sys, os
 from fusion.msg import Control
 from sensor_msgs.msg import Joy
+from nav_msgs.msg import Odometry
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 #######################################
 ## Logitech G920 with Pedal and Shift
@@ -30,7 +38,7 @@ BUTTON_A = 0        # speed step down
 BUTTON_B = 1        # steering step up
 BUTTON_X = 2        # steering step down
 BUTTON_Y = 3        # speed step up
-
+BUTTON_C = 10       # center Xbox button
 
 # Throttle and Brake
 THROTTLE_AXIS = 1   # release -1 --> press 1
@@ -39,8 +47,12 @@ BRAKE_POINT = -0.9  # consider brake is applied if value is greater than this.
 
 # Gear shift
 # to be neutral, bothe SHIFT_FORWARD & SHIFT_REVERSE must be 0
+# if you have logitech driving force shifter 
 SHIFT_FORWARD = 14     # forward 1
 SHIFT_REVERSE = 15     # reverse 1
+# else
+#SHIFT_FORWARD = 4     # forward 1
+#SHIFT_REVERSE = 5     # reverse 1
 
 # Max speed and steering factor
 MAX_THROTTLE_FACTOR = 10
@@ -56,14 +68,30 @@ class Translator:
     def __init__(self):
         self.sub = rospy.Subscriber("joy", Joy, self.callback)
         self.pub = rospy.Publisher('fusion', Control, queue_size=1)
+        self.sub_vel = rospy.Subscriber("base_pose_ground_truth", Odometry, self.cbVel)
+        
         self.last_published_time = rospy.get_rostime()
         self.last_published = None
         self.timer = rospy.Timer(rospy.Duration(1./20.), self.timer_callback)
+        self.kill_data_collection = False
+        self.command = Control()
+        print('steer \tthrt: \tbrake \tvelocity')
         
     def timer_callback(self, event):
         if self.last_published and self.last_published_time < rospy.get_rostime() + rospy.Duration(1.0/20.):
             self.callback(self.last_published)
 
+    def cbVel(self, msg):
+        vel_x = msg.twist.twist.linear.x 
+        vel_y = msg.twist.twist.linear.y
+        vel_z = msg.twist.twist.linear.z
+        
+        cur_output = '{0:.3f} \t{1:.3f} \t{2:.3f} \t{3:.3f}\r'.format(self.command.steer, 
+                          self.command.throttle, self.command.brake, math.sqrt(vel_x**2 + vel_y**2 + vel_z**2))
+
+        sys.stdout.write(cur_output)
+        sys.stdout.flush()
+    
     def callback(self, message):
         rospy.logdebug("joy_translater received axes %s",message.axes)
         command = Control()
@@ -82,19 +110,27 @@ class Translator:
             command.brake = 0.0
         else:
             command.throttle = 0.0
-
+        
         if message.buttons[SHIFT_FORWARD] == 1:
             command.shift_gears = Control.FORWARD
-        elif message.buttons[SHIFT_FORWARD] == 0 and message.buttons[SHIFT_REVERSE] == 0 :
-            command.shift_gears = Control.NEUTRAL
         elif message.buttons[SHIFT_REVERSE] == 1:
             command.shift_gears = Control.REVERSE
+        elif message.buttons[BUTTON_C] == 1:
+            # print(os.system("data_collection"))
+            if self.kill_data_collection is False:
+                os.system("rosnode kill " + "data_collection")
+                self.kill_data_collection = True
+                
+            command.shift_gears = Control.NEUTRAL
+            command.throttle = 0.0
+            command.brake = 1.0
         else:
             command.shift_gears = Control.NO_COMMAND
 
         command.steer = message.axes[STEERING_AXIS]
         self.last_published = message
         self.pub.publish(command)
+        self.command = command
 
 if __name__ == '__main__':
     rospy.init_node('joystick_translator')

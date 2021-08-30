@@ -9,7 +9,7 @@ export OSCAR_PATH=$(pwd)
 
 ##
 # set up catkin_ws including model path and setup.bash
-export GAZEBO_MODEL_PATH=$(pwd)/catkin_ws/src/rover/models:${GAZEBO_MODEL_PATH} > /dev/null 2>&1
+export GAZEBO_MODEL_PATH=$(pwd)/catkin_ws/src/rover/models:${GAZEBO_MODEL_PATH} $(pwd)/catkin_ws/src/fusion/models:${GAZEBO_MODEL_PATH} > /dev/null 2>&1
 source ./catkin_ws/devel/setup.bash
 
 ##

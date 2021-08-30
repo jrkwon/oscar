@@ -1,0 +1,2 @@
+['Straight', 'Right', 'Left', 'Straight', 'Left', 'Right', 'Straight', 'Right', 'Right', 'Left', 'Right', 'Straight', 'Left', 'Right', 'Right', 'Straight', 'Left', 'Right', 'Right', 'Straight']
+['50', '100', '50', '100', '100', '50', '50', '50', '100', '50', '100', '100', '100', '50', '50', '100', '100', '100', '100', '100']

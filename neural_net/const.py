@@ -11,10 +11,20 @@ History:
 # constant definition
 
 # network model type
-NET_TYPE_JAEROCK     = 0
-NET_TYPE_JAEROCK_VEL = 2
-NET_TYPE_CE491       = 1
-NET_TYPE_CONVLSTM    = 10
+
+NET_TYPE_PILOT      = 1
+NET_TYPE_PILOT_M    = 0
+NET_TYPE_DAVE2SKY   = 35
+NET_TYPE_VS         = 31
+NET_TYPE_VGG16      = 32
+NET_TYPE_ALEX       = 34
+NET_TYPE_ALEX_M     = 14
+NET_TYPE_ALEX_T     = 15
+NET_TYPE_RES        = 33
+NET_TYPE_CONJOIN    = 17
+NET_TYPE_CONJOIN_T  = 16
+NET_TYPE_PILOTwL    = 22
+NET_TYPE_ALEXwL_T   = 25
 
 # file extension
 DATA_EXT             = '.csv'
