@@ -57,29 +57,35 @@ class DataCollection():
         # create csv data file
         name_datatime = str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
         #path = '../data/' + sys.argv[1] + '/' + name_datatime + '/'
-        # path = rospy.get_param('path_to_e2e_data', 
-        #                 './e2e_data') + '/' + sys.argv[1] + '/' + name_datatime + '/'
-        if sys.argv[1][-1] is '/':
-            argv = sys.argv[1]
+        path = rospy.get_param('path_to_e2e_data', 
+                        './e2e_data') + '/' + sys.argv[1] + '/' + name_datatime + '/'
+        if os.path.exists(path):
+            print('path exists. continuing...')
         else:
-            argv = sys.argv[1] + '/'
-        n = 1
-        is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
-        path = is_exist_path + '/' + name_datatime + '/'
-        
-        if os.path.exists(is_exist_path) is False:
             print('new folder created: ' + path)
             os.makedirs(path)
-        else:
-            while(os.path.exists(is_exist_path)):
-                print('path exists. continuing...')
-                n += 1
-                is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
-                path = is_exist_path + '/' + name_datatime + '/' 
-            os.makedirs(path)
+        
+        ###OPEM4AV   
+        # if sys.argv[1][-1] is '/':
+        #     argv = sys.argv[1]
+        # else:
+        #     argv = sys.argv[1] + '/'
+        # n = 1
+        # is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
+        # path = is_exist_path + '/' + name_datatime + '/'
+        
+        # if os.path.exists(is_exist_path) is False:
+        #     print('new folder created: ' + path)
+        #     os.makedirs(path)
+        # else:
+        #     while(os.path.exists(is_exist_path)):
+        #         print('path exists. continuing...')
+        #         n += 1
+        #         is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
+        #         path = is_exist_path + '/' + name_datatime + '/' 
+        #     os.makedirs(path)
 
         self.text = open(str(path) + name_datatime + const.DATA_EXT, "w+")
-        # self.text_accel = open(str(path) + name_datatime+'_accel' + const.DATA_EXT, "w+")
         self.path = path
 
 
@@ -138,11 +144,11 @@ class DataCollection():
                                                         self.vel_x,
                                                         self.vel_y,
                                                         self.vel_z,
+                                                        self.accel_x,
+                                                        self.accel_y,
                                                         self.pos_x,
                                                         self.pos_y,
-                                                        self.pos_z,
-                                                        self.accel_x,
-                                                        self.accel_y)
+                                                        self.pos_z)
         else:
             line = "{}{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
                                                         self.steering, 
