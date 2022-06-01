@@ -26,6 +26,7 @@ from image_converter import ImageConverter
 from drive_run import DriveRun
 from config import Config
 from image_process import ImageProcess
+import gpu_options
 
 if Config.data_collection['vehicle_name'] == 'fusion':
     from fusion.msg import Control
@@ -41,12 +42,16 @@ velocity = 0
 
 
 class NeuralControl:
-    def __init__(self, weight_file_name):
+    def __init__(self, weight_file_name, weight_file_name2 = None):
         rospy.init_node('run_neural')
         self.ic = ImageConverter()
         self.image_process = ImageProcess()
         self.rate = rospy.Rate(30)
         self.drive= DriveRun(weight_file_name)
+        if weight_file_name2 != None:
+            self.drive2 = DriveRun(weight_file_name2) # multiple network models can be used
+        else:
+            self.drive2 = None
         rospy.Subscriber(Config.data_collection['camera_image_topic'], Image, self._controller_cb)
         self.image = None
         self.image_processed = False
@@ -90,10 +95,11 @@ def pos_vel_cb(value):
     velocity = math.sqrt(vel_x**2 + vel_y**2 + vel_z**2)
 
         
-def main(weight_file_name):
+def main(weight_file_name, weight_file_name2 = None):
+    gpu_options.set()
 
     # ready for neural network
-    neural_control = NeuralControl(weight_file_name)
+    neural_control = NeuralControl(weight_file_name, weight_file_name2)
     
     rospy.Subscriber(Config.data_collection['base_pose_topic'], Odometry, pos_vel_cb)
     # ready for /bolt topic publisher
@@ -115,6 +121,8 @@ def main(weight_file_name):
         # predicted steering angle from an input image
         if config['num_inputs'] == 2:
             prediction = neural_control.drive.run((neural_control.image, velocity))
+            if weight_file_name2 != None:
+                prediction2 = neural_control.drive2.run((neural_control.image, velocity))
             if config['num_outputs'] == 2:
                 # prediction is [ [] ] numpy.ndarray
                 joy_data.steer = prediction[0][0]
@@ -123,6 +131,8 @@ def main(weight_file_name):
                 joy_data.steer = prediction[0][0]
         else: # num_inputs is 1
             prediction = neural_control.drive.run((neural_control.image, ))
+            if weight_file_name2 != None:
+                prediction2 = neural_control.drive2.run((neural_control.image, ))
             if config['num_outputs'] == 2:
                 # prediction is [ [] ] numpy.ndarray
                 joy_data.steer = prediction[0][0]
@@ -183,10 +193,13 @@ def main(weight_file_name):
 
 if __name__ == "__main__":
     try:
-        if len(sys.argv) != 2:
-            exit('Usage:\n$ rosrun run_neural run_neural.py weight_file_name')
+        if len(sys.argv) == 2:
+            main(sys.argv[1])
+        elif len(sys.argv) == 3:
+            main(sys.argv[1], sys.argv[2])
+        else:
+            exit('Usage:\n$ rosrun run_neural run_neural.py weight_file_name [weight_file_name2]')
 
-        main(sys.argv[1])
 
     except KeyboardInterrupt:
         print ('\nShutdown requested. Exiting...')

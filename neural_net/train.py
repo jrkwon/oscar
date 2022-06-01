@@ -11,11 +11,14 @@ History:
 
 import sys
 from drive_train import DriveTrain
+import gpu_options
 
 
 ###############################################################################
 #
 def train(data_folder_name):
+    gpu_options.set()
+
     drive_train = DriveTrain(data_folder_name)
     drive_train.train(show_summary = False)
 
