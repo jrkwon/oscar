@@ -127,22 +127,25 @@ class DriveTrain:
     def _build_model(self, show_summary=True):
 
         def _data_augmentation(image, steering_angle):
+            is_aug = False
             if config['data_aug_flip'] is True:    
                 # Flipping the image
-                return True, self.data_aug.flipping(image, steering_angle)
+                image, steering_angle = self.data_aug.flipping(image, steering_angle)
+                is_aug = True
 
             if config['data_aug_bright'] is True:    
                 # Changing the brightness of image
                 if steering_angle > config['steering_angle_jitter_tolerance'] or \
                     steering_angle < -config['steering_angle_jitter_tolerance']:
                     image = self.data_aug.brightness(image)
-                return True, image, steering_angle
+                    is_aug = True
 
             if config['data_aug_shift'] is True:    
                 # Shifting the image
-                return True, self.data_aug.shift(image, steering_angle)
+                image, steering_angle = self.data_aug.shift(image, steering_angle)
+                is_aug = True
 
-            return False, image, steering_angle
+            return is_aug, image, steering_angle
 
         def _prepare_batch_samples(batch_samples):
             images = []
