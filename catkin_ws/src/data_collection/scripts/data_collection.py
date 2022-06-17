@@ -65,25 +65,25 @@ class DataCollection():
             print('new folder created: ' + path)
             os.makedirs(path)
         
-        ###OPEM4AV   
-        # if sys.argv[1][-1] is '/':
-        #     argv = sys.argv[1]
-        # else:
-        #     argv = sys.argv[1] + '/'
-        # n = 1
-        # is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
-        # path = is_exist_path + '/' + name_datatime + '/'
+        ##OPEM4AV   
+        if sys.argv[1][-1] is '/':
+            argv = sys.argv[1]
+        else:
+            argv = sys.argv[1] + '/'
+        n = 1
+        is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
+        path = is_exist_path + '/' + name_datatime + '/'
         
-        # if os.path.exists(is_exist_path) is False:
-        #     print('new folder created: ' + path)
-        #     os.makedirs(path)
-        # else:
-        #     while(os.path.exists(is_exist_path)):
-        #         print('path exists. continuing...')
-        #         n += 1
-        #         is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
-        #         path = is_exist_path + '/' + name_datatime + '/' 
-        #     os.makedirs(path)
+        if os.path.exists(is_exist_path) is False:
+            print('new folder created: ' + path)
+            os.makedirs(path)
+        else:
+            while(os.path.exists(is_exist_path)):
+                print('path exists. continuing...')
+                n += 1
+                is_exist_path = argv + str(Config.neural_net['network_type']) + '/' + str(n) + 'n'
+                path = is_exist_path + '/' + name_datatime + '/' 
+            os.makedirs(path)
 
         self.text = open(str(path) + name_datatime + const.DATA_EXT, "w+")
         self.path = path
@@ -144,11 +144,11 @@ class DataCollection():
                                                         self.vel_x,
                                                         self.vel_y,
                                                         self.vel_z,
-                                                        self.accel_x,
-                                                        self.accel_y,
                                                         self.pos_x,
                                                         self.pos_y,
-                                                        self.pos_z)
+                                                        self.pos_z,
+                                                        self.accel_x,
+                                                        self.accel_y)
         else:
             line = "{}{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
                                                         self.steering, 
