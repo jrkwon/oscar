@@ -134,7 +134,20 @@ class DataCollection():
         else:
             cv2.imwrite(file_full_path, img)
         sys.stdout.write(file_full_path + '\r')
-        if config['version'] >= 0.92:
+        if config['version'] == 0.92:
+            line = "{}{},{},{},{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
+                                                        self.steering, 
+                                                        self.throttle,
+                                                        self.brake,
+                                                        unix_time,
+                                                        self.vel,
+                                                        self.vel_x,
+                                                        self.vel_y,
+                                                        self.vel_z,
+                                                        self.pos_x,
+                                                        self.pos_y,
+                                                        self.pos_z)
+        elif config['version'] >= 0.93:
             line = "{}{},{},{},{},{},{},{},{},{},{},{},{},{},{}\r\n".format(time_stamp, const.IMAGE_EXT, 
                                                         self.steering, 
                                                         self.throttle,
@@ -184,6 +197,6 @@ def main():
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Usage: ')
-        exit('$ rosrun data_collection data_collection.py save_path')
+        exit('$ rosrun data_collection data_collection.py your_data_id')
 
     main()
