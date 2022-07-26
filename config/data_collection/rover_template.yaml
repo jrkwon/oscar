@@ -21,7 +21,7 @@ crop: False
 # vehicle name
 vehicle_name: rover
 # camera image topic 
-camera_image_topic: /camera/image_raw
+camera_image_topic: /camera/color/image_raw
 # vehicle control topic name
 vehicle_control_topic: /rover
 # p3d - current position and velocity

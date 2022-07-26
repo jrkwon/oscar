@@ -1324,25 +1324,7 @@
       <accelerometerTurnOnBiasSigma>0.196</accelerometerTurnOnBiasSigma>
     </plugin>
 
-    <!-- start of section: add camera and lidar by kwon -->
-    <include>
-      <uri>model://usb_cam</uri>
-      <pose>0.35 0 1.92 0 0.261799 0</pose>
-    </include>
-    <joint name="usb_cam_joint" type="fixed">
-      <child>usb_cam::link</child>
-      <parent>base_link</parent>
-    </joint>
-    <include>
-      <uri>model://ouster</uri>
-      <pose>0.31 0 1.95 0 0 0</pose>
-      <!-- pose>1.5 0 0.8 0 0 0</pose -->
-    </include>
-    <joint name="ouster_joint" type="fixed">
-      <child>ouster::os1_sensor</child>
-      <parent>base_link</parent>
-    </joint>
-    <!-- end of section -->
+
 
   </model>
 </sdf>

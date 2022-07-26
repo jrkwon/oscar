@@ -17,6 +17,8 @@
     <arg name="world" default="$(find rover)/worlds/empty.world"/>
     <arg name="sdf" default="$(find rover)/models/$(arg vehicle)/model.sdf"/>
 
+
+
     <!-- gazebo configs -->
     <arg name="gui" default="true"/>
     <arg name="debug" default="false"/>
@@ -24,7 +26,7 @@
     <arg name="paused" default="false"/>
     <arg name="respawn_gazebo" default="false"/>
     <!-- MAVROS configs -->
-    <arg name="fcu_url" default="udp://:14540@localhost:14557"/>
+    <arg name="fcu_url" default="/dev/ttyACM0:57600"/>
     <arg name="respawn_mavros" default="false"/>
     <!-- PX4 configs -->
     <arg name="interactive" default="true"/>
@@ -49,11 +51,13 @@
     <!-- MAVROS -->
     <include file="$(find rover)/launch/mavros_launch/px4.launch">
         <!-- GCS link is provided by SITL -->
-        <arg name="gcs_url" value=""/>
+        <arg name="gcs_url" value="udp://@localhost"/>
         <arg name="fcu_url" value="$(arg fcu_url)"/>
         <arg name="respawn_mavros" value="$(arg respawn_mavros)"/>
+
+
     </include>
-    
+
     <param name="robot_description" textfile="$(find rover)/models/$(arg vehicle)/model.urdf" />
     <!-- rviz -->
     <node if="$(arg rviz)" type="rviz" name="rviz" pkg="rviz" args="-d $(find rover)/rviz/$(arg vehicle).rviz">
@@ -65,9 +69,9 @@
     
     <node pkg="rover" type="joystick_translator.py" name="joystick_translator">
     </node>
+
     <!-- Run two joy nodes publishing to the same topic, just to cover two possible joystick locations -->
     <node pkg="joy" type="joy_node" name="joy_node0">
         <param name="dev" value="/dev/input/js0"/>
     </node>
-  
 </launch>

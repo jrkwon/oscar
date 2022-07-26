@@ -3,5 +3,5 @@
 # - The config name will be postfixed to the neural network weight file name
 # - update: separated configs
 neural_net: fusion_jaerock_jaerock2
-data_collection: fusion_jaerock_jaerock2
+data_collection: rover_template
 run_neural: fusion_bada_bada
