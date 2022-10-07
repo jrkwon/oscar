@@ -22,7 +22,8 @@ normalize_data: True
 validation_rate: 0.3
 num_epochs: 20
 batch_size: 16
-num_outputs: 1
+num_inputs: 1     # input: image, velocity
+num_outputs: 1    # output: steering_angle, throttle
 early_stopping_patience: 3
 # tensorboard log dir
 tensorboard_log_dir: logs/scalars/
@@ -39,6 +40,6 @@ input_image_depth: 3
 
 # steering data preprocessing
 # - steering angle adjustment
-steering_angle_scale: 5.0
+steering_angle_scale: 1.0
 # - steering wheel jitter tolerance
 steering_angle_jitter_tolerance: 0.01

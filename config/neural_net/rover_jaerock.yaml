@@ -35,6 +35,6 @@ input_image_depth: 3
 
 # steering data preprocessing
 # - steering angle adjustment
-steering_angle_scale: 5.0
+steering_angle_scale: 1
 # - steering wheel jitter tolerance
 steering_angle_jitter_tolerance: 0.01

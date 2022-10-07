@@ -17,6 +17,8 @@ import random
 
 from config import Config
 
+
+
 class DriveData:
 
     if Config.data_collection['brake'] is True:
@@ -149,7 +151,7 @@ class DriveData:
 #  for testing DriveData class only
 def main(data_path):
     import const
-
+ 
     if data_path[-1] == '/':
         data_path = data_path[:-1]
 

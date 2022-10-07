@@ -83,6 +83,7 @@ def build_csv(data_path):
 ###############################################################################
 #
 def main():
+
     if (len(sys.argv) != 2):
         print('Usage: \n$ python rebuild_csv data_folder_name')
         return

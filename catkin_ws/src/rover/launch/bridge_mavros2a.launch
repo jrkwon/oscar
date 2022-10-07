@@ -1,0 +1,48 @@
+<launch>
+  <arg name="ns" default="/"/>
+  <arg name="rviz" default="True"/>
+  <arg name="fcu_url" default="/dev/ttyACM0:57600"/>
+  <arg name="gcs_url" default="udp://@localhost" />   <!-- GCS link is provided by SITL -->
+  <arg name="tgt_system" default="1" />
+  <arg name="tgt_component" default="1" />
+  <arg name="system_id" default="255" />
+  <arg name="component_id" default="240" />
+  <arg name="teleop_args" default="-att" />
+  <!-- vehicle model and world -->
+  <arg name="tf2" default="true"/>
+  <arg name="est" default="ekf2"/>
+  <arg name="vehicle" default="rover"/>
+  <arg name="world" default="$(find rover)/worlds/empty.world"/>
+  <arg name="sdf" default="$(find rover)/models/$(arg vehicle)/model.sdf"/>
+
+
+ 
+	<!-- Launch bridge -->
+  <include file="$(find px4_realsense_bridge)/launch/bridge_over_waters.launch" >
+  </include>
+  <!-- Launch MavROS -->
+  <group ns="$(arg ns)">
+      <include file="$(find mavros)/launch/node.launch">
+          <arg name="pluginlists_yaml" value="$(find mavros)/launch/px4_pluginlists.yaml" />
+          <!-- Need to change the config file to get the tf topic and get local position in terms of local origin -->
+          <arg name="config_yaml" value="$(find mavros)/launch/px4_config.yaml" />
+          <arg name="fcu_url" value="$(arg fcu_url)" />
+          <arg name="gcs_url" value="$(arg gcs_url)" />
+          <arg name="tgt_system" value="$(arg tgt_system)" />
+          <arg name="tgt_component" value="$(arg tgt_component)" />
+
+      </include>
+  </group>
+
+  <param name="robot_description" textfile="$(find rover)/models/$(arg vehicle)/model.urdf" />
+
+  <node pkg="rover" type="joystick_translator2a.py" name="joystick_translator">
+  </node>
+  <!-- Run two joy nodes publishing to the same topic, just to cover two possible joystick locations -->
+  <node pkg="joy" type="joy_node" name="joy_node0">
+      <param name="dev" value="/dev/input/js0"/>
+  </node>
+  <!-- rviz -->
+  <node if="$(arg rviz)" type="rviz" name="rviz" pkg="rviz" args="-d $(find rover)/rviz/$(arg vehicle).rviz">
+  </node>
+</launch>

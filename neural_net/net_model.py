@@ -145,8 +145,8 @@ class NetModel:
 
         # to address the error:
         #   Could not create cudnn handle: CUDNN_STATUS_INTERNAL_ERROR
-        gpu_options = tf.GPUOptions(allow_growth=True)
-        sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+        gpu_options = tf.compat.v1.GPUOptions(allow_growth=True)
+        sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
         K.tensorflow_backend.set_session(sess)
 
         self._model()

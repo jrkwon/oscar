@@ -24,7 +24,7 @@ BUTTON_Y = 3        # speed step up
 
 # Throttle and Brake
 THROTTLE_AXIS = 3   # release -1 --> press 1
-BRAKE_AXIS = 2      # release -1 --> press 1
+BRAKE_AXIS = 1      # release -1 --> press 1
 BRAKE_POINT = -0.9  # consider brake is applied if value is greater than this.
 
 # Gear shift
@@ -36,8 +36,8 @@ SHIFT_REVERSE = 7     # reverse 1
 MAX_THROTTLE_FACTOR = 20
 MAX_STEERING_FACTOR = 20
 # Default speed and steering factor : 
-INIT_THROTTLE_FACTOR = 10
-INIT_STERRING_FACTOR = 10
+INIT_THROTTLE_FACTOR = 1
+INIT_STERRING_FACTOR = 1
 
 # Small value
 SMALL_VALUE = 0.0001
@@ -84,11 +84,11 @@ class Translator:
         if message.axes[BRAKE_AXIS] > -1*SMALL_VALUE and message.axes[BRAKE_AXIS] < SMALL_VALUE:
 		    command.brake = 0.0
 
-        if message.axes[THROTTLE_AXIS] >= 0:
-            command.throttle = message.axes[THROTTLE_AXIS]
-            command.brake = 0.0
-        else:
-            command.throttle = 0.0
+        #if message.axes[THROTTLE_AXIS] >= 0:
+            #command.throttle = message.axes[THROTTLE_AXIS]
+            #command.brake = 0.0
+        #else:
+            #command.throttle = 0.0
         
         if message.buttons[SHIFT_FORWARD] == 1:
             command.shift_gears = Control.FORWARD
@@ -100,6 +100,7 @@ class Translator:
             command.shift_gears = Control.NO_COMMAND
 
         command.steer = message.axes[STEERING_AXIS]
+        command.throttle = message.axes[THROTTLE_AXIS]
 
         # scale throttle and steering 
         command.throttle = command.throttle*self.throttle_factor
@@ -109,9 +110,9 @@ class Translator:
         if command.shift_gears == Control.FORWARD:
             command4mavros.linear.x = command.throttle
             command4mavros.linear.y = command.steer
-        #elif command.shift_gears == Control.REVERSE:
-        #    command4mavros.linear.x = -command.throttle
-        #    command4mavros.linear.y = command.steer
+        elif command.shift_gears == Control.REVERSE:
+            command4mavros.linear.x = -command.throttle
+            command4mavros.linear.y = command.steer
         else:
             command4mavros.linear.x = 0
             command4mavros.linear.y = 0
@@ -122,6 +123,6 @@ class Translator:
         self.pub.publish(command)
 
 if __name__ == '__main__':
-    rospy.init_node('joystick_translator')
+    rospy.init_node('joystick_translator3')
     t = Translator()
     rospy.spin()

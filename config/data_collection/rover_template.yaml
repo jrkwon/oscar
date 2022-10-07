@@ -11,13 +11,13 @@ version: 0.92
 ## data collection
 
 # driving simulator
-steering_angle_max: 450
+steering_angle_max: 22.5
 steering_angle_tolerance: 0.015 # around 7.5 degree
 
 # image cropping: True for legacy datasets. 
 #                 False for new datasets.
 crop: False
-
+brake: False
 # vehicle name
 vehicle_name: rover
 # camera image topic 
@@ -25,9 +25,11 @@ camera_image_topic: /camera/color/image_raw
 # vehicle control topic name
 vehicle_control_topic: /rover
 # p3d - current position and velocity
-base_pose_topic: /mavros/global_position/local
+base_pose_topic: /mavros/odometry/in
 # mavros cmd_vel topic
 mavros_cmd_vel_topic: /mavros/setpoint_velocity/cmd_vel_unstamped
+# mavros cmd_alt topic: an alternative to velcoity control
+mavros_cmd_alt_topic: /mavros/setpoint_raw/attitude
 
 ######################################################
 ## when training and running, cropping input image 
@@ -35,9 +37,9 @@ mavros_cmd_vel_topic: /mavros/setpoint_velocity/cmd_vel_unstamped
 # crop (capture) area from a camera image
 # - gazebo simulated camera resolution: 800x600
 image_crop_x1: 0
-image_crop_y1: 274
-image_crop_x2: 799
-image_crop_y2: 414
+image_crop_y1: 457
+image_crop_x2: 899
+image_crop_y2: 720
 
-image_width: 800
-image_height: 800
+image_width: 990
+image_height: 263

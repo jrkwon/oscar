@@ -14,7 +14,7 @@
     <arg name="tf2" default="true"/>
     <arg name="est" default="ekf2"/>
     <arg name="vehicle" default="rover"/>
-    <arg name="world" default="$(find rover)/worlds/empty.world"/>
+    <arg name="world" default="$(find rover)/worlds/sonoma_raceway.world"/>
     <arg name="sdf" default="$(find rover)/models/$(arg vehicle)/model.sdf"/>
 
     <!-- gazebo configs -->
