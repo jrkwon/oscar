@@ -4,3 +4,6 @@
 [submodule "VIO"]
 	path = catkin_ws/src/VIO
 	url = https://github.com/Auterion/VIO.git
+[submodule "avoidance"]
+	path = catkin_ws/src/avoidance
+	url = https://github.com/PX4/PX4-Avoidance.git
