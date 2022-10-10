@@ -12,7 +12,7 @@ version: 0.92
 
 # driving simulator
 steering_angle_max: 22.5
-steering_angle_tolerance: 0.015 # around 7.5 degree
+steering_angle_tolerance: 0.0155 # around 7.5 degree
 
 # image cropping: True for legacy datasets. 
 #                 False for new datasets.
