@@ -3,7 +3,7 @@
 	url = https://github.com/PX4/PX4-Autopilot.git
 [submodule "VIO"]
 	path = catkin_ws/src/VIO
-	url = https://github.com/jomidokunMain/VIO/tree/052662
+	url = https://github.com/jomidokunMain/VIO.git
 [submodule "avoidance"]
 	path = catkin_ws/src/avoidance
 	url = https://github.com/PX4/PX4-Avoidance.git
