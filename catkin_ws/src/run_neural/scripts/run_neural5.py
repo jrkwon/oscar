@@ -165,7 +165,7 @@ def main(weight_file_name):
 
         joy_data4mavros2.thrust = Config.run_neural['throttle_default']
         if joy_data.steer >= 0:
-        	if 0 < joy_data.steer <= 0.2:
+        	if 0 < joy_data.steer <= 0.01:
         		joy_data4mavros2.orientation.x =0
         		joy_data4mavros2.orientation.y =0
 
@@ -174,7 +174,7 @@ def main(weight_file_name):
         		joy_data4mavros2.orientation.y = 0
 
         else:
-        	if -0.2 < joy_data.steer < 0:
+        	if -0.01 < joy_data.steer < 0:
         		joy_data4mavros2.orientation.x =0
         		joy_data4mavros2.orientation.y =0
 

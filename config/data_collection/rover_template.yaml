@@ -37,9 +37,9 @@ mavros_cmd_alt_topic: /mavros/setpoint_raw/attitude
 # crop (capture) area from a camera image
 # - gazebo simulated camera resolution: 800x600
 image_crop_x1: 0
-image_crop_y1: 457
-image_crop_x2: 899
-image_crop_y2: 720
+image_crop_y1: 200
+image_crop_x2: 999
+image_crop_y2: 645
 
-image_width: 990
-image_height: 263
+image_width: 1100
+image_height: 445

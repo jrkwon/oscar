@@ -16,10 +16,7 @@
   <arg name="sdf" default="$(find rover)/models/$(arg vehicle)/model.sdf"/>
 
 
- 
-	<!-- Launch bridge -->
-  <include file="$(find px4_realsense_bridge)/launch/bridge_moon.launch" >
-  </include>
+
   <!-- Launch MavROS -->
   <group ns="$(arg ns)">
       <include file="$(find mavros)/launch/node.launch">

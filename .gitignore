@@ -1,5 +1,13 @@
+# Ignore map related files
+*.bag
+*.pgm
+*.pcd
+
+
 # Ignore data folder
 data/
+pcl/
+map/
 ce491_data/
 e2e_fusion_data/
 e2e_rover_data/

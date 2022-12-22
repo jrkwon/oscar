@@ -15,11 +15,11 @@ brake_apply_sec: 1.7
 # brake value
 brake_val: 1
 # throttle at non sharp turn
-throttle_default: 0.5
+throttle_default: 0.3
 # throttle at sharp turn
-throttle_sharp_turn: 0.5
+throttle_sharp_turn: 0.3
 # velocity threshold for not moving
 velocity_0: 30
 # scale factors
-scale_factor_throttle: 0.5
+scale_factor_throttle: 0.3
 scale_factor_steering: 0.3
