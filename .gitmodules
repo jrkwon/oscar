@@ -4,6 +4,9 @@
 [submodule "VIO"]
 	path = catkin_ws/src/VIO
 	url = https://github.com/jomidokunMain/VIO.git
-[submodule "avoidance"]
-	path = catkin_ws/src/avoidance
-	url = https://github.com/PX4/PX4-Avoidance.git
+[submodule "depthimage_to_laserscan"]
+	path = catkin_ws/src/depthimage_to_laserscan
+	url = hhttps://github.com/ros-perception/depthimage_to_laserscan.git
+[submodule "ros-line-follower-robot"]
+	path = catkin_ws/src/ros-line-follower-robot
+	url = https://github.com/chrisdalke/ros-line-follower-robot.git
