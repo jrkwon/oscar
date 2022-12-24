@@ -5,6 +5,3 @@
 	path = catkin_ws/src/VIO
 	url = https://github.com/jomidokunMain/VIO.git
 
-[submodule "depthimage_to_laserscan"]
-	path = catkin_ws/src/depthimage_to_laserscan
-	url = https://github.com/ros-perception/depthimage_to_laserscan.git
