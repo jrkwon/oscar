@@ -1,10 +1,7 @@
 [submodule "PX4-Autopilot"]
 	path = PX4-Autopilot
 	url = https://github.com/PX4/PX4-Autopilot.git
-[submodule "VIO"]
-	path = catkin_ws/src/VIO
-	url = https://github.com/jomidokunMain/VIO.git
 
-[submodule "catkin_ws/src/depthimage_to_laserscan"]
+[submodule "depthimage_to_laserscan"]
 	path = catkin_ws/src/depthimage_to_laserscan
 	url = https://github.com/ros-perception/depthimage_to_laserscan.git
