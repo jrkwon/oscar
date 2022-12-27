@@ -6,9 +6,7 @@
 	path = catkin_ws/src/depthimage_to_laserscan
 	url = https://github.com/ros-perception/depthimage_to_laserscan.git
 
-[submodule "catkin_ws/src/VIO"]
+[submodule "depthimage_to_laserscan"]
 	path = catkin_ws/src/VIO
-	url = https://github.com/Auterion/VIO.git
-[submodule "/home/jesudara/Oscar/oscar/catkin_ws/src/VIO1"]
-	path = /home/jesudara/Oscar/oscar/catkin_ws/src/VIO1
-	url = https://github.com/Auterion/VIO.git
+	url = https://github.com/JomidokunMain/VIO.git
+
