@@ -302,7 +302,7 @@ NOTE: replace the kinetic with meldoic
 - Select units based on preference (preferable meters) 
 #### Vehicle Information 
 - Firmware : `PX4 Pro`
-- Vehicle : ROVER
+- Vehicle : `ROVER`
 #### Connect the PX4to the Computer(Please attach GPS sensor)
 - See the video for firmware, airframe , and, sensors configuration
 #### Application Settings 
