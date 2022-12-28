@@ -292,7 +292,10 @@ $ usermod -aG sudo newuser
 $ sudo usermod -aG sudo newuser
 ```
 ### Install ROS
+The OSCAR current version has been tested with ROS Melodic on Ubuntu 18.04. Install [here](http://wiki.ros.org/melodic/Installation/Ubuntu)
 ### Install MAVROS
+Install the  Binary Installation(deb) section from [here](https://github.com/mavlink/mavros/blob/master/mavros/README.md#installation).
+NOTE: replace the kinetic with meldoic 
 ### Download QGroundControl
 ### Open QGC Configuration 
 #### Meaurement units configuration
