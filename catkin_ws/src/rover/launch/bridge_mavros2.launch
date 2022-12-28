@@ -1,6 +1,6 @@
 <launch>
   <arg name="ns" default="/"/>
-  <arg name="rviz" default="false"/>
+  <arg name="rviz" default="True"/>
   <arg name="fcu_url" default="/dev/ttyACM0:57600"/>
   <arg name="gcs_url" default="udp://@localhost" />   <!-- GCS link is provided by SITL -->
   <arg name="tgt_system" default="1" />
@@ -20,8 +20,6 @@
   <arg name="vehicle" default="rover"/>
   <arg name="world" default="$(find rover)/worlds/empty.world"/>
   <arg name="sdf" default="$(find rover)/models/$(arg vehicle)/model.sdf"/>
-
-
  
 	<!-- Launch bridge -->
   <include file="$(find px4_realsense_bridge)/launch/bridge_over_waters.launch" >
@@ -54,7 +52,7 @@
 
   <param name="robot_description" textfile="$(find rover)/models/$(arg vehicle)/model.urdf" />
 
-  <node pkg="rover" type="joystick_translator3.py" name="joystick_translator">
+  <node pkg="rover" type="joystick_translator2a.py" name="joystick_translator">
   </node>
   <!-- Run two joy nodes publishing to the same topic, just to cover two possible joystick locations -->
   <node pkg="joy" type="joy_node" name="joy_node0">

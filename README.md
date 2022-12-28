@@ -19,6 +19,7 @@
   - New data collection policy.
   - Data normalization added.
 - 11/30/2020: Version 1.0 released.
+- 12/30/2022: Version 1.0 released rover branch devel_mrover.
 
 ## Introduction
 
@@ -280,6 +281,35 @@ The datasets below were collected before we added `brake`. The CSV files must be
 ```
 $ sudo apt install ros-$ROS_DISTRO-hector-gazebo-plugins
 ```
+## How to Use with the Oscar_Px4 DWB
+
+### Create a New User (If necessary )
+```
+$ sudo adduser `newuser` 
+Granting a User Sudo Privileges
+$ groups newuser
+$ usermod -aG sudo newuser
+$ sudo usermod -aG sudo newuser
+```
+### Install ROS
+### Install MAVROS
+### Download QGroundControl
+### Open QGC Configuration 
+#### Meaurement units configuration
+- Select units based on preference (preferable meters) 
+#### Vehicle Information 
+- Firmware : `PX4 Pro`
+- Vehicle : ROVER
+#### Connect the PX4to the Computer(Please attach GPS sensor)
+- See the video for firmware, airframe , and, sensors configuration
+#### Application Settings 
+- Autoconnect - uncheck Pixhawk and SiK Radio
+### Install Anaconda
+### Install Realsense Ros package  
+### Install Imu filter
+### Install RTA-MAP package.  
+
+
 
 ## Acknowledgments
 
