@@ -310,7 +310,12 @@ NOTE: replace the kinetic with meldoic
 ### Install Anaconda
 ### Install Realsense Ros package  
 ### Install Imu filter
-### Install RTA-MAP package.  
+### Install RTA-MAP package.
+### Clone Oscar 
+
+```
+$ git clone https://github.com/jrkwon/oscar.git -b devel_mrover --recursive
+```  
 
 
 
