@@ -306,13 +306,15 @@ NOTE: replace the kinetic with meldoic
 #### Connect the PX4to the Computer(Please attach GPS sensor)
 - See the video for firmware, airframe , and, sensors configuration
 #### Application Settings 
-- Autoconnect - uncheck Pixhawk and SiK Radio
+- Autoconnect - Uncheck Pixhawk and SiK Radio
 ### Install Anaconda
+- see installation [guide](https://docs.anaconda.com/anaconda/install/linux/)
 ### Install Realsense Ros package  
+- see installation [guide](https://github.com/IntelRealSense/realsense-ros)
 ### Install Imu filter
+
 ### Install RTA-MAP package.
 ### Clone Oscar 
-
 ```
 $ git clone https://github.com/jrkwon/oscar.git -b devel_mrover --recursive
 ```  
