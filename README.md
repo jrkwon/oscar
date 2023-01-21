@@ -312,14 +312,40 @@ NOTE: replace the kinetic with meldoic
 ### Install Realsense Ros package  
 - see installation [guide](https://github.com/IntelRealSense/realsense-ros)
 ### Install Imu filter
-
+```
+$ sudo apt-get install ros-melodic-imu-filter-madgwick
+``` 
 ### Install RTA-MAP package.
-### Clone Oscar 
+```
+$ sudo apt-get install ros-melodic-rtabmap-ros
+$ sudo apt-get install ros-melodic-robot-localization
+``` 
+## Implementation of the DBW
+### 1. Clone Oscar 
 ```
 $ git clone https://github.com/jrkwon/oscar.git -b devel_mrover --recursive
 ```  
-
-
+### 2. make the make the workspace
+```
+$ cd oscar/catkin_ws
+$ catkin_make
+$ cd ..
+``` 
+### 3. source the workspace in the terminal
+```
+$ source ./setup.bash
+```
+### 4. start the vehicle
+```
+$ ./start_rover.sh
+```
+### 5. start the vehicle GUI(QGroundcontrol)
+go to location where QgroundControl is downloaded double click the icon 
+Or
+on the terminal
+```
+$ ./start_rover.sh
+```
 
 ## Acknowledgments
 
@@ -332,6 +358,7 @@ $ git clone https://github.com/jrkwon/oscar.git -b devel_mrover --recursive
 - Donghyun Kim: Ph.D. student at Hanyang University-ERICA, Korea
 - Rohan Pradeepkumar: MS student in Automotive Systems Engineering at the University of Michigan-Dearborn
 - Sanjyot Thete: MS student in Data Science at the University of Michigan-Dearborn
+- Jesudara Omidokun: MS student in Electrical Engineering University of Michigan-Dearborn
 
 ### References
 
