@@ -24,6 +24,13 @@ elif [ "$1" == "mcity_jaerock" ] ; then
 elif [ "$1" == "simple_city" ] ; then
     echo "Starting with $1..." #### experimental
     roslaunch fusion sitl.launch world:=$1 x:=-35 y:=-1.6 z:=0 R:=0 P:=0 Y:=0
+elif [ "$1" == "track_aws_ANEC" ] ; then
+    echo "Starting with $1..." #### experimental
+    roslaunch fusion sitl.launch world:=$1 x:=8.8257 y:=-99.1053 z:=0 R:=0 P:=0 Y:=1.57
+	# roslaunch fusion sitl.launch world:=$1 x:=366.314000 y:=571.437000 z:=0 R:=0 P:=0 Y:=-1.57
+elif [ "$1" == "track_aws_smc" ] ; then
+    echo "Starting with $1..." #### experimental
+    roslaunch fusion sitl.launch world:=$1 x:=7.58439 y:=-102.82 z:=0.02 R:=0 P:=0 Y:=1.57
 else 
     echo "Error: no $1.world file exist." 
 fi
