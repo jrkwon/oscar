@@ -7,7 +7,8 @@ simultaneous operation of several neural network controllers because it was orig
 
 ## How does it work?
 We propose the Adaptive Neural Ensemble Controller (ANEC), by which we show algorithmic perception latency problems can be mitigated by adaptively infusing the prediction action output into the baseline output. A high-level overview of the proposed system is shown in the Figure below. ANEC depends on combining the output of two driving models, the Base Model (BM) and the Predictive Model (PM). BM is expected to extract features to infer control output at the current input without consideration of latency. PM, on the other hand, is expected to extract latent variables for future actions. A dy- namic and adaptive weight, dependent on the vehicle speed, is assigned to each model to establish ANEC final output. The higher the speed, the greater the significance of future states, and hence the greater the weight assigned to PM.
-![My Image](../images/my-image.jpg)
+
+[ANEC-Overview.pdf](../imgs_anec/ANEC-Overview.pdf)
 
 
 ## General steps to use ANEC:
@@ -123,7 +124,7 @@ When some of test images must be deleted, just delete them and rebuild the csv u
 
 ## How to Train Neural Network
 
-[ANEC-Training.pdf](https://github.com/jrkwon/oscar/files/10561225/ANEC-Training.pdf)
+[ANEC-Training.pdf](../imgs_anec/ANEC-Training.pdf)
 
 After collecting data, we will train each model separately.
 * BM will be trained using the generated csv file after collecting data.
