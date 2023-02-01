@@ -255,9 +255,9 @@ if __name__ == "__main__":
             type=str)
         
         argparser.add_argument(
-            '-sm', '--second_model',
+            '-pm', '--predictive_model',
             help='second model for higher velocity',
-            default='path/to/delay_compensation_model',
+            default='path/to/predictive_model',
             type=str)
 
         args = argparser.parse_args()
