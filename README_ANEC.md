@@ -21,11 +21,11 @@ We propose the Adaptive Neural Ensemble Controller (ANEC), by which we show algo
 3. Start OSCAR with the fusion vehicle.
 4. Collect data, understand its format, and clean it if needed.
     * This will create a CSV file which will be used for the base model (BM) training.
-5. Reassociate data
+5. create new data pairs (image, future actions).
     * This will create a 2nd CSV file which will be used for the predictive model (PM) training.
-6. Train the BM
-7. Train the PM
-8. 
+6. Train the base model (BM) and save it.
+7. Train the predictive model (PM) and save it.
+8. Use ANEC system to drive using both models.
 
 
 ## Download the OSCAR_ANEC Source Code
