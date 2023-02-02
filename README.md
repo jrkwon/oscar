@@ -1,5 +1,11 @@
 # OSCAR
 
+|     |     |
+| --- | --- |
+|![](imgs4readme/Screenshot%20from%202023-02-02%2015-50-55.png) |![](imgs4readme/Screenshot%20from%202023-02-02%2015-51-22.png) |
+|![](imgs4readme/Screenshot%20from%202023-02-02%2015-48-22.png)|![](imgs4readme/Screenshot%20from%202023-02-02%2015-48-37.png)|
+|![](imgs4readme/Screenshot%20from%202023-02-02%2015-49-35.png) |![](imgs4readme/Screenshot%20from%202023-02-02%2015-49-47.png) |
+
 ## History
 
 - 3/11/2021: 
@@ -281,17 +287,29 @@ The datasets below were collected before we added `brake`. The CSV files must be
 $ sudo apt install ros-$ROS_DISTRO-hector-gazebo-plugins
 ```
 
+## Relevant Publications
+
+- Jaerock Kwon, Aws Khalil, Donghyun Kim, Haewoon Nam, “Incremental End-to-End Learning for Lateral Control in Autonomous Driving,” IEEE Access, 2022.
+- Aws Khalil, Ahmed Abdelhamed, Girma Tewolde, Jaerock Kwon, “Ridon Vehicle: Drive-by-Wire System for Scaled Vehicle Platform and Its Application on Behavior Cloning,” MDPI Energies, Special Issue “Autonomous Vehicles Perception and Control,” 2021.
+- Byung Chan Choi, Jaerock Kwon, Haewoon Nam, “Image Prediction for Lane Following Assist using Convolutional Neural Network-based U-Net,” The 4th International Conference on Artificial Intelligence in Information and Communication (ICAIIC 2022), Feb 21-24, 2022
+- Donghyun Kim, Jaerock Kwon, Haewoon Nam, “End-to-End Learning-based Self-Driving Control Imitating Human Driving”, The 12th International Conference on ICT Convergence (ICTC 2021), Jeju Island, Korea, October 20-22, 2021
+- Ahmed Abdelhamed, Girma Tewolde, and Jaerock Kwon, Simulation Framework for Development and Testing of Autonomous Vehicles, International IOT, Electronics and Mechatronics Conference, Vancouver, Canada, Sep 2020
+- Nikhil Prabhu, Sewoong Min, Haewoon Nam, Girma Tewolde, and Jaerock Kwon, Integrated Framework of Autonomous Vehicle with Traffic Sign Recognition in Simulation Environment, IEEE International Conference on Electro/Information Technology, Naperville, IL, USA, July 2020
+- Shobit Sharma, Girma Tewolde, and Jaerock Kwon, Lateral and Longitudinal Motion Control of Autonomous Vehicles using Deep Learning, IEEE International Conference on Electro/Information Technology, Brookings, South Dakota, USA, May 2019
+
 ## Acknowledgments
 
 ### System Design and Implementation
 
 - Jaerock Kwon, Ph.D.: Assistant Professor of Electrical and Computer Engineering at the University of Michigan-Dearborn
 
-### Implementation
+### Implementation and Contributors
 
 - Donghyun Kim: Ph.D. student at Hanyang University-ERICA, Korea
-- Rohan Pradeepkumar: MS student in Automotive Systems Engineering at the University of Michigan-Dearborn
-- Sanjyot Thete: MS student in Data Science at the University of Michigan-Dearborn
+- Aws Khalil: Ph.D. student at the University of Michigan-Dearborn
+- Jesudara Omidokum: M.S. student at the University of Michigan-Dearborn
+- Rohan Pradeepkumar: M.S. student in Automotive Systems Engineering at the University of Michigan-Dearborn
+- Sanjyot Thete: M.S. student in Data Science at the University of Michigan-Dearborn
 
 ### References
 
