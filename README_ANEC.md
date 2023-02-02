@@ -155,7 +155,7 @@ max         0.310105
 Name: steering_angle, dtype: float64
 ```
 
-### build a second csv file to create (image, future actions) data pairs.
+### Build a second csv file to create (image, future actions) data pairs.
 After collecting data and cleaning it, you will have a generated csv file that can be used to train the base model (BM).
 Now, we need a 2nd csv file to train the predictive model (PM), weher we need to create (image, future actions) data pairs.
 
@@ -226,7 +226,7 @@ To compare the driving performance between models, we created a reference model,
 To do so, we used a python library which allow to measure the similarity between curves developed by Jekel et al [1]. You can use this script for driving performance comparison. In this file you will find instructions based on the data you are using. A data sample is provided in the next section.
 
 
-[a link](https://github.com/jrkwon/oscar/blob/devel_anec/neural_net/driving_performance_comparison_sm.ipynb)
+[driving_performance_comparison_sm.ipynb](https://github.com/jrkwon/oscar/blob/devel_anec/neural_net/driving_performance_comparison_sm.ipynb)
 
 <img src="imgs_anec/driving_performance_cmp_sm.png" alt="drawing" width="600"/>
 
