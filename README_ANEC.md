@@ -92,7 +92,7 @@ This section explains how to use `fusion`.
 
 ## How to Collect Data
 
-Run the script with a data ID as an argument.
+Run the script with a data ID as an argument, for example use your name as data ID.
 ```
 (anec) $ ./collect_data_fusion jaerock
 ```
@@ -183,10 +183,69 @@ This is done by running the following script with 2 arguments:
 ```
 
 
-## How to Drive using ANEC system 
+## How to Drive using all three models 
+
+You can drive using the base model (BM), the predictive model (PM), or the ANEC system.
+Once one of them is driving you can use the same data collection command to collect data and compare with other models.
+
+### How to Drive using BM 
+```
+(anec) $ . setup.bash
+(anec) $ rosrun run_neural run_nerual.py path/to/saved/base/model 
+```
+Then on a new terminal you can run the data collection command,and for example you can use data ID "BM".
+```
+(anec) $ ./collect_data_fusion BM
+```
+
+### How to Drive using PM 
+```
+(anec) $ . setup.bash
+(anec) $ rosrun run_neural run_nerual.py path/to/saved/predictive/model 
+```
+Then on a new terminal you can run the data collection command,and for example you can use data ID "PM".
+```
+(anec) $ ./collect_data_fusion PM
+```
+
+### How to Drive using ANEC system 
 
 ```
-(oscar) $ . setup.bash
-(oscar) $ rosrun run_neural run_nerual_fusion.py -bm path/to/saved/base/model -pm path/to/saved/predictive/model
+(anec) $ . setup.bash
+(anec) $ rosrun run_neural run_nerual_fusion.py -bm path/to/saved/base/model -pm path/to/saved/predictive/model
+```
+Then on a new terminal you can run the data collection command,and for example you can use data ID "ANEC".
+```
+(anec) $ ./collect_data_fusion ANEC
 ```
 
+## Comparing Driving Performance
+
+To compare the driving performance between models, we created a reference model, which is a trained based model at a maximum speed of 65 km/h. Then we let the all models drive at a speed of 90 km/h and checked which model had the closest trajectory to the reference model.
+
+To do so, we used a python library which allow to measure the similarity between curves developed by Jekel et al [1]. You can use this script for driving performance comparison. In this file you will find instructions based on the data you are using. A data sample is provided in the next section.
+
+
+[a link](https://github.com/jrkwon/oscar/blob/devel_anec/neural_net/driving_performance_comparison_sm.ipynb)
+
+<img src="imgs_anec/driving_performance_cmp_sm.png" alt="drawing" width="600"/>
+
+## Data Samples
+- https://drive.google.com/drive/folders/1oCJjjE5KJoc7O0Tj_JamXc84paBqDPuV?usp=sharing
+
+## pre-trained models
+- https://drive.google.com/drive/folders/1HHZZzWrA8w2z_efmv9qTiC5t4qBxD5bL?usp=sharing
+
+## Acknowledgments
+
+### System Design and Implementation
+
+- Jaerock Kwon, Ph.D.: Assistant Professor of Electrical and Computer Engineering at the University of Michigan-Dearborn
+
+### Implementation
+
+- Aws Khalil: Ph.D. student at the University of Michigan-Dearborn.
+
+## references 
+1. **paper:** Jekel, C. F., Venter, G., Venter, M. P., Stander, N., & Haftka, R. T. (2018). Similarity measures for identifying material parameters from hysteresis loops using inverse analysis. International Journal of Material Forming. https://doi.org/10.1007/s12289-018-1421-8 . **Library:** https://pypi.org/project/similaritymeasures/
+    
