@@ -307,9 +307,7 @@ $ sudo apt install ros-$ROS_DISTRO-hector-gazebo-plugins
 
 - Donghyun Kim: Ph.D. student at Hanyang University-ERICA, Korea
 - Aws Khalil: Ph.D. student at the University of Michigan-Dearborn
-- Jesudara Omidokum: M.S. student at the University of Michigan-Dearborn
-- Rohan Pradeepkumar: M.S. student in Automotive Systems Engineering at the University of Michigan-Dearborn
-- Sanjyot Thete: M.S. student in Data Science at the University of Michigan-Dearborn
+- Jesudara Omidokun: M.S. student at the University of Michigan-Dearborn
 
 ### References
 
